@@ -1,6 +1,6 @@
 ---
 name: nbr-session-setup
-description: Set up a work session for a repository: worktree, dependency install, Rex session or Herdr workspace, and optionally a coding agent started from a brief in its Agents tab. Use when a skill or the user needs another repo, branch or PR ready to work in, such as a dispatch, a PR review, or Bob handing out work.
+description: "Set up a work session for a repository: worktree, dependency install, Rex session or Herdr workspace, and optionally a coding agent started from a brief in its Agents tab. Use when a skill or the user needs another repo, branch or PR ready to work in, such as a dispatch, a PR review, or Bob handing out work."
 compatibility: Requires Rex or Herdr.
 ---
 

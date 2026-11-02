@@ -1,6 +1,6 @@
 ---
 name: nbr-session-teardown
-description: Tear down a work session once its work is merged or done: checks that nothing gets lost, stops its servers, removes its worktree and branch, and closes the Rex session or Herdr workspace. Use when a skill or the user is done with a session, worktree, PR review or dispatched task, or asks to clean one up.
+description: "Tear down a work session once its work is merged or done: checks that nothing gets lost, stops its servers, removes its worktree and branch, and closes the Rex session or Herdr workspace. Use when a skill or the user is done with a session, worktree, PR review or dispatched task, or asks to clean one up."
 compatibility: Requires Rex or Herdr.
 ---
 

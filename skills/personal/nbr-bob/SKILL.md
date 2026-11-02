@@ -1,6 +1,6 @@
 ---
 name: nbr-bob
-description: Run Bob, Nik's digital assistant with access to his notes, through the day across his circles (private and work): open the day, file reports from other sessions, hand work out to them, watch his load, and close the day. Use when Nik starts or ends his day, when a report or status message arrives, or when he asks what is open.
+description: "Run Bob, Nik's digital assistant with access to his notes, through the day across his circles (private and work): open the day, file reports from other sessions, hand work out to them, watch his load, and close the day. Use when Nik starts or ends his day, when a report or status message arrives, or when he asks what is open."
 compatibility: Requires Rex, nbr-activity and nbr-log; a circle skill for each work circle.
 ---
 

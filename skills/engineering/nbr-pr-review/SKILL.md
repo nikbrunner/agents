@@ -1,6 +1,6 @@
 ---
 name: nbr-pr-review
-description: Review a pull request from its GitHub link in a session of its own: worktree, Rex session, and a Claude worker that reports against nbr-repo-conventions. Use when Nik asks to review a PR, or a host-specific review skill builds on it.
+description: "Review a pull request from its GitHub link in a session of its own: worktree, Rex session, and a Claude worker that reports against nbr-repo-conventions. Use when Nik asks to review a PR, or a host-specific review skill builds on it."
 argument-hint: "<GitHub pull request URL>"
 compatibility: Requires Rex, gh, and nbr-session-setup.
 ---

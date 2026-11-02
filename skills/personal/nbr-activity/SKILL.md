@@ -1,6 +1,6 @@
 ---
 name: nbr-activity
-description: Collect what Nik did on one day in his own projects: commits across ~/repos and the GitHub PRs and issues he opened or closed, as compact text or JSON. Use when a skill or Nik needs a day's private activity, such as a daily note, a day close, or a changelog.
+description: "Collect what Nik did on one day in his own projects: commits across ~/repos and the GitHub PRs and issues he opened or closed, as compact text or JSON. Use when a skill or Nik needs a day's private activity, such as a daily note, a day close, or a changelog."
 compatibility: macOS. Requires git and jq, and gh for GitHub.
 ---
 
