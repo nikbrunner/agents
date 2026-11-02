@@ -12,7 +12,16 @@
 
 Audio is cached in `~/.cache/claude-play/`, keyed on the reply, model and voice: a replay costs nothing.
 
-Needs the ElevenLabs API key in Proton Pass at `pass://Nik/.env/ELEVENLABS_API_TOKEN` (read once per session, held in memory), plus `pass-cli`, `curl`, `mpv` and `nc`.
+Needs `curl`, `mpv` and `nc`, plus an ElevenLabs API key from one of two environment variables, read once per session and held in memory:
+
+- `ELEVENLABS_API_KEY` holds the key.
+- `ELEVENLABS_API_KEY_COMMAND` holds a shell command that prints it, so the key can stay in a password manager.
+
+Both can go in the `env` block of Claude Code's `settings.json`:
+
+```json
+"ELEVENLABS_API_KEY_COMMAND": "pass-cli item view pass://Vault/item/ELEVENLABS_API_KEY"
+```
 
 ## Cost
 

@@ -5,7 +5,6 @@ import { forTheEar, hash, lastReply, SCRIPT_PROMPT } from './speech'
 
 const VOICE = 'bD9maNcCuQQS75DGuteM'
 const MODEL = 'eleven_v4_turbo'
-const KEY_REF = 'pass://Nik/.env/ELEVENLABS_API_TOKEN'
 // Every character is billed; a longer reply needs `/play all`.
 const MAX_CHARS = 3000
 const REQUEST_LIMIT = 10000
@@ -69,11 +68,13 @@ async function toScript($: EngineInterface, reply: string) {
   return result.isAnswered && result.text.trim() ? result.text.trim() : forTheEar(reply)
 }
 
-// The key from Proton Pass, read once per session and held in memory only.
+const KEY_SCRIPT = 'if [ -n "$ELEVENLABS_API_KEY" ]; then printf %s "$ELEVENLABS_API_KEY"; elif [ -n "$ELEVENLABS_API_KEY_COMMAND" ]; then eval "$ELEVENLABS_API_KEY_COMMAND"; fi'
+
+// Read once per session and held in memory only.
 async function apiKey($: EngineInterface) {
   if (key) return key
-  const { exitCode, stdout } = await $.process.run(['pass-cli', 'item', 'view', KEY_REF])
-  if (exitCode !== 0 || !stdout.trim()) throw new Error(`could not read ${KEY_REF}`)
+  const { exitCode, stdout } = await $.process.run(['sh', '-c', KEY_SCRIPT])
+  if (exitCode !== 0 || !stdout.trim()) throw new Error('no ElevenLabs key: set ELEVENLABS_API_KEY or ELEVENLABS_API_KEY_COMMAND')
   key = stdout.trim()
   return key
 }

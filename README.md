@@ -176,7 +176,7 @@ claude plugin install dash@nbr
 
 - `dash` shows a session dashboard pane: workspace, git, agent, tasks, limits, cost and what the conversation is working on. It installs `toggle-mods` with it.
 - `toggle-mods` adds `/toggle-mods`, which hides and shows the dash and the panes of the mods that listen to it.
-- `play` adds `/play`, which reads the last reply aloud through ElevenLabs. It reads the ElevenLabs key from my Proton Pass vault, so it only runs as is on my machines.
+- `play` adds `/play`, which reads the last reply aloud through ElevenLabs. It needs an ElevenLabs API key and `mpv`; [its README](mods/play/README.md) has the setup.
 
 ## License
 
