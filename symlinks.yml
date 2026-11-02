@@ -24,7 +24,6 @@ common:
   home/.agents: ~/.agents
   home/repos/nikbrunner/AGENTS.md: ~/repos/nikbrunner/AGENTS.md
   "home/.claude/hooks/enforce/*": ~/.claude/hooks/enforce
-  home/.claude/plugins/local-marketplace: ~/.claude/plugins/marketplaces/local-plugins
   home/.local/bin/claude-hooks: ~/.local/bin/claude-hooks
   home/.local/bin/claude-account-label: ~/.local/bin/claude-account-label
   home/.local/bin/claude-cache-countdown: ~/.local/bin/claude-cache-countdown
