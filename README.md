@@ -9,6 +9,13 @@ My agent setup: skills for Claude Code, Pi, Codex and anything else that reads `
 | [`statusline`](statusline) | A Claude Code status line for subagents and the hooks that feed it                   |
 | [`home`](home)             | Agent config that mirrors `~`: global `AGENTS.md`, subagents, Claude Code, Pi, Codex |
 
+- [Install the skills](#install-the-skills)
+- [Working copy](#working-copy)
+- [Skills](#skills)
+- [Mods](#mods), including [installing them](#installing-mods)
+- [Claude Code settings](#claude-code-settings), including the [status line](#status-line)
+- [License](#license)
+
 ## Install the skills
 
 The skills sit in two folders. [`engineering`](skills/engineering) covers coding work and the tools it runs on. [`personal`](skills/personal) covers life outside the code. [Skills](#skills) lists what each one needs installed first.
@@ -194,7 +201,7 @@ The repo is a plugin marketplace named `nbr`. Add it once, then install the mods
 ```sh
 claude plugin marketplace add nikbrunner/agents
 claude plugin install dash@nbr
-claude plugin install play@nbr
+claude plugin install play@nbr   # optional: needs an ElevenLabs key, mpv and nc
 ```
 
 To update, refresh the marketplace and then each mod:
