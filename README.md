@@ -9,11 +9,19 @@ My agent setup: skills for Claude Code, Pi, Codex and anything else that reads `
 | [`statusline`](statusline) | A Claude Code status line for subagents and the hooks that feed it                   |
 | [`home`](home)             | Agent config that mirrors `~`: global `AGENTS.md`, subagents, Claude Code, Pi, Codex |
 
+## Contents
+
 - [Install the skills](#install-the-skills)
 - [Working copy](#working-copy)
+  - [Third-party skills](#third-party-skills)
 - [Skills](#skills)
-- [Mods](#mods), including [installing them](#installing-mods)
-- [Claude Code settings](#claude-code-settings), including the [status line](#status-line)
+  - [How they work together](#how-they-work-together)
+  - [Engineering](#engineering)
+  - [Personal](#personal)
+- [Mods](#mods)
+  - [Installing mods](#installing-mods)
+- [Claude Code settings](#claude-code-settings)
+  - [Status line](#status-line)
 - [License](#license)
 
 ## Install the skills
@@ -49,7 +57,7 @@ git clone https://github.com/nikbrunner/agents ~/repos/nikbrunner/agents
 ~/repos/nikbrunner/agents/install.sh
 ```
 
-It does three things:
+What it does:
 
 - Links the config in `home/` into `~`, as listed in [`symlinks.yml`](symlinks.yml). An existing file is moved aside as `<name>.backup.<timestamp>`; `--dry-run` shows what would change. [`scripts/symlinks.sh`](scripts/symlinks.sh) does the linking and runs on its own too. It is a copy of the linker in my dots repo, whose `dots link` runs this one after its own.
 - Links every skill folder in `skills/<group>/` into `~/.agents/skills`, removing links whose skill no longer exists and never replacing a real file or directory.
@@ -73,7 +81,7 @@ Each skill names its own requirements in the `compatibility` field of its `SKILL
 
 ### How they work together
 
-Arrows are references written in the skill files. Solid boxes are skills in this repo. The dashed box stands for my work skills, which live in a private repo and build on these.
+Arrows are references written in the skill files. Solid boxes are skills in this repo. The dashed box is my work skills, which live in a private repo and build on these.
 
 ```mermaid
 flowchart LR
@@ -118,17 +126,29 @@ flowchart LR
   class work private
 ```
 
-**A day with Bob.** `nbr-bob` runs Bob, my notes session. It opens and closes the day in every circle's daily note, the private one in my Obsidian vault and one per work circle that a work skill adds. Other sessions send it their state with `nbr-report-to-bob`, and it files each report in the right note. It hands PR reviews and tasks out through `nbr-pr-review` and `nbr-dispatch`, watches how much runs at once, and at day close offers to tear down sessions whose work merged, which it does only on my yes.
+#### A day with Bob
 
-**A PR review.** `nbr-pr-review` reads the PR, judges its shape and fills a brief, then has `nbr-session-setup` build a worktree on the PR's branch, a Rex session with the Agents, Edit and Shells tabs, and a Claude worker in the Agents tab. The worker reviews against `nbr-repo-conventions`, leaves its report in its pane, and stays for follow-ups. When I'm done, it runs `nbr-session-teardown` on its own session. A work skill runs the same flow for another host, with its own conventions swapped into the brief.
+`nbr-bob` runs Bob, my digital assistant, which has access to my notes. It opens and closes the day in every circle's daily note, the private one in my Obsidian vault and one per work circle that a work skill adds. Other sessions send it their state with `nbr-report-to-bob`, and it files each report in the right note. It hands PR reviews and tasks out through `nbr-pr-review` and `nbr-dispatch`, watches how much runs at once, and at day close offers to tear down sessions whose work merged, which it does only on my yes.
 
-**A dispatch.** `nbr-dispatch` confirms the target repo with me, checks its state, writes the brief with the worker's boundary rules, and launches it through `nbr-session-setup`. The worker sends its handoff to the dispatching session when it finishes. A worker Bob dispatched also reports to Bob with `nbr-report-to-bob`, since Bob's brief asks for it, so the day's note gets the outcome.
+#### A PR review
 
-**The day's record.** `nbr-activity` collects one day's commits and GitHub activity. `nbr-log` writes the private daily note from it, and `nbr-changelog-things` logs it as Things items.
+`nbr-pr-review` reads the PR, judges its shape and fills a brief, then has `nbr-session-setup` build a worktree on the PR's branch, a Rex session with the Agents, Edit and Shells tabs, and a Claude worker in the Agents tab. The worker reviews against `nbr-repo-conventions`, leaves its report in its pane, and stays for follow-ups. When I'm done, it runs `nbr-session-teardown` on its own session. A work skill runs the same flow for another host, with its own conventions swapped into the brief.
 
-**Commits.** `nbr-git-commit` makes one commit: review, gate, commit, with `nbr-audit-docs` as the docs check. `nbr-git-commit-buckets` sorts a dirty tree into several commits through it, and `nbr-git-commit-rebuild` turns a run of commits back into a dirty tree for buckets.
+#### A dispatch
 
-**Repo conventions.** `nbr-repo-conventions` holds the topics. `nbr-repo-setup` sets a repo up from them and `nbr-repo-audit` checks a repo against them without changing it.
+`nbr-dispatch` confirms the target repo with me, checks its state, writes the brief with the worker's boundary rules, and launches it through `nbr-session-setup`. The worker sends its handoff to the dispatching session when it finishes. A worker Bob dispatched also reports to Bob with `nbr-report-to-bob`, since Bob's brief asks for it, so the day's note gets the outcome.
+
+#### The day's record
+
+`nbr-activity` collects one day's commits and GitHub activity. `nbr-log` writes the private daily note from it, and `nbr-changelog-things` logs it as Things items.
+
+#### Commits
+
+`nbr-git-commit` makes one commit: review, gate, commit, with `nbr-audit-docs` as the docs check. `nbr-git-commit-buckets` sorts a dirty tree into several commits through it, and `nbr-git-commit-rebuild` turns a run of commits back into a dirty tree for buckets.
+
+#### Repo conventions
+
+`nbr-repo-conventions` holds the topics. `nbr-repo-setup` sets a repo up from them and `nbr-repo-audit` checks a repo against them without changing it.
 
 ### Engineering
 
@@ -169,27 +189,27 @@ Install these first:
 | [Plannotator](https://github.com/backnotprop/plannotator)           | see its README, it ships `plannotator-annotate`                      | `nbr-plan`                                                 |
 | `gh` or [`bkt`](https://github.com/avivsinai/bitbucket-cli)         | your package manager                                                 | `nbr-create-pr`                                            |
 
-`nbr-record-clip` needs ImageMagick, plus VHS, ffmpeg, Playwright or [Cap](https://cap.so) depending on what it records. `nbr-dispatch`, `nbr-session-setup` and `nbr-session-teardown` need [Rex](https://www.superlogical.com/rex) or [Herdr](https://github.com/herdrdev/herdr), `nbr-pr-review` Rex and `gh`, `nbr-intercom` Claude Code, `nbr-nvim-dev` Neovim and ripgrep, and `nbr-bkt` `bkt` and `pass-cli`.
+`nbr-record-clip` needs ImageMagick, plus VHS, ffmpeg, Playwright or [Cap](https://cap.so) depending on what it records. `nbr-dispatch`, `nbr-session-setup` and `nbr-session-teardown` need [Rex](https://www.superlogical.com/rex) or [Herdr](https://github.com/herdrdev/herdr). `nbr-pr-review` needs Rex and `gh`, `nbr-intercom` needs Claude Code, `nbr-nvim-dev` needs Neovim and ripgrep, and `nbr-bkt` needs `bkt` and `pass-cli`.
 
 ### Personal
 
 Bob and the daily notes, tasks in Things 3, and speech from ElevenLabs.
 
-| Skill                  | What it does                                               | Requires                                                                                                        |
-| ---------------------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `nbr-bob`              | Run Bob, the notes session, through the day across circles | Rex, `nbr-activity`, `nbr-log`                                                                                  |
-| `nbr-report-to-bob`    | Send this session's state to Bob                           | Claude Code; Rex or Herdr across accounts                                                                       |
-| `nbr-activity`         | Collect one day's commits and GitHub activity              | macOS, git, jq, `gh`                                                                                            |
-| `nbr-log`              | Write the day's development work into the private note     | `nbr-activity`, an Obsidian vault                                                                               |
-| `nbr-things`           | Manage Things 3 tasks on macOS                             | Things 3, the `things` CLI                                                                                      |
-| `nbr-changelog-things` | Log a day's development work as completed Things items     | Things 3, the `things` CLI, `nbr-activity`                                                                      |
-| `nbr-tts`              | Turn text into speech with ElevenLabs                      | ElevenLabs account, the `elevenlabs` CLI, jq, ffmpeg, `npx skills add elevenlabs/skills --skill text-to-speech` |
+| Skill                  | What it does                                                  | Requires                                                                                                        |
+| ---------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `nbr-bob`              | Run Bob, my digital assistant, through the day across circles | Rex, `nbr-activity`, `nbr-log`                                                                                  |
+| `nbr-report-to-bob`    | Send this session's state to Bob                              | Claude Code; Rex or Herdr across accounts                                                                       |
+| `nbr-activity`         | Collect one day's commits and GitHub activity                 | macOS, git, jq, `gh`                                                                                            |
+| `nbr-log`              | Write the day's development work into the private note        | `nbr-activity`, an Obsidian vault                                                                               |
+| `nbr-things`           | Manage Things 3 tasks on macOS                                | Things 3, the `things` CLI                                                                                      |
+| `nbr-changelog-things` | Log a day's development work as completed Things items        | Things 3, the `things` CLI, `nbr-activity`                                                                      |
+| `nbr-tts`              | Turn text into speech with ElevenLabs                         | ElevenLabs account, the `elevenlabs` CLI, jq, ffmpeg, `npx skills add elevenlabs/skills --skill text-to-speech` |
 
 ## Mods
 
 [`mods`](mods) holds my Claude Code mods, one plugin per folder:
 
-- `dash` shows a session dashboard pane: workspace, git, agent, tasks, limits, cost and what the conversation is working on. `/dash` hides and shows it.
+- `dash` shows a session dashboard pane: workspace, git, agent, tasks, limits, cost and what the conversation is working on. `/dash` hides and shows it. [Its README](mods/dash/README.md) has the settings and the cost.
 - `play` adds `/play`, which reads the last reply aloud through ElevenLabs. It needs an ElevenLabs API key, `mpv` and `nc`; [its README](mods/play/README.md) has the setup.
 
 The dash shows a red badge next to the account when `DASH_BADGE` is set, with its value as the text. I set `DASH_BADGE=WORK` in the shell function that starts Claude Code with my work account.
@@ -211,7 +231,7 @@ claude plugin marketplace update nbr
 claude plugin update dash@nbr
 ```
 
-Restart Claude Code after installing or updating. Mods need a recent Claude Code; `/plugin` lists what loaded. I run them on 2.1.316.
+Restart Claude Code after installing or updating. Mods need a recent Claude Code, and I run them on 2.1.316. `/plugin` lists what loaded.
 
 To edit a mod and use it live, load it from a clone instead, as a colon-separated list in the `env` block of `~/.claude/settings.json`:
 
@@ -222,7 +242,7 @@ To edit a mod and use it live, load it from a clone instead, as a colon-separate
 
 ## Claude Code settings
 
-My full settings are in [`home/.claude/settings.json`](home/.claude/settings.json). The ones that shape how Claude Code feels:
+My full settings are in [`home/.claude/settings.json`](home/.claude/settings.json). The main ones:
 
 ```json
 {

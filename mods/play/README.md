@@ -27,8 +27,8 @@ Both can go in the `env` block of Claude Code's `settings.json`:
 
 Each reply costs two things:
 
-- **Haiku** rewrites the reply into a script, billed to the Claude account the session runs on. A few thousand tokens per reply.
-- **ElevenLabs** bills every character of the script, in plan credits.
+- Haiku rewrites the reply into a script, billed to the Claude account the session runs on. A few thousand tokens per reply.
+- ElevenLabs bills every character of the script, in plan credits.
 
 How many credits a character costs depends on how the request is authenticated:
 
@@ -39,10 +39,10 @@ How many credits a character costs depends on how the request is authenticated:
 
 The `elevenlabs` CLI signs in through the browser and is billed like the web app. Measured on the account: 75 chars through the API key billed 15 credits, 80 chars through the CLI billed 80. The API rates match ElevenLabs' list prices of $0.04 (v4 Turbo) and $0.08 (v4) per 1,000 characters.
 
-A reply is usually 1,000–1,500 chars once Haiku has scripted it, so about 200–300 credits on v4 Turbo. Starter's 30,000 credits a month read about 100–150 replies; v4 halves that.
+A reply is usually 1,000 to 1,500 chars once Haiku has scripted it, so about 200 to 300 credits on v4 Turbo. Starter's 30,000 credits a month read about 100 to 150 replies; v4 halves that.
 
-**Beyond the plan:** pay-as-you-go top-ups (Developers → Top Up, $5 minimum, prepaid, expire after 12 months) start once the plan's credits are spent, at the same API rates. Usage pauses at a $0 balance; nothing is billed after the fact. An optional monthly spend cap lives in the same place.
+Beyond the plan, pay-as-you-go top-ups (Developers, then Top Up; $5 minimum, prepaid, expire after 12 months) start once the plan's credits are spent, at the same API rates. Usage pauses at a $0 balance; nothing is billed after the fact. An optional monthly spend cap lives in the same place.
 
-**Checking what was spent:** `elevenlabs history list --format json | jq -r '.history[] | [.model_id, (.character_count_change_to - .character_count_change_from)] | @tsv'` lists each generation with the credits it took; `elevenlabs user subscription get --format json | jq '{character_count, character_limit}'` shows the month's total.
+To check what was spent, `elevenlabs history list --format json | jq -r '.history[] | [.model_id, (.character_count_change_to - .character_count_change_from)] | @tsv'` lists each generation with the credits it took; `elevenlabs user subscription get --format json | jq '{character_count, character_limit}'` shows the month's total.
 
 Sources: [API pricing](https://elevenlabs.io/pricing/api), [new pricing and PAYG announcement](https://elevenlabs.io/blog/weve-lowered-api-agents-pricing-and-introduced-pay-as-you-go), [pay-as-you-go docs](https://elevenlabs.io/docs/overview/administration/pay-as-you-go).
