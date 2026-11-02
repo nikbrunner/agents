@@ -156,7 +156,7 @@ I'm testing Rex, Superlogical's terminal multiplexer. `~/repos/nikbrunner/notes/
 
 ## Bob
 
-Bob is my notes session: a Claude session named `Bob` running the `nbr-bob` skill. It keeps the daily notes of every
+Bob is my digital assistant with access to my notes: a Claude session named `Bob` running the `nbr-bob` skill. It keeps the daily notes of every
 circle, work and private. "Tell Bob", "report to Bob" or a bare mention of Bob means sending this session's state there
 with `nbr-report-to-bob`.
 

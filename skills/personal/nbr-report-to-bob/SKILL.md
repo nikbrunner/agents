@@ -1,6 +1,6 @@
 ---
 name: nbr-report-to-bob
-description: Report this session's state to Bob, Nik's notes session, so the day's note captures it. Use when Nik wraps up or moves on from the work here, or asks to report, hand off, or log it.
+description: Report this session's state to Bob, Nik's digital assistant, so the day's note captures it. Use when Nik wraps up or moves on from the work here, or asks to report, hand off, or log it.
 argument-hint: "[what to stress]"
 compatibility: Requires Claude Code; Rex or Herdr when Bob runs on another Claude account.
 ---
