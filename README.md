@@ -197,7 +197,14 @@ claude plugin install dash@nbr
 claude plugin install play@nbr
 ```
 
-`claude plugin marketplace update nbr` pulls new versions. Restart Claude Code after installing or updating.
+To update, refresh the marketplace and then each mod:
+
+```sh
+claude plugin marketplace update nbr
+claude plugin update dash@nbr
+```
+
+Restart Claude Code after installing or updating. Mods need a recent Claude Code; `/plugin` lists what loaded. I run them on 2.1.316.
 
 To edit a mod and use it live, load it from a clone instead, as a colon-separated list in the `env` block of `~/.claude/settings.json`:
 
@@ -227,7 +234,7 @@ My full settings are in [`home/.claude/settings.json`](home/.claude/settings.jso
 
 - `model`: Opus with the 1M-token context window.
 - `editorMode`: Vim keys in the prompt.
-- `tui`: the fullscreen interface, which the dash's pane sits in.
+- `tui`: the fullscreen interface.
 - `voice`: dictation while a key is held.
 - `promptCacheTtl`: keeps the prompt cache for an hour instead of five minutes, so a session picked up after a short break still reads from the cache.
 - `includeCoAuthoredBy`: no Claude co-author line in commits.
