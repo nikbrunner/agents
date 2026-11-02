@@ -8,7 +8,6 @@ My agent setup: skills for Claude Code, Pi, Codex and anything else that reads `
 | [`mods`](mods)             | Claude Code mods, published as the `nbr` plugin marketplace                          |
 | [`statusline`](statusline) | A Claude Code status line for subagents and the hooks that feed it                   |
 | [`home`](home)             | Agent config that mirrors `~`: global `AGENTS.md`, subagents, Claude Code, Pi, Codex |
-| [`macos`](macos)           | macOS-only agent config: the Claude Desktop config                                   |
 
 ## Install the skills
 
@@ -45,7 +44,7 @@ git clone https://github.com/nikbrunner/agents ~/repos/nikbrunner/agents
 
 It does three things:
 
-- Links the config in `home/` and `macos/` into `~`, as listed in [`symlinks.yml`](symlinks.yml). An existing file is moved aside as `<name>.backup.<timestamp>`; `--dry-run` shows what would change. [`scripts/symlinks.sh`](scripts/symlinks.sh) does the linking and runs on its own too. It is a copy of the linker in my dots repo, whose `dots link` runs this one after its own.
+- Links the config in `home/` into `~`, as listed in [`symlinks.yml`](symlinks.yml). An existing file is moved aside as `<name>.backup.<timestamp>`; `--dry-run` shows what would change. [`scripts/symlinks.sh`](scripts/symlinks.sh) does the linking and runs on its own too. It is a copy of the linker in my dots repo, whose `dots link` runs this one after its own.
 - Links every skill folder in `skills/<group>/` into `~/.agents/skills`, removing links whose skill no longer exists and never replacing a real file or directory.
 - Points `~/.claude/skills` and `~/.claude-work/skills` at `~/.agents/skills`.
 

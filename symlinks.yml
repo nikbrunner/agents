@@ -27,7 +27,6 @@ common:
 
   home/.config/opencode/opencode.jsonc: ~/.config/opencode/opencode.jsonc
 
-macos:
-  macos/Library/Application Support/Claude/claude_desktop_config.json: ~/Library/Application Support/Claude/claude_desktop_config.json
+macos: {}
 
 arch: {}
