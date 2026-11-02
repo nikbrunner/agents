@@ -22,6 +22,7 @@ common:
   home/.claude/keybindings.json:
     [~/.claude/keybindings.json, ~/.claude-work/keybindings.json]
   home/.agents: ~/.agents
+  home/repos/nikbrunner/AGENTS.md: ~/repos/nikbrunner/AGENTS.md
   "home/.claude/hooks/enforce/*": ~/.claude/hooks/enforce
   home/.claude/plugins/local-marketplace: ~/.claude/plugins/marketplaces/local-plugins
   home/.local/bin/claude-hooks: ~/.local/bin/claude-hooks

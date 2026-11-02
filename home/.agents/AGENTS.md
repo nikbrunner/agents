@@ -140,28 +140,15 @@ If Exa or Chrome DevTools fails, report it, then use the matching native tool wh
 
 ## My Projects
 
-Tools I build and use daily. When I name one, it's mine: check its repo and its memory before searching the web. Use them unprompted too. When a task touches something another project already solves, documents or depends on, look there and tell me what you found.
+Tools I build and use daily. When I name a tool you don't recognize, it's probably mine: find it and read its README before searching the web, and check its memory. Use them unprompted too. When a task touches something another project already solves, documents or depends on, look there and tell me what you found.
+
+```sh
+find ~/repos -maxdepth 4 -name .git -type d -not -path '*/.reviews/*' | sed 's#/.git$##'
+gh repo list nikbrunner --no-archived
+gh repo list black-atom-industries --no-archived
+```
 
 Memory lives in `~/.claude/projects/<repo path, with / and . as ->/memory/`.
-
-| Project          | Repo                                     | What                                                                                                                                             |
-| ---------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| dots             | ~/repos/nikbrunner/dots                  | My dotfiles for macOS and Arch, symlinked into `~`, managed by the `dots` CLI                                                                    |
-| Black Atom       | ~/repos/black-atom-industries/black-atom | Dark and light themes for developer tools; `livery/` is the desktop app that applies them                                                        |
-| iter.nvim        | ~/repos/black-atom-industries/iter.nvim  | Neovim plugin for Git staging and code review: status drawer, annotations, export for agents                                                     |
-| radar.nvim       | ~/repos/black-atom-industries/radar.nvim | Neovim file navigation: locks, recent files, alternative file, per project and branch                                                            |
-| mdn.nvim         | ~/repos/nikbrunner/mdn.nvim              | Minimal Markdown utilities for Neovim: list continuation, checkbox cycle, concealed list markers                                                 |
-| lazyjira         | ~/repos/nikbrunner/lazyjira              | Jira terminal UI in Go                                                                                                                           |
-| helm.herdr       | ~/repos/black-atom-industries/helm.herdr | One popup to reach every workspace, tab, pane, agent and project in Herdr                                                                        |
-| helm.tmux        | ~/repos/black-atom-industries/helm.tmux  | Go TUI for tmux sessions; the `helm` that `dots pull` and `dots push` call                                                                       |
-| shiplog          | ~/repos/black-atom-industries/shiplog    | AI git CLI that writes commit messages and branch names                                                                                          |
-| lager            | ~/repos/nikbrunner/lager                 | Keeps a declared set of Git repositories available in one local root                                                                             |
-| agents           | ~/repos/nikbrunner/agents                | My agent setup: global `AGENTS.md`, `nbr-*` skills, Claude Code mods, Claude/Pi/Codex config, linked into `~`                                    |
-| nbr.haus         | ~/repos/nikbrunner/nbr.haus              | My portfolio and study essays, TanStack Start and React                                                                                          |
-| writing          | ~/repos/nikbrunner/writing               | My fiction: one shared world, series and manuscripts                                                                                             |
-| notes            | ~/repos/nikbrunner/notes                 | My Obsidian vault                                                                                                                                |
-| kōyō             | ~/repos/nikbrunner/koyo                  | My 36-key split keyboard layout and its flashing CLI for Moonlander and Corne                                                                    |
-| fonts            | ~/repos/nikbrunner/fonts                 | My font collection and installer; `pick-font` updates the Ghostty and Zed configs                                                                |
 
 ### Rex beta feedback
 
