@@ -167,16 +167,90 @@ Bob and the daily notes, tasks in Things 3, and speech from ElevenLabs.
 
 ## Mods
 
-[`mods`](mods) holds my Claude Code mods, one plugin per folder. The repo is also a plugin marketplace named `nbr`:
+[`mods`](mods) holds my Claude Code mods, one plugin per folder:
+
+- `dash` shows a session dashboard pane: workspace, git, agent, tasks, limits, cost and what the conversation is working on. It needs `toggle-mods`.
+- `toggle-mods` adds `/toggle-mods`, which hides and shows the dash and the panes of the mods that listen to it.
+- `play` adds `/play`, which reads the last reply aloud through ElevenLabs. It needs an ElevenLabs API key, `mpv` and `nc`; [its README](mods/play/README.md) has the setup.
+
+### Installing mods
+
+The repo is a plugin marketplace named `nbr`. Add it once, then install the mods you want:
 
 ```sh
 claude plugin marketplace add nikbrunner/skills
+claude plugin install toggle-mods@nbr
 claude plugin install dash@nbr
+claude plugin install play@nbr
 ```
 
-- `dash` shows a session dashboard pane: workspace, git, agent, tasks, limits, cost and what the conversation is working on. It installs `toggle-mods` with it.
-- `toggle-mods` adds `/toggle-mods`, which hides and shows the dash and the panes of the mods that listen to it.
-- `play` adds `/play`, which reads the last reply aloud through ElevenLabs. It needs an ElevenLabs API key and `mpv`; [its README](mods/play/README.md) has the setup.
+`claude plugin marketplace update nbr` pulls new versions. Restart Claude Code after installing or updating.
+
+To edit a mod and use it live, load it from a clone instead, as a colon-separated list in the `env` block of `~/.claude/settings.json`:
+
+```json
+"CLAUDE_CODE_PLUGIN_DIRS": "~/repos/nikbrunner/skills/mods/dash:~/repos/nikbrunner/skills/mods/toggle-mods",
+"CLAUDE_CODE_PLUGIN_DIR_WATCH": "1"
+```
+
+## Claude Code settings
+
+The settings I run with, for `~/.claude/settings.json`:
+
+```json
+{
+  "model": "opus[1m]",
+  "editorMode": "vim",
+  "tui": "fullscreen",
+  "voice": { "enabled": true, "mode": "hold" },
+  "promptCacheTtl": "1h",
+  "includeCoAuthoredBy": false,
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
+    "ENABLE_TOOL_SEARCH": "true"
+  }
+}
+```
+
+- `model`: Opus with the 1M-token context window.
+- `editorMode`: Vim keys in the prompt.
+- `tui`: the fullscreen interface, which the dash's pane sits in.
+- `voice`: dictation while a key is held.
+- `promptCacheTtl`: keeps the prompt cache for an hour instead of five minutes, so a session picked up after a short break still reads from the cache.
+- `includeCoAuthoredBy`: no Claude co-author line in commits.
+- `CLAUDE_CODE_SUBAGENT_MODEL`: subagents run on Haiku.
+- `ENABLE_TOOL_SEARCH`: MCP tools load when a task needs them instead of filling the context up front.
+
+### Status line
+
+The dash shows what a status line would, so I run without one. If `settings.json` has a `statusLine` block, removing it frees the line.
+
+[`statusline`](statusline) holds a status line for subagents instead: each running subagent gets a progress bar built from the `PROGRESS: n/m · step` lines it writes. Two hooks make subagents write them: `subagent-start.sh` asks for the lines when a subagent starts, and `post-tool-batch.sh` reminds it after 20 tool calls without one. They need `bash` and `jq`.
+
+Clone the repo, then point the settings at the scripts in the clone:
+
+```sh
+git clone https://github.com/nikbrunner/skills ~/repos/nikbrunner/skills
+```
+
+```json
+{
+  "subagentStatusLine": {
+    "type": "command",
+    "command": "~/repos/nikbrunner/skills/statusline/claude-subagent-statusline"
+  },
+  "hooks": {
+    "SubagentStart": [
+      { "hooks": [{ "type": "command", "command": "~/repos/nikbrunner/skills/statusline/subagent-start.sh", "timeout": 5 }] }
+    ],
+    "PostToolBatch": [
+      { "hooks": [{ "type": "command", "command": "~/repos/nikbrunner/skills/statusline/post-tool-batch.sh", "timeout": 5 }] }
+    ]
+  }
+}
+```
+
+With a `hooks` block already in the file, add the two events to it.
 
 ## License
 
