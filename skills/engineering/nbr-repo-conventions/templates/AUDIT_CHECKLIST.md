@@ -180,7 +180,7 @@ Applies when the repo has a `package.json`.
 
 ## agent-tooling
 
-- [ ] `AGENTS.md` exists at the repo root and is the canonical instruction file; any `CLAUDE.md` is only a symlink to it. (agent-tooling.md#layout)
+- [ ] `AGENTS.md` exists at the repo root and is the only instruction file; the repo has no `CLAUDE.md`. (agent-tooling.md#layout)
 - [ ] Project skills live in `.agents/skills/<name>/SKILL.md`, and each `name` matches its directory. (agent-tooling.md#layout)
 - [ ] `.claude/skills` is a relative symlink to `../.agents/skills`. (agent-tooling.md#layout)
 - [ ] Agent-specific config sits only in that agent's directory (`.claude/`, `.pi/`). (agent-tooling.md#layout)
