@@ -7,7 +7,13 @@ common:
   # a wildcard-expanded target, not a single repo source, so it
   # can't be listed as a second target above without re-triggering it.
   home/.config/rpiv-advisor/advisor.json: ~/.config/rpiv-advisor/advisor.json
-  home/.pi: ~/.pi
+  # Pi keeps its sessions, credentials and caches in ~/.pi, so only its config is linked.
+  home/.pi/agent/settings.json: ~/.pi/agent/settings.json
+  home/.pi/agent/keybindings.json: ~/.pi/agent/keybindings.json
+  home/.pi/agent/mcp.json: ~/.pi/agent/mcp.json
+  home/.pi/agent/plannotator.json: ~/.pi/agent/plannotator.json
+  home/.pi/agent/trust.json: ~/.pi/agent/trust.json
+  home/.pi/agent/extensions: ~/.pi/agent/extensions
   home/.agents/AGENTS.md:
     [~/.claude/CLAUDE.md, ~/.claude-work/CLAUDE.md, ~/.pi/agent/AGENTS.md]
   home/.agents/agents: [~/.claude/agents, ~/.claude-work/agents]

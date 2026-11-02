@@ -2,9 +2,6 @@ home/.agents/
 
 # Pi extensions (project-local, have their own prettier config)
 home/.pi/agent/extensions/
-home/.pi/agent/sessions/
-home/.pi/agent/git/
-home/.pi/agent/skills/tldraw-offline/
 
 # Claude Code writes these through symlinks, so its formatting wins over
 # prettier's. The README documents the directory and stays formatted.

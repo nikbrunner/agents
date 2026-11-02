@@ -50,8 +50,6 @@ It does three things:
 
 Run it again after adding or removing a skill or a `symlinks.yml` entry.
 
-`~/.pi` links to `home/.pi` as a whole, so Pi's sessions, credentials and caches land in the clone; `.gitignore` keeps them out of git.
-
 ### Third-party skills
 
 The third-party skills I use, including the ones these skills depend on, are recorded in `skills-lock.json`. `install.sh` restores them into `.agents/skills/` (gitignored) and links them next to mine. Manage them from the repo root, then commit the lock:
