@@ -1,9 +1,6 @@
 {
   "name": "dash",
-  "version": "0.1.0",
-  "description": "Session dashboard pane: workspace, git, agent, tasks, limits, cost and what the conversation is working on",
-  "types": "./types/index.d.ts",
-  "dependencies": [
-    "toggle-mods"
-  ]
+  "version": "0.2.0",
+  "description": "Session dashboard pane: workspace, git, agent, tasks, limits, cost and what the conversation is working on. /dash hides and shows it",
+  "types": "./types/index.d.ts"
 }

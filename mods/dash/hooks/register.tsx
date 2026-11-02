@@ -10,7 +10,6 @@ const SUMMARY_INTERVAL_MS = 10_000
 
 const git = atom({ plugin: 'dash', key: 'git' } as const, null)
 const agent = atom({ plugin: 'dash', key: 'agent' } as const, {
-  isWork: false,
   model: '',
 })
 const title = atom({ plugin: 'dash', key: 'title' } as const, '')
@@ -29,7 +28,7 @@ const tick = atom({ plugin: 'dash', key: 'tick' } as const, 0)
 const thread = atom({ plugin: 'dash', key: 'thread' } as const, '')
 const now = atom({ plugin: 'dash', key: 'now' } as const, '')
 const tool = atom({ plugin: 'dash', key: 'tool' } as const, '')
-const panesHidden = { plugin: 'toggle-mods', key: 'isHidden' } as const
+const isHidden = atom({ plugin: 'dash', key: 'isHidden' } as const, false)
 const work = atom({ plugin: 'dash', key: 'work' } as const, {
   cwd: '',
   turns: 0,
@@ -113,9 +112,9 @@ async function loadAgent($: EngineInterface) {
   const paths = await $.process.run([
     'sh',
     '-c',
-    'printf "%s\\n%s\\n%s" "${CLAUDE_CONFIG_DIR:-$HOME/.claude}" "${CLAUDE_CONFIG_DIR:-$HOME}/.claude.json" "$HOME"',
+    'printf "%s\\n%s\\n%s\\n%s" "${CLAUDE_CONFIG_DIR:-$HOME/.claude}" "${CLAUDE_CONFIG_DIR:-$HOME}/.claude.json" "$HOME" "$DASH_BADGE"',
   ])
-  const [dir = '', configFile = '', homeDir = ''] = paths.stdout.split('\n')
+  const [dir = '', configFile = '', homeDir = '', badge = ''] = paths.stdout.split('\n')
   configDir = dir
   home = homeDir
   let account: string | undefined
@@ -127,7 +126,7 @@ async function loadAgent($: EngineInterface) {
     ...a,
     model,
     account,
-    isWork: dir.includes('/.claude-work'),
+    badge: badge.trim() || undefined,
   }))
 }
 
@@ -242,6 +241,7 @@ async function summarizeNow($: EngineInterface, answer: string, isDone: boolean)
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
+    await $.command.register({ name: 'dash', description: 'Hide or show the dash' })
     await loadAgent($)
     void refreshTitle($)
     void refreshWork($)
@@ -314,6 +314,12 @@ export const register: Register = on => {
     return ran
   })
 
+  on('command.run', { command: 'dash' }, async $ => {
+    let hidden = false
+    await update($, isHidden, h => (hidden = !h))
+    return { text: hidden ? 'Dash hidden.' : 'Dash shown.' }
+  })
+
   on('command.run', { command: 'rename' }, async ($, e, next) => {
     const result = await next(e)
     const name = e.args.trim()
@@ -343,7 +349,7 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
-    if (e.props.hasSurvey || (await read($, panesHidden))) return next(e)
+    if (e.props.hasSurvey || (await read($, isHidden))) return next(e)
     const els = $.ui.resolve(e)
     const { Box, Text } = els
     // The desktop app's font carries no Nerd Font glyphs and lays text out proportionally.
@@ -440,10 +446,10 @@ export const register: Register = on => {
       a.account && (
         <Text>
           <Text color="suggestion">{a.account}</Text>
-          {a.isWork && (
+          {a.badge && (
             <Text color="error" bold>
               {' '}
-              ⚠ WORK
+              ⚠ {a.badge}
             </Text>
           )}
         </Text>

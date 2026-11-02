@@ -8,13 +8,8 @@
   "plugins": [
     {
       "name": "dash",
-      "description": "Session dashboard pane: workspace, git, agent, tasks, limits, cost and what the conversation is working on",
+      "description": "Session dashboard pane: workspace, git, agent, tasks, limits, cost and what the conversation is working on. /dash hides and shows it",
       "source": "./mods/dash"
-    },
-    {
-      "name": "toggle-mods",
-      "description": "/toggle-mods hides and shows the dash and the panes of the mods that listen to it",
-      "source": "./mods/toggle-mods"
     },
     {
       "name": "play",
