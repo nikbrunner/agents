@@ -234,8 +234,6 @@ My full settings are in [`home/.claude/settings.json`](home/.claude/settings.jso
 - `CLAUDE_CODE_SUBAGENT_MODEL`: subagents run on Haiku.
 - `ENABLE_TOOL_SEARCH`: MCP tools load when a task needs them instead of filling the context up front.
 
-Rules for the auto-mode classifier that name my employer's systems stay out of this repo. They live in a file in my private work repo, passed with `--settings` by the shell function that starts Claude Code with my work account; `autoMode` arrays from several settings sources are concatenated.
-
 ### Status line
 
 The dash shows what a status line would, so I run without one. If `settings.json` has a `statusLine` block, removing it frees the line.

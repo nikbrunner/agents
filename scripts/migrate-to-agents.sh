@@ -2,7 +2,7 @@
 # One-time move of the agent config from dots to nikbrunner/agents, once per machine.
 # Run after nikbrunner/skills is renamed to nikbrunner/agents on GitHub and both
 # agents-repo branches are merged, with dots still on its pre-merge commit, and with
-# Claude Code and Pi closed. The ImFusion steps run only where the work repo exists.
+# Claude Code and Pi closed. The work skills link only where the work repo exists.
 set -euo pipefail
 
 repos="$HOME/repos/nikbrunner"
@@ -30,16 +30,6 @@ overlap=$(comm -12 <(git -C "$dots" diff --name-only --diff-filter=AM HEAD | sor
     printf 'these uncommitted dots files would collide with the pull; commit or stash them first:\n%s\n' "$overlap" >&2
     exit 1
 }
-
-if [[ -d $work ]]; then
-    step "Saving the ImFusion autoMode rules to $work/claude-settings.json"
-    if [[ -f "$work/claude-settings.json" ]]; then
-        echo "exists, left alone"
-    else
-        jq '{autoMode}' "$dots/common/.claude/settings.json" >"$work/claude-settings.json"
-        echo "written; commit it in the work repo"
-    fi
-fi
 
 step "Renaming the skills clone to agents and pulling"
 if [[ -d "$repos/skills" && ! -e "$agents" ]]; then

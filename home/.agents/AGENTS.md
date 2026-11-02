@@ -140,9 +140,9 @@ If Exa or Chrome DevTools fails, report it, then use the matching native tool wh
 
 ## My Projects
 
-Tools I build and use daily, my own and ImFusion's. When I name one, it's mine: check its repo and its memory before searching the web. Use them unprompted too. When a task touches something another project already solves, documents or depends on, look there and tell me what you found.
+Tools I build and use daily. When I name one, it's mine: check its repo and its memory before searching the web. Use them unprompted too. When a task touches something another project already solves, documents or depends on, look there and tell me what you found.
 
-Memory lives in `~/.claude/projects/<repo path, with / and . as ->/memory/`, for ImFusion repos in `~/.claude-work/projects/`.
+Memory lives in `~/.claude/projects/<repo path, with / and . as ->/memory/`.
 
 | Project          | Repo                                     | What                                                                                                                                             |
 | ---------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -162,11 +162,6 @@ Memory lives in `~/.claude/projects/<repo path, with / and . as ->/memory/`, for
 | notes            | ~/repos/nikbrunner/notes                 | My Obsidian vault                                                                                                                                |
 | kōyō             | ~/repos/nikbrunner/koyo                  | My 36-key split keyboard layout and its flashing CLI for Moonlander and Corne                                                                    |
 | fonts            | ~/repos/nikbrunner/fonts                 | My font collection and installer; `pick-font` updates the Ghostty and Zed configs                                                                |
-| @imfusion/web-ui | ~/repos/imfusion/websdk/web-ui           | Shared React UI library for ImFusion web apps: primitives, tokens, one import surface. I am its main author and maintainer                       |
-| imfusion-portal  | ~/repos/imfusion/cp/imfusion-portal      | Web portal for ImFusion Cloud: register, sign in, manage licenses and members. I work on the frontend SPA and its e2e tests                      |
-| labels-web       | ~/repos/imfusion/cp/labels-web           | Web portal for the cloud deployment of ImFusion Labels. I work on the frontend SPA                                                               |
-| web-sdk          | ~/repos/imfusion/websdk/web-sdk          | ImFusionLib subset in WebAssembly, published as `@imfusion/sdk` and `@imfusion/sdk-react`. I contribute now and then, mostly to the docs package |
-| imf-notes        | ~/repos/imfusion/brunner/notes           | My ImFusion notes: timesheet, per-repo notes, research, ADRs                                                                                     |
 
 ### Rex beta feedback
 
@@ -313,10 +308,3 @@ Before renaming or changing a function signature, use `findReferences` to find a
 
 - Don't echo back file contents you just read
 - Don't narrate tool calls ("Let me read the file..."). Just do it.
-
-## ImFusion
-
-Private company context for ImFusion projects — Atlassian MCP defaults,
-Jira project keys, and company-specific skills.
-
-@~/repos/imfusion/brunner/agents/AGENTS.md
