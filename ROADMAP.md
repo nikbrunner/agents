@@ -2,11 +2,6 @@
 
 Where this repo is heading: one home for my agent setup, with dots keeping only machine wiring.
 
-## Link the work skills from the work repo
-
-The `imfg-*` links in `~/.agents/skills` point into my work agents repo and are made by hand. That repo needs its own
-install step for them.
-
 ## Port the workflow improvements from work
 
 The project skills in a work repo have moved ahead of their generic versions here. Generic parts to bring over:
