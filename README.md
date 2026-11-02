@@ -165,6 +165,19 @@ Bob and the daily notes, tasks in Things 3, and speech from ElevenLabs.
 | `nbr-changelog-things` | Log a day's development work as completed Things items     | Things 3, the `things` CLI, `nbr-activity`                                                                      |
 | `nbr-tts`              | Turn text into speech with ElevenLabs                      | ElevenLabs account, the `elevenlabs` CLI, jq, ffmpeg, `npx skills add elevenlabs/skills --skill text-to-speech` |
 
+## Mods
+
+[`mods`](mods) holds my Claude Code mods, one plugin per folder. The repo is also a plugin marketplace named `nbr`:
+
+```sh
+claude plugin marketplace add nikbrunner/skills
+claude plugin install dash@nbr
+```
+
+- `dash` shows a session dashboard pane: workspace, git, agent, tasks, limits, cost and what the conversation is working on. It installs `toggle-mods` with it.
+- `toggle-mods` adds `/toggle-mods`, which hides and shows the dash and the panes of the mods that listen to it.
+- `play` adds `/play`, which reads the last reply aloud through ElevenLabs. It reads the ElevenLabs key from my Proton Pass vault, so it only runs as is on my machines.
+
 ## License
 
 MIT

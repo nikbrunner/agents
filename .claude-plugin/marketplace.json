@@ -1,0 +1,25 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "nbr",
+  "description": "Claude Code mods by Nik Brunner",
+  "owner": {
+    "name": "Nik Brunner"
+  },
+  "plugins": [
+    {
+      "name": "dash",
+      "description": "Session dashboard pane: workspace, git, agent, tasks, limits, cost and what the conversation is working on",
+      "source": "./mods/dash"
+    },
+    {
+      "name": "toggle-mods",
+      "description": "/toggle-mods hides and shows the dash and the panes of the mods that listen to it",
+      "source": "./mods/toggle-mods"
+    },
+    {
+      "name": "play",
+      "description": "/play reads the last reply aloud through ElevenLabs, with pause, rewind and stop in a band above the prompt",
+      "source": "./mods/play"
+    }
+  ]
+}
