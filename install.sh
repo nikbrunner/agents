@@ -10,6 +10,13 @@ target="$HOME/.agents/skills"
 "$repo/scripts/symlinks.sh" "$@"
 echo
 
+for arg in "$@"; do
+    if [ "$arg" = "--dry-run" ]; then
+        echo "Dry run: skipping the skill links."
+        exit 0
+    fi
+done
+
 (cd "$repo" && npx -y skills experimental_install -y >/dev/null)
 
 mkdir -p "$target"
