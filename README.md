@@ -2,15 +2,9 @@
 
 My agent setup: skills for Claude Code, Pi, Codex and anything else that reads `SKILL.md`, Claude Code mods, and the config of the agents I run. The skills encode how I plan, commit, open PRs and set up repos, so they are opinionated by design. Take what fits.
 
-| Folder                     | Holds                                                                                |
-| -------------------------- | ------------------------------------------------------------------------------------ |
-| [`skills`](skills)         | My `nbr-*` skills                                                                    |
-| [`mods`](mods)             | Claude Code mods, published as the `nbr` plugin marketplace                          |
-| [`statusline`](statusline) | A Claude Code status line for subagents and the hooks that feed it                   |
-| [`home`](home)             | Agent config that mirrors `~`: global `AGENTS.md`, subagents, Claude Code, Pi, Codex |
-
 ## Contents
 
+- [What is here](#what-is-here)
 - [Install the skills](#install-the-skills)
 - [Working copy](#working-copy)
   - [Third-party skills](#third-party-skills)
@@ -20,9 +14,19 @@ My agent setup: skills for Claude Code, Pi, Codex and anything else that reads `
   - [Personal](#personal)
 - [Mods](#mods)
   - [Installing mods](#installing-mods)
+  - [Third-party mods](#third-party-mods)
 - [Claude Code settings](#claude-code-settings)
   - [Status line](#status-line)
 - [License](#license)
+
+## What is here
+
+| Folder                     | Holds                                                                                |
+| -------------------------- | ------------------------------------------------------------------------------------ |
+| [`skills`](skills)         | My `nbr-*` skills                                                                    |
+| [`mods`](mods)             | Claude Code mods, published as the `nbr` plugin marketplace                          |
+| [`statusline`](statusline) | A Claude Code status line for subagents and the hooks that feed it                   |
+| [`home`](home)             | Agent config that mirrors `~`: global `AGENTS.md`, subagents, Claude Code, Pi, Codex |
 
 ## Install the skills
 
@@ -210,6 +214,11 @@ Bob and the daily notes, tasks in Things 3, and speech from ElevenLabs.
 
 ## Mods
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/dash-dark.webp">
+  <img src="docs/assets/readme/dash-light.webp" alt="The dash above the prompt, with a row for play, while three subagents run">
+</picture>
+
 [`mods`](mods) holds my Claude Code mods, one plugin per folder:
 
 - `dash` shows a session dashboard pane: workspace, git, agent, tasks, limits, cost and what the conversation is working on. `/dash` hides and shows it. [Its README](mods/dash/README.md) has the settings and the cost.
@@ -243,6 +252,15 @@ To edit a mod and use it live, load it from a clone instead, as a colon-separate
 "CLAUDE_CODE_PLUGIN_DIR_WATCH": "1"
 ```
 
+### Third-party mods
+
+I also run [`cache-tax`](https://github.com/karanb192/cache-tax), which keeps the prompt cache warm during breaks and shows the estimated cost before a cold send:
+
+```sh
+claude plugin marketplace add karanb192/claude-code-mods
+claude plugin install cache-tax@claude-code-mods
+```
+
 ## Claude Code settings
 
 My full settings are in [`home/.claude/settings.json`](home/.claude/settings.json). The main ones:
@@ -273,9 +291,16 @@ My full settings are in [`home/.claude/settings.json`](home/.claude/settings.jso
 
 ### Status line
 
-The dash shows what a status line would, so I run without one. If `settings.json` has a `statusLine` block, removing it frees the line.
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/dash-dark.webp">
+  <img src="docs/assets/readme/dash-light.webp" alt="Claude Code footer with Vim mode, and a progress bar for each running subagent">
+</picture>
 
-[`statusline`](statusline) holds a status line for subagents instead: each running subagent gets a progress bar built from the `PROGRESS: n/m · step` lines it writes. Two hooks make subagents write them: `subagent-start.sh` asks for the lines when a subagent starts, and `post-tool-batch.sh` reminds it after 20 tool calls without one. They need `bash` and `jq`.
+I've turned my status line off almost completely, because what it showed now lives in the dash. All that's left is Claude Code's own footer, with the Vim mode and the permission mode, and a tracker for running subagents.
+
+Turning it off takes no setting of its own. `settings.json` has no `statusLine` block, and without one Claude Code shows only its footer. To do the same, delete the block.
+
+The subagent tracker is in [`statusline`](statusline): each running subagent gets a progress bar built from the `PROGRESS: n/m · step` lines it writes. Two hooks make subagents write them: `subagent-start.sh` asks for the lines when a subagent starts, and `post-tool-batch.sh` reminds it after 20 tool calls without one. They need `bash` and `jq`.
 
 Clone the repo, then point the settings at the scripts in the clone:
 

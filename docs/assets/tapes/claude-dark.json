@@ -1,0 +1,16 @@
+{
+  "theme": "custom:black-atom-default-dark",
+  "enabledPlugins": {
+    "cache-tax@claude-code-mods": false
+  },
+  "permissions": {
+    "allow": [
+      "Agent",
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash"
+    ],
+    "defaultMode": "default"
+  }
+}
