@@ -26,6 +26,9 @@ My agent setup: skills for Claude Code, Pi, Codex and anything else that reads `
 
 ## Install the skills
 
+> [!NOTE]
+> Every skill here starts with `nbr-`. That prefix is a namespace: my skills sit together in the `/` menu, you can find them by typing `/nbr`, and names like `/commit` stay free for yours. I wish more third-party skills did this.
+
 The skills sit in two folders. [`engineering`](skills/engineering) covers coding work and the tools it runs on. [`personal`](skills/personal) covers life outside the code. [Skills](#skills) lists what each one needs installed first.
 
 All of them:
