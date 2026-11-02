@@ -2,8 +2,12 @@
 
 My agent setup: skills for Claude Code, Pi, Codex and anything else that reads `SKILL.md`, Claude Code mods, and the config of the agents I run. The skills encode how I plan, commit, open PRs and set up repos, so they are opinionated by design. Take what fits.
 
+> [!TIP]
+> Want to use parts of this with your own agent? Paste it [these instructions](#instructions-for-agents).
+
 ## Contents
 
+- [Instructions for agents](#instructions-for-agents)
 - [What is here](#what-is-here)
 - [Install the skills](#install-the-skills)
 - [Working copy](#working-copy)
@@ -13,11 +17,37 @@ My agent setup: skills for Claude Code, Pi, Codex and anything else that reads `
   - [Engineering](#engineering)
   - [Personal](#personal)
 - [Mods](#mods)
+  - [dash](#dash)
+  - [play](#play)
   - [Installing mods](#installing-mods)
   - [Third-party mods](#third-party-mods)
 - [Claude Code settings](#claude-code-settings)
   - [Status line](#status-line)
 - [License](#license)
+
+## Instructions for agents
+
+To have your coding agent set up parts of this repo for you, paste this into it:
+
+```text
+Read https://github.com/nikbrunner/agents, starting with its README, and help me adopt parts of it into my own setup. It is Nik's personal setup, so I take pieces of it, and my own config stays mine.
+
+1. Ask which pieces I want, and read what I already have: my settings.json, skills and plugins.
+2. Show the changes you plan, including anything of mine that would change, and wait for my yes.
+3. Make the changes, then check that each piece works.
+
+For each piece:
+
+- Skills: use the commands under "Install the skills", and first install what each skill's compatibility field requires.
+- Mods: use the commands under "Installing mods".
+- Settings: merge the keys I choose into my settings.json and keep my existing values unless I say otherwise. Read home/.claude/settings.json only for reference, since its paths and pass:// secret references work only on Nik's machines.
+- Status line: follow "Status line". It needs a clone, so ask me where to put it, and replace ~/repos/nikbrunner/agents with that path.
+- Instructions: treat home/.agents/AGENTS.md as a source of ideas. It describes Nik, so adapt what I like into my own file.
+
+Everything else installs without a clone. Clone only for the status line, or if I want to edit the skills or mods.
+
+install.sh, symlinks.yml and scripts/ are for Nik's machines, and they replace global config with links into this repo. Use them only if I explicitly want the whole setup, after showing me what scripts/symlinks.sh --dry-run would change. scripts/migrate-to-agents.sh is a one-time move for his machines and never applies to anyone else.
+```
 
 ## What is here
 
@@ -66,7 +96,7 @@ git clone https://github.com/nikbrunner/agents ~/repos/nikbrunner/agents
 
 What it does:
 
-- Links the config in `home/` into `~`, as listed in [`symlinks.yml`](symlinks.yml). An existing file is moved aside as `<name>.backup.<timestamp>`; `--dry-run` shows what would change. [`scripts/symlinks.sh`](scripts/symlinks.sh) does the linking and runs on its own too. It is a copy of the linker in my dots repo, whose `dots link` runs this one after its own.
+- Links the config in `home/` into `~`, as listed in [`symlinks.yml`](symlinks.yml). An existing file is moved aside as `<name>.backup.<timestamp>`; [`scripts/symlinks.sh`](scripts/symlinks.sh) does the linking and runs on its own too, and its `--dry-run` shows what would change. It is a copy of the linker in my dots repo, whose `dots link` runs this one after its own.
 - Links every skill folder in `skills/<group>/` into `~/.agents/skills`, removing links whose skill no longer exists and never replacing a real file or directory.
 - Points `~/.claude/skills` and `~/.claude-work/skills` at `~/.agents/skills`.
 
@@ -214,17 +244,22 @@ Bob and the daily notes, tasks in Things 3, and speech from ElevenLabs.
 
 ## Mods
 
+[`mods`](mods) holds my Claude Code mods, one plugin per folder.
+
+### dash
+
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/readme/dash-dark.webp">
   <img src="docs/assets/readme/dash-light.webp" alt="The dash above the prompt, with a row for play, while three subagents run">
 </picture>
 
-[`mods`](mods) holds my Claude Code mods, one plugin per folder:
-
-- `dash` shows a session dashboard pane: workspace, git, agent, tasks, limits, cost and what the conversation is working on. `/dash` hides and shows it. [Its README](mods/dash/README.md) has the settings and the cost.
-- `play` adds `/play`, which reads the last reply aloud through ElevenLabs. It needs an ElevenLabs API key, `mpv` and `nc`; [its README](mods/play/README.md) has the setup.
+A session dashboard above the prompt: workspace, git, agent, tasks, limits, cost and what the conversation is working on. `/dash` hides and shows it. [Its README](mods/dash/README.md) has the settings and the cost.
 
 The dash shows a red badge next to the account when `DASH_BADGE` is set, with its value as the text. I set `DASH_BADGE=WORK` in the shell function that starts Claude Code with my work account.
+
+### play
+
+`/play` reads the last reply aloud through ElevenLabs. It needs an ElevenLabs API key, `mpv` and `nc`; [its README](mods/play/README.md) has the setup.
 
 ### Installing mods
 
