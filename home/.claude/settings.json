@@ -1,0 +1,300 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "syncClaudeAiSkills": false,
+  "env": {
+    "DISABLE_AUTOUPDATER": "0",
+    "ENABLE_TOOL_SEARCH": "true",
+    "CLAUDE_CODE_PLUGIN_DIRS": "~/repos/nikbrunner/agents/mods/dash:~/repos/nikbrunner/agents/mods/play",
+    "CLAUDE_CODE_PLUGIN_DIR_WATCH": "1",
+    "ELEVENLABS_API_KEY_COMMAND": "pass-cli item view pass://Nik/.env/ELEVENLABS_API_TOKEN",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
+  },
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(claude mcp list:*)",
+      "Bash(claude mcp tools:*)",
+      "Bash(curl:*)",
+      "Bash(cut:*)",
+      "Bash(find:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(grep:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run check:*)",
+      "Bash(npm run check:lint:*)",
+      "Bash(npm run check:types:*)",
+      "Bash(npm run db:push:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm run format:*)",
+      "Bash(npm run storybook:start:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm run test:compile:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npx jest:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npx shadcn@latest init --yes)",
+      "Bash(npx supabase --help:*)",
+      "Bash(npx supabase db --help:*)",
+      "Bash(npx supabase link --help:*)",
+      "Bash(pkill:*)",
+      "Bash(timeout 10 npm run dev:*)",
+      "Bash(timeout 5 npm run dev:*)",
+      "Bash(timeout 8 npm run dev:*)",
+      "WebFetch(domain:*)",
+      "WebSearch",
+      "mcp__Ref__ref_read_url",
+      "mcp__Ref__ref_search_documentation",
+      "mcp__chrome-devtools__*",
+      "mcp__exa__*",
+      "mcp__linear__*",
+      "mcp__atlassian-rovo-mcp__*",
+      "mcp__supabase__*",
+      "Bash(herdr agent start:*)",
+      "Bash(herdr agent prompt:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "model": "opus[1m]",
+  "hooks": {
+    "Notification": [],
+    "PreToolUse": [
+      {
+        "matcher": "WebFetch|WebSearch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"allow\"}}'"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/enforce/session-start.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/enforce/record-repo-root.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "^(startup|resume|clear|compact|fork)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/herdr-agent-state.sh session",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/herdr-report-git",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/bin/sh -c 'rex __internal session-start --agent claude --feature-session-naming=false 2>/dev/null || true'",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "^(startup|resume|clear|compact|fork)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/Users/brunner/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/enforce/record-repo-root.sh"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/enforce/repair-core-bare.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/enforce/skills-check.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/enforce/current-datetime.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.local/bin/herdr-report-git",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolBatch": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/repos/nikbrunner/agents/statusline/post-tool-batch.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/repos/nikbrunner/agents/statusline/subagent-start.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "tldraw-offline",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node '/Users/brunner/skills/tldraw-offline/inject-server-context.mjs' SubagentStart"
+          }
+        ]
+      }
+    ]
+  },
+  "worktree": {
+    "bgIsolation": "none"
+  },
+  "subagentStatusLine": {
+    "type": "command",
+    "command": "~/repos/nikbrunner/agents/statusline/claude-subagent-statusline"
+  },
+  "enabledPlugins": {
+    "figma@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "lua-lsp@claude-plugins-official": true,
+    "plannotator@plannotator": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "storybook@storybook": true,
+    "vercel@claude-plugins-official": true,
+    "cache-tax@claude-code-mods": true,
+    "clangd-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "plannotator": {
+      "source": {
+        "source": "github",
+        "repo": "backnotprop/plannotator"
+      }
+    },
+    "readwise-skills": {
+      "source": {
+        "source": "github",
+        "repo": "readwiseio/readwise-skills"
+      }
+    },
+    "storybook": {
+      "source": {
+        "source": "github",
+        "repo": "storybookjs/mcp",
+        "ref": "main"
+      }
+    },
+    "claude-community": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-community"
+      }
+    },
+    "gvzdv-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "gvzdv/claudish-to-english"
+      }
+    },
+    "claude-code-filetree": {
+      "source": {
+        "source": "github",
+        "repo": "data-goblin/claude-code-filetree"
+      }
+    },
+    "claude-code-mods": {
+      "source": {
+        "source": "github",
+        "repo": "karanb192/claude-code-mods"
+      }
+    }
+  },
+  "promptCacheTtl": "1h",
+  "alwaysThinkingEnabled": false,
+  "advisorModel": "opus",
+  "pluginConfigs": {},
+  "autoUpdatesChannel": "latest",
+  "tui": "fullscreen",
+  "voice": {
+    "enabled": true,
+    "mode": "hold"
+  },
+  "autoDreamEnabled": true,
+  "theme": "custom:black-atom",
+  "editorMode": "vim",
+  "agentPushNotifEnabled": true,
+  "voiceEnabled": true,
+  "feedbackSurveyState": {
+    "lastShownTime": 1754313915132
+  },
+  "mcpServers": {}
+}

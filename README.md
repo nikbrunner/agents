@@ -1,41 +1,57 @@
-# skills
+# agents
 
-My agent skills for Claude Code, Pi, Codex and anything else that reads `SKILL.md`. They encode how I plan, commit, open PRs and set up repos, so they are opinionated by design. Take what fits.
+My agent setup: skills for Claude Code, Pi, Codex and anything else that reads `SKILL.md`, Claude Code mods, and the config of the agents I run. The skills encode how I plan, commit, open PRs and set up repos, so they are opinionated by design. Take what fits.
 
-## Install
+| Folder                     | Holds                                                                                |
+| -------------------------- | ------------------------------------------------------------------------------------ |
+| [`skills`](skills)         | My `nbr-*` skills                                                                    |
+| [`mods`](mods)             | Claude Code mods, published as the `nbr` plugin marketplace                          |
+| [`statusline`](statusline) | A Claude Code status line for subagents and the hooks that feed it                   |
+| [`home`](home)             | Agent config that mirrors `~`: global `AGENTS.md`, subagents, Claude Code, Pi, Codex |
+| [`macos`](macos)           | macOS-only agent config: the Claude Desktop config                                   |
+
+## Install the skills
 
 The skills sit in two folders. [`engineering`](skills/engineering) covers coding work and the tools it runs on. [`personal`](skills/personal) covers life outside the code. [Skills](#skills) lists what each one needs installed first.
 
 All of them:
 
 ```sh
-npx skills add nikbrunner/skills
+npx skills add nikbrunner/agents
 ```
 
 One folder:
 
 ```sh
-npx skills add https://github.com/nikbrunner/skills/tree/main/skills/engineering
+npx skills add https://github.com/nikbrunner/agents/tree/main/skills/engineering
 ```
 
 One skill:
 
 ```sh
-npx skills add nikbrunner/skills --skill nbr-git-commit
+npx skills add nikbrunner/agents --skill nbr-git-commit
 ```
 
-`npx skills add nikbrunner/skills --list` shows everything with its description.
+`npx skills add nikbrunner/agents --list` shows everything with its description.
 
-### Working copy
+## Working copy
 
-To edit the skills and use them live, clone the repo and link them in:
+My machines run from a clone. `install.sh` links everything into place:
 
 ```sh
-git clone https://github.com/nikbrunner/skills ~/repos/nikbrunner/skills
-~/repos/nikbrunner/skills/install.sh
+git clone https://github.com/nikbrunner/agents ~/repos/nikbrunner/agents
+~/repos/nikbrunner/agents/install.sh
 ```
 
-`install.sh` links every skill folder in `skills/<group>/` into `~/.agents/skills`, and points `~/.claude/skills` and `~/.claude-work/skills` at that directory. It removes links whose skill no longer exists and never replaces a real file or directory. Run it again after adding or removing a skill.
+It does three things:
+
+- Links the config in `home/` and `macos/` into `~`, as listed in [`symlinks.yml`](symlinks.yml). An existing file is moved aside as `<name>.backup.<timestamp>`; `--dry-run` shows what would change. [`scripts/symlinks.sh`](scripts/symlinks.sh) does the linking and runs on its own too. It is a copy of the linker in my dots repo, whose `dots link` runs this one after its own.
+- Links every skill folder in `skills/<group>/` into `~/.agents/skills`, removing links whose skill no longer exists and never replacing a real file or directory.
+- Points `~/.claude/skills` and `~/.claude-work/skills` at `~/.agents/skills`.
+
+Run it again after adding or removing a skill or a `symlinks.yml` entry.
+
+`~/.pi` links to `home/.pi` as a whole, so Pi's sessions, credentials and caches land in the clone; `.gitignore` keeps them out of git.
 
 ### Third-party skills
 
@@ -169,17 +185,17 @@ Bob and the daily notes, tasks in Things 3, and speech from ElevenLabs.
 
 [`mods`](mods) holds my Claude Code mods, one plugin per folder:
 
-- `dash` shows a session dashboard pane: workspace, git, agent, tasks, limits, cost and what the conversation is working on. It needs `toggle-mods`.
-- `toggle-mods` adds `/toggle-mods`, which hides and shows the dash and the panes of the mods that listen to it.
+- `dash` shows a session dashboard pane: workspace, git, agent, tasks, limits, cost and what the conversation is working on. `/dash` hides and shows it.
 - `play` adds `/play`, which reads the last reply aloud through ElevenLabs. It needs an ElevenLabs API key, `mpv` and `nc`; [its README](mods/play/README.md) has the setup.
+
+The dash shows a red badge next to the account when `DASH_BADGE` is set, with its value as the text. I set `DASH_BADGE=WORK` in the shell function that starts Claude Code with my work account.
 
 ### Installing mods
 
 The repo is a plugin marketplace named `nbr`. Add it once, then install the mods you want:
 
 ```sh
-claude plugin marketplace add nikbrunner/skills
-claude plugin install toggle-mods@nbr
+claude plugin marketplace add nikbrunner/agents
 claude plugin install dash@nbr
 claude plugin install play@nbr
 ```
@@ -189,13 +205,13 @@ claude plugin install play@nbr
 To edit a mod and use it live, load it from a clone instead, as a colon-separated list in the `env` block of `~/.claude/settings.json`:
 
 ```json
-"CLAUDE_CODE_PLUGIN_DIRS": "~/repos/nikbrunner/skills/mods/dash:~/repos/nikbrunner/skills/mods/toggle-mods",
+"CLAUDE_CODE_PLUGIN_DIRS": "~/repos/nikbrunner/agents/mods/dash:~/repos/nikbrunner/agents/mods/play",
 "CLAUDE_CODE_PLUGIN_DIR_WATCH": "1"
 ```
 
 ## Claude Code settings
 
-The settings I run with, for `~/.claude/settings.json`:
+My full settings are in [`home/.claude/settings.json`](home/.claude/settings.json). The ones that shape how Claude Code feels:
 
 ```json
 {
@@ -221,6 +237,8 @@ The settings I run with, for `~/.claude/settings.json`:
 - `CLAUDE_CODE_SUBAGENT_MODEL`: subagents run on Haiku.
 - `ENABLE_TOOL_SEARCH`: MCP tools load when a task needs them instead of filling the context up front.
 
+Rules for the auto-mode classifier that name my employer's systems stay out of this repo. They live in a file in my private work repo, passed with `--settings` by the shell function that starts Claude Code with my work account; `autoMode` arrays from several settings sources are concatenated.
+
 ### Status line
 
 The dash shows what a status line would, so I run without one. If `settings.json` has a `statusLine` block, removing it frees the line.
@@ -230,21 +248,37 @@ The dash shows what a status line would, so I run without one. If `settings.json
 Clone the repo, then point the settings at the scripts in the clone:
 
 ```sh
-git clone https://github.com/nikbrunner/skills ~/repos/nikbrunner/skills
+git clone https://github.com/nikbrunner/agents ~/repos/nikbrunner/agents
 ```
 
 ```json
 {
   "subagentStatusLine": {
     "type": "command",
-    "command": "~/repos/nikbrunner/skills/statusline/claude-subagent-statusline"
+    "command": "~/repos/nikbrunner/agents/statusline/claude-subagent-statusline"
   },
   "hooks": {
     "SubagentStart": [
-      { "hooks": [{ "type": "command", "command": "~/repos/nikbrunner/skills/statusline/subagent-start.sh", "timeout": 5 }] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/repos/nikbrunner/agents/statusline/subagent-start.sh",
+            "timeout": 5
+          }
+        ]
+      }
     ],
     "PostToolBatch": [
-      { "hooks": [{ "type": "command", "command": "~/repos/nikbrunner/skills/statusline/post-tool-batch.sh", "timeout": 5 }] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/repos/nikbrunner/agents/statusline/post-tool-batch.sh",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   }
 }

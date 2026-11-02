@@ -1,0 +1,724 @@
+#!/usr/bin/env bash
+# Creates and manages symlinks from symlinks configuration
+# Usage: ./scripts/symlinks.sh [--dry-run] [--no-backup] [--verbose]
+# Can also be sourced for access to symlink functions
+
+set -e
+
+# ============================================================================
+# SYMLINKS CONFIGURATION FUNCTIONS
+# ============================================================================
+
+# Helper: check if a path needs sudo
+_needs_sudo() {
+    local path="$1"
+    [[ "$path" == /etc/* || "$path" == /usr/* || "$path" == /opt/* ]] && return 0
+    return 1
+}
+
+# Helper: run a command with sudo if target path needs it
+_sudoexec() {
+    local target_path="$1"
+    shift
+    if _needs_sudo "$target_path"; then
+        sudo "$@"
+    else
+        "$@"
+    fi
+}
+
+# Helper: compute a relative path from one absolute directory to an absolute path
+# Usage: _relative_path <from_dir> <to_path>
+_relative_path() {
+    local from="$1"
+    local to="$2"
+    local common="$from"
+    local ups=""
+
+    while [[ "$to" != "$common/"* ]]; do
+        common="${common%/*}"
+        ups="../$ups"
+    done
+
+    printf '%s%s\n' "$ups" "${to#"$common"/}"
+}
+
+# Helper: print the canonical link text for a symlink at abs_target pointing to
+# abs_source. When the link physically lives inside the repo (its parent
+# directory resolves through another symlink into the repo, e.g. ~/.pi ->
+# home/.pi), the link text is repo-relative so the committed link stays
+# portable across machines with different absolute paths.
+# Usage: _canonical_link_text <abs_source> <abs_target> <resolved_dots_dir>
+_canonical_link_text() {
+    local abs_source="$1"
+    local abs_target="$2"
+    local resolved_dots_dir="$3"
+
+    local resolved_target_dir
+    resolved_target_dir="$(cd "$(dirname "$abs_target")" 2>/dev/null && pwd -P)"
+
+    if [[ -n "$resolved_target_dir" && "$resolved_target_dir" == "$resolved_dots_dir"/* ]]; then
+        _relative_path "$resolved_target_dir" "$abs_source"
+    else
+        printf '%s\n' "$abs_source"
+    fi
+}
+
+# Function to process symlinks configuration with common + OS-specific sections
+# Usage: process_symlinks_entries <symlinks_file> <current_os>
+# Returns: prints "source_path|target_path" pairs for all entries
+# A source's value may be a single target string or a list of targets
+# (for one source symlinked into multiple destinations).
+process_symlinks_entries() {
+    local symlinks_file="$1"
+    local current_os="$2"
+
+    if [[ ! -f "$symlinks_file" ]]; then
+        echo "Error: Symlinks file not found: $symlinks_file" >&2
+        return 1
+    fi
+
+    local scalar_expr='to_entries | .[] | select(.value | tag != "!!seq") | .key + "|" + .value'
+    local list_expr='to_entries | .[] | select(.value | tag == "!!seq") | .key as $k | .value[] | $k + "|" + .'
+
+    # Process common section first (scalar targets, then list targets)
+    yq eval ".common | $scalar_expr" "$symlinks_file" 2>/dev/null
+    yq eval ".common | $list_expr" "$symlinks_file" 2>/dev/null
+
+    # Process OS-specific section
+    yq eval ".$current_os | $scalar_expr" "$symlinks_file" 2>/dev/null
+    yq eval ".$current_os | $list_expr" "$symlinks_file" 2>/dev/null
+}
+
+# ============================================================================
+# SYMLINK FUNCTIONS
+# ============================================================================
+
+# Function to expand wildcard patterns in symlinks entries
+# Usage: expand_wildcard_entry <source_path> <target_path> <dots_dir>
+# Returns: prints "source_file|target_file" pairs for each expanded entry
+expand_wildcard_entry() {
+    local source_path="$1"
+    local target_path="$2"
+    local dots_dir="$3"
+
+    # Check if source path ends with /*
+    if [[ "$source_path" == *"*" ]]; then
+        # Remove the /* suffix to get the base directory
+        local base_source="${source_path%/*}"
+        local abs_base_source="$dots_dir/$base_source"
+
+        # Check if the base directory exists
+        if [[ ! -d "$abs_base_source" ]]; then
+            echo "✗ Wildcard source directory not found: $abs_base_source" >&2
+            return 1
+        fi
+
+        # List all files and directories in the source directory
+        local file_count=0
+        while IFS= read -r -d '' file; do
+            if [[ -n "$file" ]]; then
+                local filename
+                filename=$(basename "$file")
+                local file_source="$base_source/$filename"
+                local file_target="$target_path/$filename"
+                echo "$file_source|$file_target"
+                file_count=$((file_count + 1))
+            fi
+        done < <(find "$abs_base_source" -maxdepth 1 \( -type f -o -type d \) -not -path "$abs_base_source" -print0 2>/dev/null)
+
+        if [[ "$file_count" -eq 0 ]]; then
+            echo "⚠ No entries found in wildcard directory: $abs_base_source" >&2
+        fi
+    else
+        # Not a wildcard, return as-is
+        echo "$source_path|$target_path"
+    fi
+}
+
+# Function to create symlinks from symlinks configuration
+# Usage: create_symlinks_from_config <symlinks_file> <current_os> [options...]
+# Options: --dry-run, --no-backup, --quiet, --verbose, --prune-stale
+create_symlinks_from_config() {
+    local symlinks_file="$1"
+    local current_os="$2"
+    shift 2
+
+    # Parse options
+    local dry_run=false
+    local no_backup=false
+    local quiet=false
+    local verbose=false
+    local prune_stale=false
+
+    for arg in "$@"; do
+        case $arg in
+        --dry-run)
+            dry_run=true
+            ;;
+        --no-backup)
+            no_backup=true
+            ;;
+        --quiet)
+            quiet=true
+            ;;
+        --verbose)
+            verbose=true
+            ;;
+        --prune-stale)
+            prune_stale=true
+            ;;
+        esac
+    done
+
+    if [[ ! -f "$symlinks_file" ]]; then
+        echo "Error: Symlinks file not found: $symlinks_file"
+        return 1
+    fi
+
+    # Validate YAML
+    if ! yq eval '.' "$symlinks_file" >/dev/null 2>&1; then
+        echo "Error: Invalid YAML in symlinks file: $symlinks_file"
+        return 1
+    fi
+
+    local dots_dir
+    dots_dir="$(dirname "$symlinks_file")"
+    local resolved_dots_dir
+    resolved_dots_dir="$(cd "$dots_dir" && pwd -P)"
+
+    # Initialize counters
+    local total_links=0
+    local created_links=0
+    local updated_links=0
+    local valid_links=0
+    local errors=0
+    local stale_entries=0
+    local pruned_entries=0
+
+    # First, expand wildcards and collect all entries to process
+    local temp_expanded
+    temp_expanded=$(mktemp)
+
+    # Process each entry in the configuration and expand wildcards
+    while IFS='|' read -r source_path target_path; do
+        [[ -z "$source_path" || -z "$target_path" ]] && continue
+
+        # Expand wildcards if present, otherwise pass through as-is
+        expand_wildcard_entry "$source_path" "$target_path" "$dots_dir" >>"$temp_expanded"
+    done < <(process_symlinks_entries "$symlinks_file" "$current_os")
+
+    # Now process all expanded entries (including non-wildcards)
+    local needs_sudo=false
+    while IFS='|' read -r source_path target_path; do
+        [[ -z "$source_path" || -z "$target_path" ]] && continue
+        local abs_target="${target_path/\~/$HOME}"
+        if _needs_sudo "$abs_target"; then
+            needs_sudo=true
+            break
+        fi
+    done <"$temp_expanded"
+
+    # Cache sudo credentials upfront if needed
+    if [[ "$needs_sudo" == true ]]; then
+        if [[ "$dry_run" == true ]]; then
+            echo "[DRY] Would need sudo for system paths"
+        else
+            sudo -v
+        fi
+    fi
+
+    # Now process all expanded entries (including non-wildcards)
+    while IFS='|' read -r source_path target_path; do
+        [[ -z "$source_path" || -z "$target_path" ]] && continue
+
+        total_links=$((total_links + 1))
+
+        # Convert tilde paths to absolute paths
+        local abs_target="${target_path/\~/$HOME}"
+        local abs_source="$dots_dir/$source_path"
+
+        [[ "$verbose" == true ]] && echo "Processing: $source_path -> $target_path"
+
+        # Verify source exists
+        if [[ ! -e "$abs_source" ]]; then
+            # Stale entry — source file removed from repo but still listed
+            if [[ "$prune_stale" == true ]]; then
+                if [[ "$dry_run" == true ]]; then
+                    echo "⚠ [DRY] Would prune stale entry: $source_path"
+                    pruned_entries=$((pruned_entries + 1))
+                else
+                    # Auto-remove from both common and OS-specific sections
+                    # (del is a no-op for non-existent keys, so this is safe)
+                    if yq eval "del(.common.\"$source_path\") | del(.$current_os.\"$source_path\")" -i "$symlinks_file" >/dev/null 2>&1; then
+                        echo "⚠ Pruned stale entry: $source_path"
+                        pruned_entries=$((pruned_entries + 1))
+                    else
+                        echo "✗ Failed to prune stale entry: $source_path"
+                        errors=$((errors + 1))
+                    fi
+                fi
+            else
+                echo "⚠ Stale entry: $source_path (file no longer in repo)"
+                echo "    Run with --prune-stale to auto-remove from symlinks.yml"
+                stale_entries=$((stale_entries + 1))
+            fi
+            continue
+        fi
+
+        local expected_text
+        expected_text="$(_canonical_link_text "$abs_source" "$abs_target" "$resolved_dots_dir")"
+
+        if [[ "$dry_run" == true ]]; then
+            # Dry run mode - just show what would happen
+            if [[ -L "$abs_target" ]]; then
+                local current_target
+                current_target=$(readlink "$abs_target" 2>/dev/null)
+                if [[ "$current_target" == "$expected_text" ]]; then
+                    valid_links=$((valid_links + 1))
+                    [[ "$verbose" == true ]] && echo "✓ [DRY] Symlink OK: $target_path"
+                else
+                    # Would update symlink
+                    updated_links=$((updated_links + 1))
+                    [[ "$quiet" != true ]] && echo "⚠ [DRY] Would update: $target_path"
+                fi
+            elif [[ -e "$abs_target" ]]; then
+                # Would backup and replace
+                created_links=$((created_links + 1))
+                [[ "$quiet" != true ]] && echo "+ [DRY] Would replace: $target_path"
+            else
+                # Would create
+                created_links=$((created_links + 1))
+                [[ "$quiet" != true ]] && echo "+ [DRY] Would create: $target_path"
+            fi
+        else
+            # Create parent directories if needed
+            _sudoexec "$abs_target" mkdir -p "$(dirname "$abs_target")"
+
+            if [[ -L "$abs_target" ]]; then
+                # Target is already a symlink
+                local current_target
+                current_target=$(readlink "$abs_target" 2>/dev/null)
+                if [[ "$current_target" == "$expected_text" ]]; then
+                    valid_links=$((valid_links + 1))
+                    [[ "$verbose" == true ]] && echo "✓ Symlink OK: $target_path"
+                else
+                    # Update symlink
+                    _sudoexec "$abs_target" rm "$abs_target"
+                    _sudoexec "$abs_target" ln -s "$expected_text" "$abs_target"
+                    updated_links=$((updated_links + 1))
+                    [[ "$quiet" != true ]] && echo "⚠ Updated: $target_path"
+                fi
+            elif [[ -e "$abs_target" ]]; then
+                # Target exists but is not a symlink
+                if [[ "$no_backup" == true ]]; then
+                    [[ "$verbose" == true ]] && echo "⚠ Replacing: $target_path"
+                    _sudoexec "$abs_target" rm -rf "$abs_target"
+                else
+                    local backup_name
+                    backup_name="$abs_target.backup.$(date +%Y%m%d_%H%M%S)"
+                    [[ "$verbose" == true ]] && echo "⚠ Backing up: $target_path -> $(basename "$backup_name")"
+                    _sudoexec "$abs_target" mv "$abs_target" "$backup_name"
+                fi
+                _sudoexec "$abs_target" ln -s "$expected_text" "$abs_target"
+                created_links=$((created_links + 1))
+                [[ "$quiet" != true ]] && echo "+ Created: $target_path"
+            else
+                # Target doesn't exist
+                _sudoexec "$abs_target" ln -s "$expected_text" "$abs_target"
+                created_links=$((created_links + 1))
+                [[ "$quiet" != true ]] && echo "+ Created: $target_path"
+            fi
+        fi
+    done <"$temp_expanded"
+
+    # Clean up temp file
+    rm -f "$temp_expanded"
+
+    # Print summary
+    if [[ "$dry_run" == true ]]; then
+        echo "Dry run complete:"
+    else
+        echo "Symlink operation complete:"
+    fi
+    echo "  Total: $total_links | Created: $created_links | Updated: $updated_links | Valid: $valid_links"
+    [[ "$pruned_entries" -gt 0 ]] && echo "  Pruned stale entries: $pruned_entries"
+    [[ "$stale_entries" -gt 0 ]] && echo "  Stale entries: $stale_entries (run with --prune-stale to clean)"
+    [[ "$errors" -gt 0 ]] && echo "  Errors: $errors"
+
+    return $errors
+}
+
+# Function to clean up broken symlinks from symlinks configuration
+# Usage: cleanup_broken_symlinks_from_config <symlinks_file> <current_os> [--dry-run] [--verbose]
+cleanup_broken_symlinks_from_config() {
+    local symlinks_file="$1"
+    local current_os="$2"
+    shift 2
+
+    # Parse options
+    local dry_run=false
+    local verbose=false
+
+    for arg in "$@"; do
+        case $arg in
+        --dry-run)
+            dry_run=true
+            ;;
+        --verbose)
+            verbose=true
+            ;;
+        esac
+    done
+
+    if [[ ! -f "$symlinks_file" ]]; then
+        echo "Error: Symlinks file not found: $symlinks_file"
+        return 1
+    fi
+
+    local dots_dir
+    dots_dir="$(dirname "$symlinks_file")"
+    local resolved_dots_dir
+    resolved_dots_dir="$(cd "$dots_dir" && pwd -P)"
+
+    local broken_count=0
+
+    # First, expand wildcards and collect all entries to process
+    local temp_expanded
+    temp_expanded=$(mktemp)
+
+    # Process each entry in the configuration and expand wildcards
+    while IFS='|' read -r source_path target_path; do
+        [[ -z "$source_path" || -z "$target_path" ]] && continue
+
+        # Expand wildcards if present, otherwise pass through as-is
+        expand_wildcard_entry "$source_path" "$target_path" "$dots_dir" >>"$temp_expanded"
+    done < <(process_symlinks_entries "$symlinks_file" "$current_os")
+
+    # Check each expanded symlink entry
+    while IFS='|' read -r source_path target_path; do
+        [[ -z "$source_path" || -z "$target_path" ]] && continue
+
+        local abs_target="${target_path/\~/$HOME}"
+        local abs_source="$dots_dir/$source_path"
+
+        if [[ -L "$abs_target" ]]; then
+            local current_target
+            current_target=$(readlink "$abs_target" 2>/dev/null)
+
+            # Check if symlink is broken or points to wrong target
+            local expected_text
+            expected_text="$(_canonical_link_text "$abs_source" "$abs_target" "$resolved_dots_dir")"
+            if [[ "$current_target" != "$expected_text" ]] || [[ ! -e "$abs_source" ]]; then
+                if [[ "$dry_run" == true ]]; then
+                    [[ "$verbose" == true ]] && echo "✗ [DRY] Would remove broken symlink: $abs_target"
+                else
+                    [[ "$verbose" == true ]] && echo "✗ Removing broken symlink: $abs_target"
+                    _sudoexec "$abs_target" rm "$abs_target"
+                fi
+                broken_count=$((broken_count + 1))
+            fi
+        fi
+    done <"$temp_expanded"
+
+    # Clean up temp file
+    rm -f "$temp_expanded"
+
+    if [[ "$broken_count" -eq 0 ]]; then
+        [[ "$verbose" == true ]] && echo "✓ No broken symlinks found"
+    else
+        if [[ "$dry_run" == true ]]; then
+            echo "Found $broken_count broken symlinks (dry run)"
+        else
+            echo "Cleaned up $broken_count broken symlinks"
+        fi
+    fi
+
+    return 0
+}
+
+# Function to remove symlinks whose entry was deleted from symlinks.yml.
+# Diffs the working tree's symlinks.yml against HEAD; any target that
+# disappeared from the config but still exists as a symlink pointing into
+# the dots repo is removed. Catches orphans that cleanup_broken_symlinks_from_config
+# can't see, since that function only checks entries still present in the file.
+# Usage: cleanup_removed_symlink_entries <symlinks_file> <current_os> [--dry-run] [--verbose]
+cleanup_removed_symlink_entries() {
+    local symlinks_file="$1"
+    local current_os="$2"
+    shift 2
+
+    local dry_run=false
+    local verbose=false
+    for arg in "$@"; do
+        case $arg in
+        --dry-run) dry_run=true ;;
+        --verbose) verbose=true ;;
+        esac
+    done
+
+    local dots_dir
+    dots_dir="$(dirname "$symlinks_file")"
+    local resolved_dots_dir
+    resolved_dots_dir="$(cd "$dots_dir" && pwd -P)"
+
+    if ! git -C "$dots_dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        return 0
+    fi
+
+    if ! git -C "$dots_dir" cat-file -e HEAD:symlinks.yml 2>/dev/null; then
+        return 0
+    fi
+
+    local old_symlinks_file
+    old_symlinks_file=$(mktemp)
+    git -C "$dots_dir" show "HEAD:symlinks.yml" >"$old_symlinks_file" 2>/dev/null
+
+    local old_entries new_entries removed_entries
+    old_entries=$(mktemp)
+    new_entries=$(mktemp)
+    removed_entries=$(mktemp)
+
+    process_symlinks_entries "$old_symlinks_file" "$current_os" | sort -u >"$old_entries"
+    process_symlinks_entries "$symlinks_file" "$current_os" | sort -u >"$new_entries"
+    comm -23 "$old_entries" "$new_entries" >"$removed_entries"
+
+    local removed_count=0
+
+    while IFS='|' read -r source_path target_path; do
+        [[ -z "$source_path" || -z "$target_path" ]] && continue
+        # Wildcard entries can't be expanded against a deleted source dir; skip.
+        [[ "$source_path" == *"*" ]] && continue
+
+        local abs_target="${target_path/\~/$HOME}"
+        local abs_source="$dots_dir/$source_path"
+
+        if [[ -L "$abs_target" ]]; then
+            local current_target
+            current_target=$(readlink "$abs_target" 2>/dev/null)
+            local expected_text
+            expected_text="$(_canonical_link_text "$abs_source" "$abs_target" "$resolved_dots_dir")"
+
+            # Only remove if it still points at the entry that was deleted,
+            # not some unrelated symlink that happens to share the target path.
+            if [[ "$current_target" == "$expected_text" ]]; then
+                if [[ "$dry_run" == true ]]; then
+                    [[ "$verbose" == true ]] && echo "✗ [DRY] Would remove orphaned symlink: $abs_target (entry removed from symlinks.yml)"
+                else
+                    [[ "$verbose" == true ]] && echo "✗ Removing orphaned symlink: $abs_target (entry removed from symlinks.yml)"
+                    _sudoexec "$abs_target" rm "$abs_target"
+                fi
+                removed_count=$((removed_count + 1))
+            fi
+        fi
+    done <"$removed_entries"
+
+    rm -f "$old_symlinks_file" "$old_entries" "$new_entries" "$removed_entries"
+
+    if [[ "$removed_count" -eq 0 ]]; then
+        [[ "$verbose" == true ]] && echo "✓ No orphaned symlinks from removed entries found"
+    else
+        if [[ "$dry_run" == true ]]; then
+            echo "Found $removed_count orphaned symlinks from removed entries (dry run)"
+        else
+            echo "Cleaned up $removed_count orphaned symlinks from removed entries"
+        fi
+    fi
+
+    return 0
+}
+
+# Function to check status of symlinks from symlinks configuration
+# Usage: check_symlinks_from_config <symlinks_file> <current_os> [--verbose]
+check_symlinks_from_config() {
+    local symlinks_file="$1"
+    local current_os="$2"
+    local verbose=false
+
+    [[ "$3" == "--verbose" ]] && verbose=true
+
+    if [[ ! -f "$symlinks_file" ]]; then
+        echo "Error: Symlinks file not found: $symlinks_file"
+        return 1
+    fi
+
+    local dots_dir
+    dots_dir="$(dirname "$symlinks_file")"
+    local resolved_dots_dir
+    resolved_dots_dir="$(cd "$dots_dir" && pwd -P)"
+
+    local total_links=0
+    local valid_links=0
+    local broken_links=0
+    local missing_links=0
+    local wrong_target_links=0
+
+    # First, expand wildcards and collect all entries to process
+    local temp_expanded
+    temp_expanded=$(mktemp)
+
+    # Process each entry in the configuration and expand wildcards
+    while IFS='|' read -r source_path target_path; do
+        [[ -z "$source_path" || -z "$target_path" ]] && continue
+
+        # Expand wildcards if present, otherwise pass through as-is
+        expand_wildcard_entry "$source_path" "$target_path" "$dots_dir" >>"$temp_expanded"
+    done < <(process_symlinks_entries "$symlinks_file" "$current_os")
+
+    # Check each expanded symlink entry
+    while IFS='|' read -r source_path target_path; do
+        [[ -z "$source_path" || -z "$target_path" ]] && continue
+
+        total_links=$((total_links + 1))
+        local abs_target="${target_path/\~/$HOME}"
+        local abs_source="$dots_dir/$source_path"
+
+        if [[ -L "$abs_target" ]]; then
+            local current_target
+            current_target=$(readlink "$abs_target" 2>/dev/null)
+            local expected_text
+            expected_text="$(_canonical_link_text "$abs_source" "$abs_target" "$resolved_dots_dir")"
+            if [[ "$current_target" == "$expected_text" ]]; then
+                valid_links=$((valid_links + 1))
+                [[ "$verbose" == true ]] && echo "✓ $target_path"
+            else
+                wrong_target_links=$((wrong_target_links + 1))
+                [[ "$verbose" == true ]] && echo "⚠ Wrong target: $target_path -> $current_target (expected: $expected_text)"
+            fi
+
+            if [[ ! -e "$abs_target" ]]; then
+                broken_links=$((broken_links + 1))
+                [[ "$verbose" == true ]] && echo "✗ Broken link: $target_path"
+            fi
+        elif [[ -e "$abs_target" ]]; then
+            [[ "$verbose" == true ]] && echo "✗ Not a symlink: $target_path"
+        else
+            missing_links=$((missing_links + 1))
+            [[ "$verbose" == true ]] && echo "⚠ Missing: $target_path"
+        fi
+    done <"$temp_expanded"
+
+    # Clean up temp file
+    rm -f "$temp_expanded"
+
+    echo "Symlink status summary:"
+    echo "  Total entries: $total_links"
+    echo "  Valid symlinks: $valid_links"
+    echo "  Missing: $missing_links"
+    echo "  Wrong target: $wrong_target_links"
+    echo "  Broken: $broken_links"
+
+    return 0
+}
+
+# ============================================================================
+# MAIN SCRIPT EXECUTION
+# ============================================================================
+
+# If script is sourced, don't execute main logic
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    return 0
+fi
+
+# The repo this script lives in; symlinks.yml sits at its root.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel)"
+
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/detect-os.sh"
+
+CURRENT_OS=$(get_os)
+SYMLINKS_FILE="$REPO_DIR/symlinks.yml"
+
+# Check for flags
+DRY_RUN=false
+NO_BACKUP=false
+QUIET=false
+VERBOSE=false
+PRUNE_STALE=false
+for arg in "$@"; do
+    case $arg in
+    --dry-run)
+        DRY_RUN=true
+        ;;
+    --no-backup)
+        NO_BACKUP=true
+        ;;
+    --quiet)
+        QUIET=true
+        ;;
+    --verbose)
+        VERBOSE=true
+        ;;
+    --prune-stale)
+        PRUNE_STALE=true
+        ;;
+    *)
+        echo "Unknown option: $arg"
+        echo "Usage: $0 [--dry-run] [--no-backup] [--quiet] [--verbose] [--prune-stale]"
+        exit 1
+        ;;
+    esac
+done
+
+# Check if symlinks file exists
+if [[ ! -f "$SYMLINKS_FILE" ]]; then
+    echo "Error: Symlinks file not found: $SYMLINKS_FILE"
+    echo "Please ensure symlinks.yml exists in the repository root."
+    exit 1
+fi
+
+if [[ "$DRY_RUN" == true ]]; then
+    echo "DRY RUN MODE - No changes will be made"
+    echo ""
+fi
+
+if [[ "$NO_BACKUP" == true ]]; then
+    echo "NO BACKUP MODE - Existing files will be overwritten"
+    echo ""
+fi
+
+echo "Setting up symlinks from configuration..."
+echo "OS detected: $CURRENT_OS"
+echo "Configuration: $SYMLINKS_FILE"
+echo ""
+
+# Clean up broken symlinks first
+echo "→ Cleaning broken symlinks..."
+if [[ "$DRY_RUN" == true ]]; then
+    cleanup_broken_symlinks_from_config "$SYMLINKS_FILE" "$CURRENT_OS" --dry-run --verbose
+else
+    cleanup_broken_symlinks_from_config "$SYMLINKS_FILE" "$CURRENT_OS" --verbose
+fi
+echo ""
+
+# Clean up symlinks whose entry was deleted from symlinks.yml since last commit
+echo "→ Cleaning symlinks from removed entries..."
+if [[ "$DRY_RUN" == true ]]; then
+    cleanup_removed_symlink_entries "$SYMLINKS_FILE" "$CURRENT_OS" --dry-run --verbose
+else
+    cleanup_removed_symlink_entries "$SYMLINKS_FILE" "$CURRENT_OS" --verbose
+fi
+echo ""
+
+# Create/update symlinks
+echo "→ Processing configuration entries..."
+options=()
+[[ "$DRY_RUN" == true ]] && options+=(--dry-run)
+[[ "$NO_BACKUP" == true ]] && options+=(--no-backup)
+[[ "$QUIET" == true ]] && options+=(--quiet)
+[[ "$VERBOSE" == true ]] && options+=(--verbose)
+[[ "$PRUNE_STALE" == true ]] && options+=(--prune-stale)
+
+if create_symlinks_from_config "$SYMLINKS_FILE" "$CURRENT_OS" "${options[@]}"; then
+    echo ""
+    if [[ "$DRY_RUN" == true ]]; then
+        echo "Dry run complete! No changes were made."
+    else
+        echo "Symlink setup complete!"
+    fi
+else
+    echo ""
+    echo "Some errors occurred during symlink creation."
+    exit 1
+fi

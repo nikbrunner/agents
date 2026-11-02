@@ -1,0 +1,33 @@
+common:
+  # claude-work is an isolated CLAUDE_CONFIG_DIR for a second Anthropic
+  # account (see ccw() in dots' .zshrc), sharing the same
+  # AGENTS.md/agents/settings/skills as the primary ~/.claude. Its hooks
+  # dir (~/.claude-work/hooks) is a manual home->home symlink to
+  # ~/.claude/hooks, not managed here — ~/.claude/hooks/enforce is itself
+  # a wildcard-expanded target, not a single repo source, so it
+  # can't be listed as a second target above without re-triggering it.
+  home/.config/rpiv-advisor/advisor.json: ~/.config/rpiv-advisor/advisor.json
+  home/.pi: ~/.pi
+  home/.agents/AGENTS.md:
+    [~/.claude/CLAUDE.md, ~/.claude-work/CLAUDE.md, ~/.pi/agent/AGENTS.md]
+  home/.agents/agents: [~/.claude/agents, ~/.claude-work/agents]
+  home/.claude/settings.json:
+    [~/.claude/settings.json, ~/.claude-work/settings.json]
+  home/.claude/keybindings.json:
+    [~/.claude/keybindings.json, ~/.claude-work/keybindings.json]
+  home/.agents: ~/.agents
+  "home/.claude/hooks/enforce/*": ~/.claude/hooks/enforce
+  home/.claude/plugins/local-marketplace: ~/.claude/plugins/marketplaces/local-plugins
+  home/.local/bin/claude-hooks: ~/.local/bin/claude-hooks
+  home/.local/bin/claude-account-label: ~/.local/bin/claude-account-label
+  home/.local/bin/claude-cache-countdown: ~/.local/bin/claude-cache-countdown
+
+  # Codex CLI: only the config; authentication, sessions and runtime state stay local.
+  home/.codex/config.toml: ~/.codex/config.toml
+
+  home/.config/opencode/opencode.jsonc: ~/.config/opencode/opencode.jsonc
+
+macos:
+  macos/Library/Application Support/Claude/claude_desktop_config.json: ~/Library/Application Support/Claude/claude_desktop_config.json
+
+arch: {}

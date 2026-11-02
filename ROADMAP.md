@@ -2,28 +2,10 @@
 
 Where this repo is heading: one home for my agent setup, with dots keeping only machine wiring.
 
-## Become the `agents` repo
+## Link the work skills from the work repo
 
-The repo grows from skills into the content of my agent setup, mirroring my work agents repo.
-
-- Rename the repo to `agents`. GitHub redirects the old URL, so `npx skills add nikbrunner/skills` keeps working.
-- Move the global `AGENTS.md` and the subagents (`common/.agents/AGENTS.md` and `common/.agents/agents/` in dots) into
-  `global/`. They never sit at the repo root: a root `AGENTS.md` is the project instruction file for agents working in
-  this repo.
-- `install.sh` links them where `symlinks.yml` in dots links them today: `~/.claude/CLAUDE.md`, `~/.claude-work/CLAUDE.md`,
-  `~/.pi/agent/AGENTS.md`, `~/.claude/agents`, `~/.claude-work/agents`.
-- `~/.agents` stops being a symlink into dots and becomes a directory `install.sh` owns.
-
-Open question: does tool config move too (Claude `settings.json`, hooks, keybindings, `.pi`, `.codex`)? Content first;
-tool config follows only if the split between the two repos gets in the way.
-
-## Empty the dots skills folder
-
-`~/.agents/skills` still lives in dots and holds a few pieces this repo doesn't manage:
-
-- `plannotator-annotate`, `-last`, `-review` from the Plannotator installer, and `tldraw-offline` and `terminal-browser`
-  from their apps. They can stay untracked, since their tools reinstall them.
-- The `imfg-*` links into my work agents repo. That repo needs its own install step for them first.
+The `imfg-*` links in `~/.agents/skills` point into my work agents repo and are made by hand. That repo needs its own
+install step for them.
 
 ## Port the workflow improvements from work
 

@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
-# Restore the third-party skills from skills-lock.json, link them and every skill in skills/<group>/
-# into ~/.agents/skills, and point the Claude Code skill directories at it.
+# Link the agent config from symlinks.yml into ~, restore the third-party skills from
+# skills-lock.json, link them and every skill in skills/<group>/ into ~/.agents/skills, and point
+# the Claude Code skill directories at it. Arguments go to the linker (--dry-run, --verbose, ...).
 set -e
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 target="$HOME/.agents/skills"
+
+"$repo/scripts/symlinks.sh" "$@"
+echo
 
 (cd "$repo" && npx -y skills experimental_install -y >/dev/null)
 
