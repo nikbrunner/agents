@@ -35,7 +35,7 @@ export type Agent = {
   style?: string
 }
 
-export type Work = { cwd: string; mode?: string; turns: number }
+export type Work = { cwd: string; turns: number }
 
 export type Cache = { hit?: number; lastAt?: number; misses: number }
 

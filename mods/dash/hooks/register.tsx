@@ -149,21 +149,10 @@ async function refreshTitle($: EngineInterface) {
 async function refreshWork($: EngineInterface) {
   const cwd = await $.session.cwd()
   const turns = await $.session.turns()
-  const run = await $.process.run([
-    'sh',
-    '-c',
-    'f=$(ls "$1"/projects/*/"$2".jsonl 2>/dev/null | head -1); [ -n "$f" ] || exit 0; ' +
-      'grep -o \'"permissionMode":"[^"]*"\' "$f" | tail -1 | sed \'s/.*":"//; s/"$//\'',
-    'sh',
-    configDir,
-    await $.session.id(),
-  ])
-  const mode = run.stdout.trim() || undefined
   await update($, work, w => ({
     ...w,
     cwd: home && cwd.startsWith(home) ? `~${cwd.slice(home.length)}` : cwd,
     turns,
-    mode: mode ?? w.mode,
   }))
 }
 
@@ -455,7 +444,6 @@ export const register: Register = on => {
         </Text>
       ),
       a.effort && <Text color="warning">{a.effort}</Text>,
-      w.mode && <Text>{w.mode}</Text>,
       a.style && a.style !== 'default' && <Text>{a.style}</Text>,
       <Text>{w.turns} turns</Text>,
     ].filter(Boolean)
