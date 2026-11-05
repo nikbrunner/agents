@@ -1,10 +1,10 @@
 ---
 name: nbr-plan
 description:
-  "A planning flow and plan shape: grill the idea to shared understanding, optionally record decisions in the repo's
-  docs, then write a plan that reads for a Product Owner and a Developer (prose per section, implementation and
-  verification beneath it) and review it in Plannotator. Use when asked to plan a change, for every plan written in plan mode, and when asked to grill an idea,
-  which stops after the grill."
+    "A planning flow and plan shape: grill the idea to shared understanding, optionally record decisions in the repo's
+    docs, then write a plan that reads for a Product Owner and a Developer (prose per section, implementation and
+    verification beneath it) and review it in Plannotator. Use when asked to plan a change, for every plan written in plan mode, and when asked to grill an idea,
+    which stops after the grill."
 compatibility: Requires the nbr-repo-conventions and humanizer skills, and Plannotator, which ships the plannotator-annotate skill.
 ---
 
@@ -28,6 +28,9 @@ hang off it, and the **frontier** is every decision whose prerequisites are sett
 
 The grill is done when the frontier is empty and the user confirms the shared understanding. A small, clear request can reach
 that after one or two questions.
+
+Every open question is answered before the plan is written. One that surfaces while writing goes back to the user, and
+its answer lands in Decisions.
 
 ## 2. Record decisions (optional)
 
@@ -59,8 +62,6 @@ Use this shape:
 - Verification: how this slice is proven to work
 
 ## Out of scope
-
-## Open questions
 ```
 
 - A slice is a piece that works and can be verified on its own.
@@ -69,7 +70,7 @@ Use this shape:
 - The Implementation bullets carry what the Developer, human or agent, needs to execute: paths, names, commands, and
   existing code to reuse. Code snippets appear only where a signature or shape is the decision.
 - Add a Mermaid diagram after the goal when three or more components interact and the text alone leaves the flow unclear.
-- Empty Out of scope or Open questions sections are dropped.
+- An empty Out of scope section is dropped.
 
 Run `humanizer` over everything the Product Owner reads. The Implementation bullets stay as written.
 
