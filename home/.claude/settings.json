@@ -231,7 +231,8 @@
     "storybook@storybook": true,
     "vercel@claude-plugins-official": true,
     "cache-tax@claude-code-mods": true,
-    "clangd-lsp@claude-plugins-official": true
+    "clangd-lsp@claude-plugins-official": true,
+    "ponytail@ponytail": true
   },
   "extraKnownMarketplaces": {
     "plannotator": {
@@ -276,12 +277,25 @@
         "source": "github",
         "repo": "karanb192/claude-code-mods"
       }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
     }
   },
   "promptCacheTtl": "1h",
   "alwaysThinkingEnabled": false,
   "advisorModel": "opus",
-  "pluginConfigs": {},
+  "pluginConfigs": {
+    "ponytail@ponytail": {
+      "options": {
+        "ledger": true,
+        "sendNames": true
+      }
+    }
+  },
   "autoUpdatesChannel": "latest",
   "tui": "fullscreen",
   "voice": {
