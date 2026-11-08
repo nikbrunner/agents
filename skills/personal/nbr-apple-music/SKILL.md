@@ -6,7 +6,7 @@ compatibility: macOS with Music.app, and the apple-music MCP at --level api.
 
 # Apple Music
 
-Every write goes through the `apple-music` MCP. Its tool descriptions cover parameters; this skill covers the order of work and what they leave out.
+Every write goes through the `apple-music` MCP, apart from cover art and playlist descriptions, which it has no tool for. Its tool descriptions cover parameters; this skill covers the order of work and what they leave out.
 
 ## Curate a playlist
 
@@ -39,6 +39,29 @@ To change one track, use `add` with `replace`: the old track goes only after the
 - Nik's default intro is dark, moody ambient that slowly builds. The Close mirrors the Intro, ideally with related material.
 - Keep the same artist from playing back to back, apart from deliberate runs in the Intro and Close. Spread versions of one tune across phases.
 - Add a track when a phase lacks material or a transition needs a bridge, and report what was added.
+
+Re-sequencing can make a playlist's description untrue, so update it along with the order.
+
+### Cover art and description
+
+Make covers with `nbr-images`, always with `aspect_ratio` `"1:1"`: on `"auto"` a 4K finish can come back portrait. Apply a square JPEG of about 3000 pixels through Music.app:
+
+```applescript
+set imgData to read (POSIX file "/path/cover.jpg") as «class JPEG»
+tell application "Music"
+  set p to first user playlist whose persistent ID is "ID"
+  try
+    set data of artwork 1 of p to imgData
+  end try
+  try
+    make new artwork at p with properties {data:imgData}
+  end try
+end tell
+```
+
+Done when Nik sees the cover in Music. Both commands can return errors and `count of artworks` can stay 0 even when the cover lands, so neither says whether it worked.
+
+Set the description with `set description of p to "..."` and read it back.
 
 ## Clean up
 
