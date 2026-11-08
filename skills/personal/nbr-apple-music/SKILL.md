@@ -11,16 +11,34 @@ Every write goes through the `apple-music` MCP. Its tool descriptions cover para
 ## Curate a playlist
 
 1. **Brief.** Pin down mood, occasion, length and hard exclusions. Read taste from `discover(action="heavy_rotation")`, `library(action="recently_played")` and any playlist Nik names, and look in `playlist(action="folders")` for a playlist already on the topic.
-2. **Propose.** Show the tracklist in listening order, each as title and artist. Revise until Nik approves it. Build a label or discography brief from evidence: album `copyright` in `https://itunes.apple.com/search?entity=album&country=de&limit=200&term=ARTIST` names the label, and `https://itunes.apple.com/lookup?entity=song&country=de&limit=200&id=ALBUM_IDS` returns catalog ids, albums and runtimes.
+2. **Propose.** Pick a shape from [Playlist shapes](#playlist-shapes) and show the tracklist in listening order, each as title and artist. Revise until Nik approves it. Build a label or discography brief from evidence: album `copyright` in `https://itunes.apple.com/search?entity=album&country=de&limit=200&term=ARTIST` names the label, and `https://itunes.apple.com/lookup?entity=song&country=de&limit=200&id=ALBUM_IDS` returns catalog ids, albums and runtimes.
 3. **Resolve.** Run `catalog(action="resolve")` on the approved list, 25 tracks per call, unless the ids came from that lookup. Show Nik any match that differs from the proposal, and keep each track's catalog id and album.
-4. **Pin.** `library(action="add", track=["id", ...])` puts the exact editions in the library. Continue once the play-history script below shows every title and album pair, usually within a minute.
+4. **Pin.** `library(action="add", track=["id", ...])` puts the exact editions in the library. A track taken from another playlist can be missing from the library, so pin those too. Continue once the play-history script below shows every title and album pair, usually within a minute.
 5. **Write.** Create the playlist, retrying the first add if it reports the playlist is not found yet. Adds append, so send them in listening order, always with `auto_add=False` so a miss fails visibly.
    - A track that collides gets its own call with top-level `track`, `artist` and `album`. It collides when the play-history output holds the same artist with that title on another album or inside a longer title, as `Circles (Mixed)` does for `Circles`.
+   - Add `allow_duplicates=True` to that call when the playlist already holds a longer title containing this one. The duplicate check matches substrings, so `Pk` is skipped once `Pk_Amb` is in.
    - Runs of other tracks go as one JSON array of `{"name", "artist"}` objects. An `album` key inside an object is ignored.
    - `auto_add=True` takes the top catalog hit, which can be a remix or another track from the same EP, and adds that wrong track to the library. `dry_run` uses a stricter matcher than the write, so a clean preview cannot rule this out. `playlist(action="add")` refuses catalog ids without a developer token.
-6. **Verify.** Done when `playlist(action="tracks")` shows every approved track, in order, with the approved album and runtime. The add response alone proves nothing. Report each one that failed to land.
+6. **Verify.** Done when `playlist(action="tracks")` shows every approved track, in order, with the approved album and runtime. The add response alone proves nothing. That read comes from the cloud and lags after a large remove, so when it disagrees with the play-history script, trust the script. Report each one that failed to land.
 
-To change one track, use `add` with `replace`: the old track goes only after the new one has persisted, and the new one lands at the end. To keep a position, remove everything from that slot on and re-add it in order.
+To change one track, use `add` with `replace`: the old track goes only after the new one has persisted, and the new one lands at the end. To keep a position, remove everything from that slot on and re-add it in order. Re-sequencing a whole playlist means removing every track from it and re-adding them in the new order.
+
+### Playlist shapes
+
+**Chronological**, for an era, artist or label. The order tells the history.
+
+- Scope it from the catalog lookup in step 2, so the list covers what exists.
+- Select by quota per release, so every release is represented: 1 track from a single, 2 from an EP, 4 from an album. Give compilations a higher quota.
+- Leave out skits under 3 minutes, a cappellas, and the same title and artist on a second release.
+- Order by the album's release date, then track number. Track-level dates can carry the original year of a reissue.
+
+**DJ set**, for a long programmed listen. The order follows energy.
+
+- Music.app holds no tempo or key data for streamed tracks, so sequence from knowledge of the records and tell Nik it is programmed rather than beatmatched.
+- Ask how the intro should feel. Then run an arc: Intro, Rising, Groove, Build, Peak, Dark hours, Close. Peak is the longest phase, at about a quarter of the runtime.
+- Nik's default intro is dark, moody ambient that slowly builds. The Close mirrors the Intro, ideally with related material.
+- Keep the same artist from playing back to back, apart from deliberate runs in the Intro and Close. Spread versions of one tune across phases.
+- Add a track when a phase lacks material or a transition needs a bridge, and report what was added.
 
 ## Clean up
 
