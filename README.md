@@ -241,6 +241,7 @@ Bob and the daily notes, tasks in Things 3, and speech from ElevenLabs.
 | `nbr-things`           | Manage Things 3 tasks on macOS                                | Things 3, the `things` CLI                                                                                      |
 | `nbr-changelog-things` | Log a day's development work as completed Things items        | Things 3, the `things` CLI, `nbr-activity`                                                                      |
 | `nbr-tts`              | Turn text into speech with ElevenLabs                         | ElevenLabs account, the `elevenlabs` CLI, jq, ffmpeg, `npx skills add elevenlabs/skills --skill text-to-speech` |
+| `nbr-apple-music`      | Curate, clean up and organize Apple Music                     | macOS, Music.app, the `apple-music` MCP                                                                         |
 
 ## Mods
 
