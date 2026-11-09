@@ -65,7 +65,9 @@ Steps
 
 ## Screenshots
 
-- <state or before/after>: <image>
+| State | Image |
+| --- | --- |
+| <state or before/after> | <image> |
 
 ## Design file
 
@@ -86,6 +88,8 @@ Steps
   stays in the commits: write lists, never diffs, file trees or call graphs.
 - **Tests added**: every new end-to-end scenario, named by what the user does and sees. Unit tests get one line.
 - **How to test**: a setup block, then numbered steps a tester can follow without reading code.
-- **Screenshots**: only for a visual change with images at hand (attach them on the platform). Omit the heading otherwise.
+- **Screenshots**: only for a visual change with images at hand, else omit the heading. A table, one row per image: what
+  it shows on the left, the image on the right. Where the agent cannot upload, the right cell holds the image's full
+  path under `~/Pictures/agents/`, which Nik replaces with the upload.
 - **Design file**: only when the design source (Figma, Claude Design board) changed with this PR. Link it in the intro.
 - **Open decision**: only questions reviewers or colleagues still have to settle. Settled choices belong in What changed.
