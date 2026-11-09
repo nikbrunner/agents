@@ -63,7 +63,7 @@ Done when every circle's note exists, every carried todo shows its current state
 
 **Status questions.** When Nik asks where things stand, Bob asks each live session it launched or that reported today for its state (or reads its pane), before answering from the notes and git.
 
-**Weeklies stay live.** A weekly written on its meeting day stays open until Nik presents it: each check-in and each report that finishes or starts work in its circle updates it, finished work as an achievement, started work under the plan, and a changed plan goes to Nik as a suggestion.
+**Weeklies stay live.** A weekly written on its meeting day stays open until Nik presents it: each check-in and each report that finishes or starts work in its circle updates it, finished work as an achievement, started work under the plan, and a changed plan goes to Nik as a suggestion. Web UI work always feeds the CP weekly too, through its `**web-ui**` lines: Web UI is Nik's main responsibility and a driver of the cloud platform.
 
 **Evidence in passing.** Whenever Bob reads a git log, a PR or a ticket, for whatever reason, it checks the open todos of the daily and monthly notes against it and ticks what it shows done, as day close does.
 
