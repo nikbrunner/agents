@@ -93,10 +93,15 @@ Work directly in the selected repository and in this pane.
 Do not launch reviewers or other agents.
 Do not invoke Pi subagent tools, workflow orchestration, worktrees, or Rex or Herdr commands.
 Do not inspect or switch to another repository.
-Never push to the default branch; changes reach it through a pull request.
+Ask before anything hard to undo or outward-facing, such as a push to the default branch. A yes from the user, typed here or relayed by the dispatching session, settles it.
 Follow directly applicable task skills in this pane; ignore unrelated skills.
 Pre-existing changes: <clean, or exact status summary>
+Commit: <only after the user approves; leave changes unstaged and hand over. Or "as you go", when the brief or calling skill says so, such as an approved plan or AFK work>
 ```
+
+When the result is judged by looking at it (UI, motion, a page), send `Do not invoke Pi subagent tools, workflow orchestration, worktrees, or Rex or Herdr commands, except to start the dev server or Storybook in an idle pane of this session's Shells tab.` in place of the boundary line that names them, followed by `Hand over that server's live link; screenshots do not replace it.`
+
+When the task updates a pull request, add `Before you hand over, bring the branch up to date with its target the way the repo does it, and resolve small conflicts so the PR merges clean. A rewrite that needs a force push, or a conflict where the two sides disagree on what the code should do, goes back as a question.`
 
 When the task builds or tests tooling for Rex or Herdr itself, send the line `Do not invoke Pi subagent tools, workflow orchestration, or worktrees.` in place of the boundary line that names them, followed by `Run Rex or Herdr commands only to test this task's changes, and close only sessions or panes you created.`
 
