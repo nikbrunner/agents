@@ -139,6 +139,10 @@ Confirm with `git log --oneline -3` and `git status --short`.
 | A whole run of commits needs rewriting                                  | Rebuild            | `nbr-git-commit-rebuild`                                          |
 | Distinct new unit of work                                               | New commit         | Normal flow above.                                                |
 
+A commit that supersedes one already on the branch, such as a second bump of the same dependency or a redo of the same
+change, is no new unit of work. It folds into the earlier commit, so a PR's history shows each change once, in its final
+state.
+
 Ask before amending, fixing up or rebuilding: history rewrites can lose work.
 
 ## Rules
