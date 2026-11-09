@@ -149,6 +149,15 @@
             "command": "~/.claude/hooks/enforce/repair-core-bare.sh"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/enforce/ticket-titles.py",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
