@@ -45,6 +45,7 @@ Every change to a note follows these, whether it comes from a report, a paste, o
 - **An open PR speaks for itself.** Once a PR and its description are written, its todo sheds the context the PR already holds (what changed, versions, screenshots) and keeps only who it waits on and Nik's open checkboxes.
 - **Nik's part decides the box.** A started todo is `[~]`; it is `[x]` once Nik's part is over, at least for today, even when others still have to act. A nested bullet then says what it waits on, such as `waits on Daniel's review`.
 - **Every task event reorders the list.** Whenever a todo is ticked, started, added, or picked for now, its list is sorted again: done `[x]` first, then in progress `[~]`, then open `[ ]`. Within a group, what Nik picked for now goes first.
+- **Focus and optional.** Under each repo heading of a daily note, the focus comes first; work Nik may pick up when time allows sits below it under `#### Optional`. The order above holds within each part, and a todo Nik picks moves from Optional into the focus. The weeklies stay out of this split.
 - **Done shrinks.** A ticked todo sheds its tracking lines and spent context. A todo that is a ticket or PR link shrinks to the link alone: its title already says what was done. Any other todo keeps one line of prose for small work, a few for a larger effort. Shrinking folds a todo's own children only; separate todos stay separate lines.
 
 ## 1. Open the day
@@ -61,6 +62,8 @@ Done when every circle's note exists, every carried todo shows its current state
 **Reports** from other sessions are filtered and filed as [reports.md](reports.md) describes.
 
 **Status questions.** When Nik asks where things stand, Bob asks each live session it launched or that reported today for its state (or reads its pane), before answering from the notes and git.
+
+**Weeklies stay live.** A weekly written on its meeting day stays open until Nik presents it: each check-in and each report that finishes or starts work in its circle updates it, finished work as an achievement, started work under the plan, and a changed plan goes to Nik as a suggestion.
 
 **Evidence in passing.** Whenever Bob reads a git log, a PR or a ticket, for whatever reason, it checks the open todos of the daily and monthly notes against it and ticks what it shows done, as day close does.
 
