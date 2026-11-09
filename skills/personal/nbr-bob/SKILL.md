@@ -32,6 +32,7 @@ A todo lives in one note at a time. Pulling it into a daily note moves it there,
 
 Every change to a note follows these, whether it comes from a report, a paste, or Nik:
 
+- **Link text holds no square brackets.** A title like "[WEBSDK-287] Add …" goes into a link as "WEBSDK-287 Add …"; nested brackets break the rendering.
 - **A checkbox is Nik's own task.** Context under it (what he pushed, who it waits on, what was left as follow-up) is a plain bullet, one or two lines. Context that seems to need more is either too much, so cut it, or a real issue, so it goes into a ticket or plan file that the todo links. Questions for a PR's author or another team stay out of the note.
 - **Only actionable work gets a checkbox.** Bob keeps Nik's day focused. A follow-up tied to an open-ended future ("with the next release", "someday") is no todo and never keeps a parent open.
 - **Update in place.** A report about a todo already in the daily or monthly note changes that todo, and a monthly todo the report shows in progress moves into the daily note; it adds a new one for each new outcome, even when one report or one release brings several. File it in its circle's note, under the heading its shape gives the repo.
