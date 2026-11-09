@@ -42,7 +42,8 @@ Every change to a note follows these, whether it comes from a report, a paste, o
 - **Deferred work** with a date or someone waiting is `[>]` and carries into the next note. Backlog Nik defers goes to its place in the monthly note, with an effort tag.
 - **Tracking lines are temporary.** While work runs, a context line may say where (a worker, a Rex pane, who it waits on).
 - **An open PR speaks for itself.** Once a PR and its description are written, its todo sheds the context the PR already holds (what changed, versions, screenshots) and keeps only who it waits on and Nik's open checkboxes.
-- **Done moves up and shrinks.** A todo ticked during the day moves to the top of its list right away, above the open ones, and sheds its tracking lines and spent context. Its ticked children fold into prose saying what was done: one line for small work, a few for a larger effort. Shrinking folds a todo's own children only; separate todos stay separate lines.
+- **Nik's part decides the box.** A started todo is `[~]`; it is `[x]` once Nik's part is over, at least for today, even when others still have to act. A nested bullet then says what it waits on, such as `waits on Daniel's review`.
+- **Done moves up and shrinks.** A todo ticked during the day moves to the top of its list right away, above the open ones, and sheds its tracking lines and spent context. A todo that is a ticket or PR link shrinks to the link alone: its title already says what was done. Any other todo keeps one line of prose for small work, a few for a larger effort. Shrinking folds a todo's own children only; separate todos stay separate lines.
 
 ## 1. Open the day
 
