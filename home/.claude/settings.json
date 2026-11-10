@@ -7,7 +7,8 @@
     "CLAUDE_CODE_PLUGIN_DIRS": "~/repos/nikbrunner/agents/mods/dash:~/repos/nikbrunner/agents/mods/play",
     "CLAUDE_CODE_PLUGIN_DIR_WATCH": "1",
     "ELEVENLABS_API_KEY_COMMAND": "pass-cli item view pass://Nik/.env/ELEVENLABS_API_TOKEN",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
+    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
+    "CLAUDE_CODE_ENABLE_TODO_TOOLS": "1"
   },
   "includeCoAuthoredBy": false,
   "permissions": {

@@ -312,7 +312,8 @@ My full settings are in [`home/.claude/settings.json`](home/.claude/settings.jso
   "includeCoAuthoredBy": false,
   "env": {
     "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
-    "ENABLE_TOOL_SEARCH": "true"
+    "ENABLE_TOOL_SEARCH": "true",
+    "CLAUDE_CODE_ENABLE_TODO_TOOLS": "1"
   }
 }
 ```
@@ -325,6 +326,7 @@ My full settings are in [`home/.claude/settings.json`](home/.claude/settings.jso
 - `includeCoAuthoredBy`: no Claude co-author line in commits.
 - `CLAUDE_CODE_SUBAGENT_MODEL`: subagents run on Haiku.
 - `ENABLE_TOOL_SEARCH`: MCP tools load when a task needs them instead of filling the context up front.
+- `CLAUDE_CODE_ENABLE_TODO_TOOLS`: turns the task list tools back on for newer models, so Helm can show how far a session has got.
 
 ### Status line
 

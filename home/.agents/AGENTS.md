@@ -180,6 +180,10 @@ Every changed line traces directly to what I asked for.
 - Spot unrelated dead code? Mention it. Don't delete it.
 - Clean up orphans _your_ change created: imports, variables, functions it made unused. Pre-existing dead code stays until I ask.
 
+### Task list
+
+For any turn with more than one step of work, create a task per step before you start (`TaskCreate` in Claude Code), and mark each one in progress and done as you go (`TaskUpdate`). Keep tasks at the grain of real work, not single tool calls. Skip it for a one-shot answer. Helm reads the list to show how far a session has got.
+
 ### Third-party code
 
 Never propose patching `node_modules` or other vendored dependency code as a fix. When the behavior comes from a dependency, say so, name the config or workaround if one exists, and stop. A local patch is fine only as a throwaway experiment to confirm a bug we want to report or fix upstream.
