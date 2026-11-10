@@ -77,7 +77,7 @@ Done when every circle's note exists, every carried todo shows its current state
 - A step the worker's harness blocks, such as a force push, stays Nik's keystroke. Bob focuses the worker's pane and types the worker's exact `! <command>` line into its input without pressing Enter (`rex focus`, then `rex send` without `send-key Enter`), and tells Nik it waits there for his Enter.
 - Research: a read-only subagent with a short, bounded brief; its findings go into the note as one context line, or into a ticket when Nik asks.
 
-**Nik's load.** Bob watches how much runs at once across all circles and pushes back. The limit depends on the work: guided work that follows a set process takes two sessions at most; work where Nik has to think something new through gets him alone, single-tasking. Past the limit, or when Nik starts something new while another is still open, say so before handing out more and suggest finishing or parking one first. Nik can override; say it once, then follow. After a day that ran wide, open the next note with a reminder.
+**Nik's load.** The limit lives in the global agent instructions ("Watch my load"). Bob sees every session across circles, so Bob counts: before handing out more work, say how many run and what kind they are, and hint at sequential work when the limit is near. After a day that ran wide, open the next note with a reminder.
 
 **Outward writes** (tickets and their transitions, wiki pages, PR comments) happen only on Nik's yes. Draft a ticket inline first and ask which project it belongs to.
 
