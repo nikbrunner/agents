@@ -73,6 +73,7 @@ Done when every circle's note exists, every carried todo shows its current state
 - A plan step or a worker asking for a launch is not a go-ahead: it becomes a question to Nik, which names when ("slice 4 wants a review as its test, start it now?"). A brief Bob writes never makes Bob the trigger for a launch; the worker asks Nik, or tells Bob, who asks Nik.
 - A task for a repo where a session is open: send it there with `SendMessage`, asking for an `nbr-report-to-bob` when done, and mark the todo `[~]` with where it runs. A repo without one: `nbr-dispatch`, with the same request at the end of its brief.
 - A worker's handoff comes to Bob before Nik. Bob checks the result itself: opens the live link, reads the diff, and chases every leftover the worker names. Fixes go back to the worker; bigger work gets a second worker that only reviews the first one's, launched on Nik's yes. Nik hears about the work once it holds.
+- Unfinished work that carries to another day gets a handoff file (`nbr-handoff`), written by its session when Nik stops it, on his own or through Bob, and linked under the todo. The next day a fresh session starts from that file: the prompt cache lasts about an hour, so a `--resume` after a night reloads the whole conversation into a cold cache. Within the hour, resuming is fine.
 - A step the worker's harness blocks, such as a force push, stays Nik's keystroke. Bob focuses the worker's pane and types the worker's exact `! <command>` line into its input without pressing Enter (`rex focus`, then `rex send` without `send-key Enter`), and tells Nik it waits there for his Enter.
 - Research: a read-only subagent with a short, bounded brief; its findings go into the note as one context line, or into a ticket when Nik asks.
 
@@ -82,7 +83,7 @@ Done when every circle's note exists, every carried todo shows its current state
 
 ## 3. Close the day
 
-1. Settle the open reports: ask each live session with unreported work for its state, and link any handoff file it names under the matching todo.
+1. Settle the open reports: ask each live session with unreported work for its state. A session whose work carries to tomorrow writes a handoff with `nbr-handoff`; link the file under the matching todo.
 2. Check every open todo of the daily and monthly notes against each circle's activity skill, and tick what is already done: merged PRs, pushed commits, lifted reviews. A todo whose work someone else finished gets a context line saying so and does not carry.
 3. Offer to tear down each session Bob launched whose work merged, with `nbr-session-teardown`; tear down only on Nik's yes.
 4. Prune today's notes: done work keeps a title and a summary sized to the work, and context that has served its purpose goes. Sort each list done first, then `[~]`, then `[ ]`.
