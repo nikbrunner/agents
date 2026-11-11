@@ -1,12 +1,12 @@
 ---
 name: nbr-dispatch
-description: Start a fresh coding agent in a Rex session (or Herdr workspace) for another repository. Use when the user asks to dispatch, spawn, sidekick, fork, or hand off a task to Pi, Claude Code, Codex, or another coding harness.
-compatibility: Requires Rex or Herdr.
+description: Start a fresh coding agent in a Rex session for another repository. Use when the user asks to dispatch, spawn, sidekick, fork, or hand off a task to Pi, Claude Code, Codex, or another coding harness.
+compatibility: Requires Rex.
 ---
 
 # Dispatch
 
-Start a fresh coding-agent session in the target repository's Rex session, or its Herdr workspace outside Rex. Invoke this skill explicitly as `/skill:nbr-dispatch`.
+Start a fresh coding-agent session in the target repository's Rex session. Invoke this skill explicitly as `/skill:nbr-dispatch`.
 
 When a session already runs in the target repository, ask the user whether to message it through `nbr-intercom` instead of starting a new one.
 
@@ -16,18 +16,18 @@ A user-supplied `<skill name="nbr-dispatch">...</skill>` definition followed by 
 
 Once active:
 
-- Check `REX_SESSION` and `HERDR_ENV` before inspecting the target repository, Rex, or Herdr.
+- Check `REX_SESSION` before inspecting the target repository or Rex.
 - Perform only routing checks required by this skill. Do not inspect implementation files or edit the target repository directly.
 - If dispatch cannot run, report blocked. Never fall back to inline implementation.
 - Task approval authorizes dispatch, not bypassing dispatch.
 
 ## Preconditions
 
-This skill runs inside Rex or Herdr. Prefer Rex: when `REX_SESSION` is set, use the Rex path; otherwise, when `HERDR_ENV=1`, use the Herdr path. Check before inspecting either or resolving a target:
+This skill runs inside Rex. Check before inspecting it or resolving a target:
 
 ```bash
-test -n "${REX_SESSION:-}" || test "${HERDR_ENV:-}" = 1 || {
-  printf '%s\n' 'Dispatch must run inside Rex or Herdr.' >&2
+test -n "${REX_SESSION:-}" || {
+  printf '%s\n' 'Dispatch must run inside Rex.' >&2
   return 1 2>/dev/null || exit 1
 }
 ```
@@ -64,7 +64,7 @@ Only when the brief or the calling skill asks for a new worktree: name its topic
 
 ## Check the target worktree
 
-After the user confirms the path, check its state before creating a session, workspace, or pane:
+After the user confirms the path, check its state before creating a session or pane:
 
 ```bash
 git -C "$target_repo" status --short
@@ -91,7 +91,7 @@ Send these boundary instructions literally, alongside the task details:
 You are the dispatched worker.
 Work directly in the selected repository and in this pane.
 Do not launch reviewers or other agents.
-Do not invoke Pi subagent tools, workflow orchestration, worktrees, or Rex or Herdr commands.
+Do not invoke Pi subagent tools, workflow orchestration, worktrees, or Rex commands.
 Do not inspect or switch to another repository.
 Ask before anything hard to undo or outward-facing, such as a push to the default branch. A yes from the user, typed here or relayed by the dispatching session, settles it.
 Follow directly applicable task skills in this pane; ignore unrelated skills.
@@ -99,11 +99,11 @@ Pre-existing changes: <clean, or exact status summary>
 Commit: <only after the user approves; leave changes unstaged and hand over. Or "as you go", when the brief or calling skill says so, such as an approved plan or AFK work>
 ```
 
-When the result is judged by looking at it (UI, motion, a page), send `Do not invoke Pi subagent tools, workflow orchestration, worktrees, or Rex or Herdr commands, except to start the dev server or Storybook in an idle pane of this session's Shells tab.` in place of the boundary line that names them, followed by `Hand over that server's live link; screenshots do not replace it.`
+When the result is judged by looking at it (UI, motion, a page), send `Do not invoke Pi subagent tools, workflow orchestration, worktrees, or Rex commands, except to start the dev server or Storybook in an idle pane of this session's Shells tab.` in place of the boundary line that names them, followed by `Hand over that server's live link; screenshots do not replace it.`
 
 When the task updates a pull request, add `Before you hand over, bring the branch up to date with its target the way the repo does it, and resolve small conflicts so the PR merges clean. A rewrite that needs a force push, or a conflict where the two sides disagree on what the code should do, goes back as a question.`
 
-When the task builds or tests tooling for Rex or Herdr itself, send the line `Do not invoke Pi subagent tools, workflow orchestration, or worktrees.` in place of the boundary line that names them, followed by `Run Rex or Herdr commands only to test this task's changes, and close only sessions or panes you created.`
+When the task builds or tests tooling for Rex itself, send the line `Do not invoke Pi subagent tools, workflow orchestration, or worktrees.` in place of the boundary line that names them, followed by `Run Rex commands only to test this task's changes, and close only sessions or panes you created.`
 
 The child may follow directly applicable task skills in this pane, but must not delegate this task to another agent or reviewer.
 
@@ -129,4 +129,4 @@ Report back to the dispatching session <name> with SendMessage: one line when yo
 
 Write the child prompt to a scratch file with the Write tool, so it never passes shell quoting. Then run `nbr-session-setup` with the confirmed repository, the worktree topic and branch when one was named, install `normal` for a new worktree, the worktree's label (or the repository's folder name for a main checkout), and the agent: the prompt file and the harness; setup names the agent. Setup stops on a denial or dialog; report what it returns as blocked. When it stops after creating a worktree, name that worktree so the user can remove it.
 
-Do not add `--wait`, wait for child completion, read child output, summarize its work, or close its pane. Return a short launch receipt with the confirmed repository, Rex session or Herdr workspace, pane, agent label or name, and that the child will leave its handoff in its pane. When the child's messages arrive, pass each one to the user in a line or two.
+Do not add `--wait`, wait for child completion, read child output, summarize its work, or close its pane. Return a short launch receipt with the confirmed repository, Rex session, pane, agent label or name, and that the child will leave its handoff in its pane. When the child's messages arrive, pass each one to the user in a line or two.

@@ -44,7 +44,7 @@ Each run prepends the two `Set` lines, then the tape's own `Output` and `Set` li
 `light`) for the project's fixtures to read, and records into its own directory. VHS ignores any `Set` after another
 command, so `Env` must follow them.
 
-A program that paints its own palette (Herdr, a Neovim colorscheme, lazygit) ignores the terminal theme. Its fixture
+A program that paints its own palette (a Neovim colorscheme, lazygit) ignores the terminal theme. Its fixture
 applies Black Atom Default from the Black Atom adapter for that tool,
 `black-atom/adapters/<tool>/themes/default/black-atom-default-<scheme>.toml`, picked by `CLIP_SCHEME`. Copy the fragment
 into `docs/assets/tapes/` so the tape works without a Black Atom checkout. With no adapter for the tool, ask before

@@ -1,14 +1,14 @@
 ---
 name: nbr-session-setup
-description: "Set up a work session for a repository: worktree, dependency install, Rex session or Herdr workspace, and optionally a coding agent started from a brief in its Agents tab. Use when a skill or the user needs another repo, branch or PR ready to work in, such as a dispatch, a PR review, or Bob handing out work."
-compatibility: Requires Rex or Herdr.
+description: "Set up a work session for a repository: worktree, dependency install, Rex session, and optionally a coding agent started from a brief in its Agents tab. Use when a skill or the user needs another repo, branch or PR ready to work in, such as a dispatch, a PR review, or Bob handing out work."
+compatibility: Requires Rex.
 ---
 
 # Session setup
 
 Prepares a place to work: the checkout, the session around it, and, when asked, an agent running a brief there. The caller has already confirmed the target with the user; this skill asks nothing. Anything it cannot do cleanly, it stops on and reports.
 
-Prefer Rex: when `REX_SESSION` is set, use the Rex sections; otherwise, when `HERDR_ENV=1`, use the Herdr sections. Neither set: stop and say so.
+It runs inside Rex: without `REX_SESSION`, stop and say so.
 
 ## Inputs
 
@@ -94,33 +94,6 @@ rex send -s "$session" -b "$block" "$line" && rex send-key -s "$session" -b "$bl
 
 Check the pane with `rex capture -s "$session" -b "$block" | tail -25`. Done when the agent shows the brief running. A denied command, or a trust, login or permission dialog in the pane, stops here: return the session, the pane, the brief path and the exact denial or dialog, and leave it to the user.
 
-## Herdr workspace
-
-Skip this section inside Rex.
-
-An open workspace from `herdr workspace list` matches only when its `worktree.checkout_path` exactly equals `$worktree`. Several match: stop and return their labels and IDs. None matches: create one, unfocused:
-
-```bash
-created=$(herdr workspace create --cwd "$worktree" --label "$label" --no-focus)
-pane=$(printf '%s\n' "$created" | jq -er '.result.root_pane.pane_id')
-```
-
-For an agent in an existing workspace, use its Agents tab, the first one Helm's layout creates; only a workspace without one falls back to the active tab. List its panes with `herdr pane list --workspace <id>`, read one's geometry with `herdr pane layout --pane <id>`, and split it `right` or `down`:
-
-```bash
-child=$(herdr pane split "$pane" --direction "$direction" --cwd "$worktree" --no-focus)
-pane=$(printf '%s\n' "$child" | jq -er '.result.pane.pane_id')
-```
-
-Start the agent in that pane:
-
-```bash
-herdr agent start "$name" --kind "$harness" --pane "$pane"
-herdr agent prompt "$name" "$(cat "$brief")"
-```
-
-A pane whose shell is still starting makes `agent start` fail with `agent_pane_busy`. Wait a second and retry, up to three times, before stopping.
-
 ## Return
 
-The worktree path, whether it was created or reused (with its status when not clean), the session or workspace with its label, the pane, and the agent's name. Parse every ID from JSON output; never guess one or rely on UI focus.
+The worktree path, whether it was created or reused (with its status when not clean), the session with its label, the pane, and the agent's name. Parse every ID from JSON output; never guess one or rely on UI focus.

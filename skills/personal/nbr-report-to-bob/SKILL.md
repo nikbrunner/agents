@@ -2,7 +2,7 @@
 name: nbr-report-to-bob
 description: Report this session's state to Bob, Nik's digital assistant, so the day's note captures it. Use when Nik wraps up or moves on from the work here, or asks to report, hand off, or log it.
 argument-hint: "[what to stress]"
-compatibility: Requires Claude Code; Rex or Herdr when Bob runs on another Claude account.
+compatibility: Requires Claude Code; Rex when Bob runs on another Claude account.
 ---
 
 # Report to Bob
@@ -13,7 +13,7 @@ Nik keeps his day in daily notes, maintained by a Claude session named `Bob` tha
 
 Run `ListAgents` first and take the session named `Bob`. `ListAgents` only shows sessions under the same Claude config dir, and Bob runs on one config for all of Nik's work, so a session on the other account does not see it there.
 
-Not listed and `REX_SESSION` is set: find it in Rex, as `nbr-intercom` describes under "Find the peer": the Rex session labelled `Bob`, in the agent pane whose status line shows `[Bob]`. Not there either and `HERDR_ENV=1`: find it in Herdr by the agent named `Bob`. None of these finds it: tell Nik, and give him the report as text to paste there instead.
+Not listed and `REX_SESSION` is set: find it in Rex, as `nbr-intercom` describes under "Find the peer": the Rex session labelled `Bob`, in the agent pane whose status line shows `[Bob]`. None of these finds it: tell Nik, and give him the report as text to paste there instead.
 
 ## 2. Write the report
 
@@ -45,4 +45,4 @@ Done when every line of the shape is filled or says none, and nothing in it is s
 
 ## 3. Send and settle
 
-Send the report straight to Bob with `SendMessage`. Use `rex send` and `rex send-key Enter` only for a Bob found in a Rex pane, and wait for its reply with `rex capture` as `nbr-intercom` describes; `rex send` cuts long reports off. For one found in Herdr, use `herdr agent prompt` and `herdr agent read`. Bob answers with where the report went, or with questions. Answer its questions from this session's context, asking Nik only what neither session can know. Done when Bob confirms where the report was filed; pass that one line on to Nik.
+Send the report straight to Bob with `SendMessage`. Use `rex send` and `rex send-key Enter` only for a Bob found in a Rex pane, and wait for its reply with `rex capture` as `nbr-intercom` describes; `rex send` cuts long reports off. Bob answers with where the report went, or with questions. Answer its questions from this session's context, asking Nik only what neither session can know. Done when Bob confirms where the report was filed; pass that one line on to Nik.

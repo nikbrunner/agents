@@ -1,7 +1,7 @@
 ---
 name: nbr-session-teardown
-description: "Tear down a work session once its work is merged or done: checks that nothing gets lost, stops its servers, removes its worktree and branch, and closes the Rex session or Herdr workspace. Use when a skill or the user is done with a session, worktree, PR review or dispatched task, or asks to clean one up."
-compatibility: Requires Rex or Herdr.
+description: "Tear down a work session once its work is merged or done: checks that nothing gets lost, stops its servers, removes its worktree and branch, and closes the Rex session. Use when a skill or the user is done with a session, worktree, PR review or dispatched task, or asks to clean one up."
+compatibility: Requires Rex.
 ---
 
 # Session teardown
@@ -10,7 +10,7 @@ Clears what a session left behind, in the reverse order of `nbr-session-setup`. 
 
 ## Inputs
 
-A Rex session or Herdr workspace, or a worktree path. From either, resolve the other: the session whose panes have the worktree as `cwd` (as `nbr-session-setup` matches them), or the worktree those panes sit in. A main checkout stays: only a linked worktree, whose `git rev-parse --git-common-dir` is not its own `.git`, gets removed. Its primary checkout holds that common dir:
+A Rex session or a worktree path. From either, resolve the other: the session whose panes have the worktree as `cwd` (as `nbr-session-setup` matches them), or the worktree those panes sit in. A main checkout stays: only a linked worktree, whose `git rev-parse --git-common-dir` is not its own `.git`, gets removed. Its primary checkout holds that common dir:
 
 ```sh
 primary=$(dirname "$(git -C "$worktree" rev-parse --path-format=absolute --git-common-dir)")
@@ -55,8 +55,6 @@ Last, since the session may hold the caller:
 ```sh
 rex kill "$session"
 ```
-
-Herdr: `herdr workspace close <id>`.
 
 When the session is the caller's own (`$REX_SESSION`), nothing after the kill runs: report first, then run steps 3 and 4 as one command, `git … worktree remove --force … && git … branch -d … && rex kill "$session"`.
 
