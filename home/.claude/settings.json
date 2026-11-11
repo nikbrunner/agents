@@ -304,7 +304,7 @@
   },
   "promptCacheTtl": "1h",
   "alwaysThinkingEnabled": false,
-  "advisorModel": "opus",
+  "advisorModel": "fable",
   "pluginConfigs": {
     "ponytail@ponytail": {
       "options": {
@@ -322,6 +322,7 @@
   "autoDreamEnabled": true,
   "theme": "custom:black-atom",
   "editorMode": "vim",
+  "idleCompaction": false,
   "agentPushNotifEnabled": true,
   "autoMode": {
     "environment": [

@@ -1,6 +1,6 @@
 {
   "theme": "terminal",
-  "lastChangelogVersion": "0.99.2",
+  "lastChangelogVersion": "1.5.0",
   "packages": [
     "npm:pi-web-access",
     "npm:@ff-labs/pi-fff",
@@ -21,7 +21,8 @@
     "npm:@juicesharp/rpiv-todo"
   ],
   "extensions": [
-    "extensions/ask-user-inline.ts"
+    "extensions/ask-user-inline.ts",
+    "-builtin:mcp"
   ],
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-6-luna",
@@ -48,5 +49,13 @@
   "enableSkillCommands": true,
   "editorPaddingX": 1,
   "showCacheMissNotices": true,
-  "collapseChangelog": true
+  "collapseChangelog": true,
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.47.0",
+    "{\"source\":\"npm:pi-mcp-adapter\",\"scope\":\"user\"}": "7.0.1",
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.87.0",
+    "{\"source\":\"npm:@narumitw/pi-accounts\",\"scope\":\"user\"}": "0.54.1",
+    "{\"source\":\"npm:@narumitw/pi-usage\",\"scope\":\"user\"}": "0.69.2",
+    "{\"source\":\"npm:pi-lens\",\"scope\":\"user\"}": "4.4.11"
+  }
 }
