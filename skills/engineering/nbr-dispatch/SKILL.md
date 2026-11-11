@@ -74,7 +74,7 @@ When the output is empty, continue. When it is not, show the changed-file summar
 
 - **Launch anyway**: start the worker and include the pre-existing status in its prompt. The worker must leave those changes alone unless the task explicitly requires them.
 - **Write a handoff**: return a copy-ready handoff containing the target, task, dirty-state summary, and suggested next step. Do not launch an agent.
-- **Create a tracker issue**: inspect the `origin` remote and identify its GitHub or Bitbucket target. Ask for confirmation again before creating an external issue. Use an authenticated, directly applicable tracker tool only when available. Otherwise return the copy-ready handoff. Do not infer a Jira project from a remote.
+- **Create a tracker issue**: return the copy-ready handoff as the issue's draft, and name the ticket skill for the repo's tracker (`imfg-tickets` for Jira) or `gh issue create` for GitHub. Do not launch an agent.
 - **Stop**: make no change.
 
 ## Resolve the harness

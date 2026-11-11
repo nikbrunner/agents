@@ -16,7 +16,7 @@
     {
       "id": 3,
       "prompt": "/skill:nbr-dispatch codex Fix stale credentials in billing-api. Its worktree has uncommitted changes.",
-      "expected_output": "Confirms the exact target first, shows the dirty-state summary before opening a pane, and offers launch anyway, a copy-ready handoff, a tracker issue, or stop. Tracker issue creation asks for confirmation after inspecting the remote.",
+      "expected_output": "Confirms the exact target first, shows the dirty-state summary before opening a pane, and offers launch anyway, a copy-ready handoff, a tracker issue, or stop. The tracker issue option returns the handoff as a draft and names the ticket skill, without creating an issue.",
       "files": []
     },
     {
