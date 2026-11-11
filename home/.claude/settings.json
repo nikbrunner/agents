@@ -50,10 +50,10 @@
       "WebSearch",
       "mcp__Ref__ref_read_url",
       "mcp__Ref__ref_search_documentation",
-      "mcp__chrome-devtools__*",
-      "mcp__exa__*",
+      "mcp__plugin_mcp_chrome-devtools__*",
+      "mcp__plugin_mcp_exa__*",
       "mcp__linear__*",
-      "mcp__atlassian-rovo-mcp__*",
+      "mcp__plugin_mcp_atlassian-rovo-mcp__*",
       "mcp__supabase__*",
       "Bash(herdr agent start:*)",
       "Bash(herdr agent prompt:*)"
@@ -242,9 +242,16 @@
     "vercel@claude-plugins-official": true,
     "cache-tax@claude-code-mods": true,
     "clangd-lsp@claude-plugins-official": true,
-    "ponytail@ponytail": true
+    "ponytail@ponytail": true,
+    "mcp@nbr": true
   },
   "extraKnownMarketplaces": {
+    "nbr": {
+      "source": {
+        "source": "directory",
+        "path": "/Users/brunner/repos/nikbrunner/agents"
+      }
+    },
     "plannotator": {
       "source": {
         "source": "github",
@@ -316,11 +323,6 @@
   "theme": "custom:black-atom",
   "editorMode": "vim",
   "agentPushNotifEnabled": true,
-  "voiceEnabled": true,
-  "feedbackSurveyState": {
-    "lastShownTime": 1754313915132
-  },
-  "mcpServers": {},
   "autoMode": {
     "environment": [
       "### Org-wide",
@@ -349,5 +351,11 @@
       "**Org-specific CLIs**: rex, herdr, dinky, defi, dots, wt, elevenlabs, tanstack, ghostty — non-standard CLIs used routinely in this project's sessions",
       "routine under nikbrunner/ prefix: actions scoped to the nikbrunner/dots repo and its own tooling (dots, wt, rex, herdr) are routine; actions touching other orgs' repos are not"
     ]
-  }
+  },
+  "voiceEnabled": true,
+  "feedbackSurveyState": {
+    "lastShownTime": 1754313915132
+  },
+  "mcpServers": {},
+  "disabledMcpjsonServers": ["chrome-devtools"]
 }

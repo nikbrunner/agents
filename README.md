@@ -55,6 +55,7 @@ install.sh, symlinks.yml and scripts/ are for Nik's machines, and they replace g
 | -------------------------- | ------------------------------------------------------------------------------------ |
 | [`skills`](skills)         | My `nbr-*` skills                                                                    |
 | [`mods`](mods)             | Claude Code mods, published as the `nbr` plugin marketplace                          |
+| [`plugins`](plugins)       | Claude Code plugins for my own setup, in the same `nbr` marketplace                  |
 | [`statusline`](statusline) | A Claude Code status line for subagents and the hooks that feed it                   |
 | [`home`](home)             | Agent config that mirrors `~`: global `AGENTS.md`, subagents, Claude Code, Pi, Codex |
 

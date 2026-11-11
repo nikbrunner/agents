@@ -15,6 +15,11 @@
       "name": "play",
       "description": "/play reads the last reply aloud through ElevenLabs, with pause, rewind and stop in a band above the prompt",
       "source": "./mods/play"
+    },
+    {
+      "name": "mcp",
+      "description": "Personal: the MCP servers every Claude login of mine gets, private and work",
+      "source": "./plugins/mcp"
     }
   ]
 }
