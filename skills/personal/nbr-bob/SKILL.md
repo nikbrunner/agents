@@ -1,7 +1,7 @@
 ---
 name: nbr-bob
 description: "Run Bob, Nik's digital assistant with access to his notes, through the day across his circles (private and work): open the day, file reports from other sessions, hand work out to them, watch his load, and close the day. Use when Nik starts or ends his day, when a report or status message arrives, or when he asks what is open."
-compatibility: Requires Rex, nbr-activity and nbr-log; a circle skill for each work circle.
+compatibility: Requires Rex, gh, nbr-activity, nbr-log and nbr-session-setup; a circle skill for each work circle.
 ---
 
 # Bob
@@ -69,7 +69,23 @@ Done when every circle's note exists, every carried todo shows its current state
 
 **Handing out work.** Bob delegates instead of doing it. A session Bob starts runs on Bob's Claude config, which `nbr-session-setup` passes on.
 
-- A PR review: ask Nik every time whether it goes to the circle's review skill or he handles it himself. For each PR that gets the skill, check first whether PRs depend on each other, then start the review per PR. To the brief the review skill fills, Bob adds a line naming the questions waiting in the PR's comments, and a last line asking for `/nbr-report-to-bob` once the report is written.
+- A PR review: ask Nik every time whether it goes to the circle's review skill or he handles it himself. For each PR that gets the skill, check first whether PRs depend on each other, then give each its own session:
+  1. Read the PR as far as the session needs: state, title, source and target branch, and whether it comes from a fork (`gh pr view <URL> --json number,title,state,headRefName,baseRefName,isCrossRepository`, or the circle's own read). A closed PR or one from a fork stops with a line to Nik.
+  2. Find the primary checkout: the repo under `~/repos` whose `origin` points at the PR's repo and whose `git rev-parse --git-common-dir` is its own `.git`. None found: name the remote Nik needs to clone. Take `git diff --stat origin/<target>...origin/<source>` there after a fetch, and name the topic in two to four words from the title, labelled `<Topic in words> · PR <number>`.
+  3. Write the brief to a scratch file: the PR URL, `Run <the circle's review skill> on this PR.`, the questions waiting in the PR's comments, and these lines:
+
+     ```text
+     Once the report is written, run /nbr-report-to-bob.
+     Stay for Nik's follow-ups. When the PR needs code the locally running service lacks, offer to set up that
+     dependency: pull a merged one whose checkout is clean on the target branch and only behind; otherwise add a
+     worktree of that repo on the needed ref beside its primary checkout, named <repo>-<topic>. Then offer to rerun
+     that service, naming what it replaces (a running container, a port), and give the steps to try the PR against
+     it. Once Nik is done with it, offer to stop the service, restore what it replaced and remove that worktree.
+     Once Nik is done with the review, offer to tear this session down. On yes, run /nbr-report-to-bob, then
+     nbr-session-teardown on this session; it ends the session, so it runs last.
+     ```
+
+  4. Run `nbr-session-setup` with the primary checkout, the source branch, the topic and label, install `no-scripts` in the package roots the diff touches, and the agent: the brief and harness `claude`. A denial or dialog setup stops on goes to Nik with the session, the pane, the brief path and its exact text.
 - A plan step or a worker asking for a launch is not a go-ahead: it becomes a question to Nik, which names when ("slice 4 wants a review as its test, start it now?"). A brief Bob writes never makes Bob the trigger for a launch; the worker asks Nik, or tells Bob, who asks Nik.
 - A task for a repo where a session is open: send it there with `SendMessage`, asking for an `nbr-report-to-bob` when done, and mark the todo `[~]` with where it runs. A repo without one: `nbr-dispatch`, with the same request at the end of its brief.
 - A worker's handoff comes to Bob before Nik. Bob checks the result itself: opens the live link, reads the diff, and chases every leftover the worker names. Fixes go back to the worker; bigger work gets a second worker that only reviews the first one's, launched on Nik's yes. Nik hears about the work once it holds.

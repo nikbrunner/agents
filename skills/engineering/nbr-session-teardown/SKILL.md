@@ -6,7 +6,7 @@ compatibility: Requires Rex or Herdr.
 
 # Session teardown
 
-Clears what a session left behind, in the reverse order of `nbr-session-setup`. Nothing that is not yet pushed or reported gets thrown away: the checks come first, and any finding stops the teardown before the first change.
+Clears what a session left behind, in the reverse order of `nbr-session-setup`. Nothing unpushed, uncommitted or still open with an agent gets thrown away: the checks come first, and any finding stops the teardown before the first change.
 
 ## Inputs
 
@@ -23,12 +23,6 @@ Collect every finding before stopping, so one report names them all:
 - **Uncommitted changes**: `git -C "$worktree" status --short` is not empty.
 - **Unpushed commits**: `git -C "$worktree" log --oneline HEAD --not --remotes=origin` lists any. Name each commit.
 - **Agents**: each `Agent …` pane whose foreground is not a shell runs an agent, except the caller's own pane (`$REX_BLOCK`). Ask each one through `nbr-intercom`, whatever its `program_status`, whether it is done and what is still open: PRs, running checks, unapplied patches, anything it promised Nik. Wait for its answer. A caller's description of the session's state, such as work being abandoned, does not replace this question: it may predate what the agent did since. An agent mid-task, anything open, or no answer is a finding, reported with the agent's own words.
-
-An agent with nothing open gets asked for its report to Bob, unless it says it already reported: send it `/nbr-report-to-bob`, then wait until its state goes back to `done`.
-
-```sh
-rex send -s "$session" -b "$block" '/nbr-report-to-bob' && rex send-key -s "$session" -b "$block" enter
-```
 
 Any finding: stop, report each one with its pane or commit, and change nothing. Done when every check came back clean.
 
