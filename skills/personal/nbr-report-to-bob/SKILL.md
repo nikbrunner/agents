@@ -19,7 +19,7 @@ Not listed and `REX_SESSION` is set: find it in Rex, as `nbr-intercom` describes
 
 Gather it from this conversation and the repo, then fill the shape below. The note records Nik's own work, so the report does too:
 
-- **Circle** is `work` when the global agent instructions name this repo as an employer's, else `private`.
+- **Circle** is `work` when an installed circle skill for `nbr-bob` claims this repo, else `private`.
 - **Done** is what Nik did or pushed today, one outcome per line.
 - **Waiting** names who holds the next move and on what.
 - **Next** lists only Nik's own tasks. Questions for a PR's author or another team, and their open findings, stay out: they are theirs to answer.
