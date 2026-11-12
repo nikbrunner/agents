@@ -76,9 +76,11 @@ In docs, comments and any durable prose, state what _is_, in positive present te
 
 If one of them fails, report it, then use the matching native tool. A search with no matches is a result, not a failure.
 
-### Design
+### Design artifacts
 
-New designs start as a Design canvas artifact (Artifact tool, `quickstart` with intent `design`).
+A design artifact is my standard tool for design and visual planning: a UI or layout draft for one of my tools, variants to compare, a moodboard, a site design, a page of data. When something is easier to judge by looking than by reading, build a design artifact without waiting to be asked; an ASCII sketch does for the small stuff.
+
+Find its place first. Some projects document a long-lived artboard in their `AGENTS.md` or docs, and that one takes the work. Otherwise list my artifacts and continue the design artifact the project already has, so a second round lands on the same URL. A new one starts as a Design canvas (Artifact tool, `quickstart` with intent `design`).
 
 ## My Projects
 
@@ -178,4 +180,4 @@ Find all references before renaming or changing a signature. Check LSP diagnosti
 Entries that hold for a limited time, each with its end. When one has ended, tell me so I can delete it.
 
 - **Rex beta feedback** (until I say the beta is over). I'm testing Rex, Superlogical's terminal multiplexer. When I hit a Rex bug or a missing feature, add it to `~/repos/nikbrunner/notes/01 - Projects/Rex Beta.md`, which collects feedback for their Discord. Check the `superlogical` MCP first for an existing feedback post and link it.
-- **Standalone Claude Design** (until 2026-12-14, when it shuts down). Older design work lives in standalone projects (claude.ai/design, the `claude-design` MCP tools); continue it there. When it's unclear whether I mean one of those or a new Design canvas artifact, ask.
+- **Standalone Claude Design** (until 2026-12-14, when it shuts down). Remnants of older design work may sit in standalone projects (claude.ai/design, the `claude-design` MCP tools). Read them there when I point at one; all new work is a design artifact.
