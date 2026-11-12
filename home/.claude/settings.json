@@ -59,7 +59,10 @@
     "deny": [],
     "ask": []
   },
-  "model": "opus[1m]",
+  "model": "fable",
+  "disabledMcpjsonServers": [
+    "chrome-devtools"
+  ],
   "hooks": {
     "Notification": [],
     "PreToolUse": [
@@ -315,6 +318,5 @@
   "feedbackSurveyState": {
     "lastShownTime": 1754313915132
   },
-  "mcpServers": {},
-  "disabledMcpjsonServers": ["chrome-devtools"]
+  "mcpServers": {}
 }
