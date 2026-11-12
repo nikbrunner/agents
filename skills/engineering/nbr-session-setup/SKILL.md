@@ -65,7 +65,7 @@ Stop when it fails.
 
 Skip this section without an agent.
 
-Name the agent first. The names are a loop of ten that survive dictation: Ben, Clara, Emma, Felix, Greta, Lena, Max, Pink, Sadie, Sophie. Take the first one after the last name in use, in loop order, that no live agent holds (`ListAgents`). The agent's Claude session is named `<Name> · <topic in words>`, the topic as the worktree convention says it, e.g. `Clara · tool panel`; the session's label never carries the name. The agent is addressed by its first name from then on.
+Name the agent first. The names are a loop of ten that survive dictation: Ben, Clara, Emma, Felix, Greta, Lena, Max, Pink, Sadie, Sophie. Take the first one after the last name in use, in loop order, that no live agent holds (`ListAgents`). The agent's Claude session is named `<Topic in words> · <Name>`, the topic capitalized as in the session label, e.g. `Tool panel · Clara`; the session's label never carries the name. The agent is addressed by its first name from then on.
 
 Find the pane in the session's Agents tab, the window named `Agents`:
 
