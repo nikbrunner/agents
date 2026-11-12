@@ -8,6 +8,8 @@ What a library scan cannot tell: lasting preferences from interviews and approve
 - Mix about half music from the library with half discovery. Library tracks anchor the list, and new finds sit around them.
 - Never: cheap chart pop, K-pop, and "music made to get laid", meaning hipster music that sounds calculated.
 - Never: thin, breathy, high male vocals that sound pretentious, such as Bon Iver or James Blake. The test is authenticity, not pitch. Thom Yorke and Matt Bellamy are fine.
+- Never: Nils Frahm. "Completely avoid", so his collaborations stay out too.
+- Never: showy soloing. "What I hate is this absolute masturbation on the saxophone", an instrument that runs through all the notes "like a super attention-seeking instrument". Piano can do it too. A melody played plainly is fine, on a saxophone as well. Bill Evans's Peace Piece failed as "piano masturbation": a calm piece whose right hand wanders ever further over a fixed bass is still showy. Dissonance is welcome and never the problem: "I like dissonance", as in The Body from Annihilation (Ben Salisbury & Geoff Barrow), which he loves.
 
 ## Lanes
 
@@ -15,12 +17,12 @@ What a library scan cannot tell: lasting preferences from interviews and approve
 
 **Harder electronic.** The Prodigy, Noisia, Carpenter Brut, Amon Tobin. There are many tracks in the library but few plays, so ask before leaning on this lane.
 
-**Neoclassical and ambient.** Max Richter is the most played artist in the library (Recomposed, The Blue Notebooks, In a Landscape), along with Ólafur Arnalds, Hania Rani, C418, Boards of Canada and Aphex Twin's Selected Ambient Works 85–92.
+**Neoclassical and ambient.** A piece needs either a real melody or real texture. Texture alone is welcome: "just curated sounds, so to say, can really be beautiful". What fails is the generic soft piano piece with neither, "a lazy excuse for a soft piece of music": "hollow", "soft but without depth", it "does not evoke any feeling". Hania Rani passes: Glass (Esja), "I really like this one", and F Major (Home), "one of the most beautiful tracks ever". Max Richter is the most played artist in the library and passes with Recomposed, The Blue Notebooks and In a Landscape; Sleep and While The Flood Rages fail as "pretentious". Ólafur Arnalds is "a bit better" than Nils Frahm and still mostly fails. C418, Boards of Canada and Aphex Twin's Selected Ambient Works 85–92 stand.
 
-**Soundtracks.** Vangelis and Zimmer/Wallfisch on Blade Runner, Joe Hisaishi, Rob Simonsen.
+**Soundtracks.** Vangelis and Zimmer/Wallfisch on Blade Runner, Joe Hisaishi, Rob Simonsen. "Love Salisbury": Ben Salisbury's scores, with Geoff Barrow and others (Annihilation, Ex Machina, Devs). Amaya Corporation from Devs is the reference for "deep ambient": "so beautiful", "the stuff that gets me going", with a pipe-like lead instrument he singles out. What makes it work is "a recognizable melody that goes through that ambient". Ambient that is "basically just a random synthesizer with long releases" has "no quality to it" and fails. Jóhann Jóhannsson's Arrival score is "absolutely awesome". This dark material belongs in the playlist "Void". "First Light" is the light morning playlist, "it should be light, not dark". For calm playlists he wants quiet scores that are "not obvious choices": James Newton Howard (The Village, Lady in the Water), Thomas Newman, Gustavo Santaolalla, Jóhann Jóhannsson, Nick Cave & Warren Ellis.
 
 **Trip-hop and atmosphere.** Massive Attack, Portishead (Third is on vinyl), Hidden Orchestra, Ours Samplus, Khruangbin.
 
-**Songs with voices.** Radiohead and Thom Yorke (OK Computer, In Rainbows, The Eraser), Björk, ROSALÍA, Billie Eilish, Norah Jones, Magdalena Bay, Muse, The Tallest Man on Earth.
+**Songs with voices.** Radiohead and Thom Yorke (OK Computer, In Rainbows, The Eraser), Björk, ROSALÍA, Billie Eilish, Norah Jones, Magdalena Bay, Muse, The Tallest Man on Earth. Whether a vocal works "really depends on the actual person singing". Jackson C. Frank (Milk and Honey) is "totally fine", Eddie Vedder and Agnes Obel are okay, and Bob Dylan is "nice, but can be annoying with his voice".
 
-**Jazz and guitar.** GoGo Penguin, Keith Jarrett, Rodrigo y Gabriela, John Renbourn.
+**Jazz and guitar.** GoGo Penguin, Keith Jarrett, Rodrigo y Gabriela, John Renbourn. "Smooth jazz" from him means quiet ballad and ECM-style jazz with strong melodies, never stock café jazz by anonymous ensembles.
