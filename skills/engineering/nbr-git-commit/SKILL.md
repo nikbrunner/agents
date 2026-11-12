@@ -111,6 +111,8 @@ Print and stop:
 
 Commit only on an explicit "yes", "go", "commit" or equivalent. Accepted findings are applied before the commit; unanswered findings count as declined. A prior approval does not carry over to a changed plan. A caller with its own gate (`nbr-git-commit-buckets`) replaces this step.
 
+"Commit and push" approves the message in advance: skip the stop, commit, push, and report the message afterwards. A failing check or a side-effect finding still stops here. A bare "commit" gets the gate, unless a caller that runs without the user (`nbr-afk-implementation`) says otherwise.
+
 ## 5. Commit
 
 1. Apply the accepted findings and stage them. After edits next to staged hunks, re-run `hunks.py list` and stage by the fresh IDs.
