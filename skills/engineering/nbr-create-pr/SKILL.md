@@ -90,6 +90,7 @@ Steps
 - **How to test**: a setup block, then numbered steps a tester can follow without reading code.
 - **Screenshots**: only for a visual change with images at hand, else omit the heading. A table, one row per image: what
   it shows on the left, the image on the right. Where the agent cannot upload, the right cell holds the image's full
-  path under `~/Pictures/agents/`, which Nik replaces with the upload.
+  path under `~/Pictures/agents/`, which Nik replaces with the upload. A folder named `<repo>-pr-<topic>` from before the
+  PR existed is renamed to `<repo>-pr-<n>` once the PR has its number, and the paths in the description follow.
 - **Design file**: only when the design source (Figma, Claude Design board) changed with this PR. Link it in the intro.
 - **Open decision**: only questions reviewers or colleagues still have to settle. Settled choices belong in What changed.

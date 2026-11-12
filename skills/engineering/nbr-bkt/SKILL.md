@@ -32,6 +32,8 @@ Center.
 
 Take them with Chrome DevTools, then put them in `~/Pictures/agents/<repo>-pr-<n>/`, named `01-<state>.png` in the order a
 reviewer should look at them, and give Nik the full path. He drags them into the PR.
+Screenshots taken before the PR exists go to `~/Pictures/agents/<repo>-pr-<topic>/`; creating the PR renames the folder to
+`<repo>-pr-<n>` and updates the paths in its description in the same step.
 
 ## Landing a PR
 
