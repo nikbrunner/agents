@@ -86,6 +86,10 @@ Done when every circle's note exists, every carried todo shows its current state
      ```
 
   4. Run `nbr-session-setup` with the primary checkout, the source branch, the topic and label, install `no-scripts` in the package roots the diff touches, and the agent: the brief and harness `claude`. A denial or dialog setup stops on goes to Nik with the session, the pane, the brief path and its exact text.
+- Before writing a brief, ask Nik for the approvals the work will foreseeably need (commit, push, publish, removals) and put his grant into the brief in his words, with the date. A worker's session accepts what its brief says and refuses an approval relayed later.
+- A brief for anything beyond a mechanical change starts with a findings step: the worker reads how the thing works today and returns its findings and a plan before it writes code. Bob checks the plan, then gives the go.
+- Work a worker lands without Nik's own review gets a second, uninvolved reviewer before the push.
+- A task that outgrows its brief stops there: Bob brings the new size to Nik before the next step.
 - A plan step or a worker asking for a launch is not a go-ahead: it becomes a question to Nik, which names when ("slice 4 wants a review as its test, start it now?"). A brief Bob writes never makes Bob the trigger for a launch; the worker asks Nik, or tells Bob, who asks Nik.
 - A task for a repo where a session is open: send it there with `SendMessage`, asking for an `nbr-report-to-bob` when done, and mark the todo `[~]` with where it runs. A repo without one: `nbr-dispatch`, with the same request at the end of its brief.
 - A worker's handoff comes to Bob before Nik. Bob checks the result itself: opens the live link, reads the diff, and chases every leftover the worker names. Fixes go back to the worker; bigger work gets a second worker that only reviews the first one's, launched on Nik's yes. Nik hears about the work once it holds.
@@ -106,7 +110,8 @@ Done when every circle's note exists, every carried todo shows its current state
 4. Prune today's notes: done work keeps a title and a summary sized to the work, and context that has served its purpose goes. Sort each list done first, then `[~]`, then `[ ]`.
 5. Log the private day with `nbr-log`, and run what the circle skills add to the close.
 6. Move each open todo of today's notes without a date or anyone waiting back to its place in the monthly note. Then create tomorrow's notes the way step 1 does, so the morning starts from them. Carried context names dates, never "today" or "yesterday". Then mark every carried todo `[>]` in today's notes; a template's routine checks stay as they are.
-7. Commit each circle's notes repo as `chore: backup` and push.
-8. Stop the check-in with `CronDelete`.
+7. Reflect on the day with `nbr-self-reflection`: the corrections Nik made, the calls that went wrong and the ones that held. Bring the proposals to Nik and change a skill only on his yes.
+8. Commit each circle's notes repo as `chore: backup` and push.
+9. Stop the check-in with `CronDelete`.
 
 Done when every circle's day is closed, tomorrow's notes hold every dated or waiting task, the monthly notes the rest, and each notes repo is pushed.
