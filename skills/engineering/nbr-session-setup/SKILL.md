@@ -67,17 +67,17 @@ Skip this section without an agent.
 
 Name the agent first. The names are a loop of ten that survive dictation: Ben, Clara, Emma, Felix, Greta, Lena, Max, Pink, Sadie, Sophie. Take the first one after the last name in use, in loop order, that no live agent holds (`ListAgents`). The agent's Claude session is named `<Topic in words> · <Name>`, the topic capitalized as in the session label, e.g. `Tool panel · Clara`; the session's label never carries the name. The agent is addressed by its first name from then on.
 
-Find the pane in the session's Agents tab, the window named `Agents`:
+Find the pane in the session's Agents tab: the window whose `.label` is `Agents` in `rex session inspect "$session" --json` (`.windows[]`); `rex block ls` shows no window labels.
 
-1. The first `Agent …` pane whose foreground process is a shell (`.foreground.name` is `zsh`, `bash` or `fish`). For a session just created, `jq -er '.tabs[].panes["Agent I"] // empty'` on `$created` gives `Agent I`.
-2. Every Agent pane busy: split one, choosing `right` or `below` from its `rect` in `rex session inspect "$session" --json`, labelled with the next roman numeral. The split opens an interactive shell:
+1. The first pane in that window whose foreground process is a shell (`.foreground.name` is `zsh`, `bash` or `fish`), whatever its label. Relabel it with `rex block rename -s "$session" "$block" "Agent <next numeral>"`. For a session just created, `jq -er '.tabs[].panes["Agent I"] // empty'` on `$created` gives `Agent I`.
+2. Every pane there busy: split one, choosing `right` or `below` from its `rect` in `rex session inspect "$session" --json`, labelled with the next roman numeral. The split opens an interactive shell:
 
    ```sh
    rex split -s "$session" -b "$anchor" --split="$direction" -c "$worktree" \
      --label "Agent <next numeral>" --focus=false --json
    ```
 
-3. No Agents tab: `rex window new -s "$session" Agents -c "$worktree" --keep-open --json -- <launch command>`, with the command as its arguments, and take the pane from `.block_ids[0]`. A command started by Rex runs in the login shell's environment, so it carries every variable itself.
+3. Only when no window is labelled `Agents`: `rex window new -s "$session" Agents -c "$worktree" --keep-open --json -- <launch command>`, with the command as its arguments, and take the pane from `.block_ids[0]`. A command started by Rex runs in the login shell's environment, so it carries every variable itself.
 
 Start the agent by typing one line into the shell, so the user's shell functions and environment hold and the brief, read through command substitution, never passes shell quoting. Claude runs on the caller's config: when `CLAUDE_CONFIG_DIR` is set here, the line carries it and the variables that come with it.
 
