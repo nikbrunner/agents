@@ -165,6 +165,7 @@ Applies when the app has authenticated routes.
 
 Applies when the repo has a `package.json`.
 
+- [ ] npm is the package manager: `package-lock.json` is committed and no other lockfile exists. (npm-project.md#package-manager)
 - [ ] `"type": "module"`, a Node floor in `engines.node` or `.nvmrc`, and `private: true` only on unpublished packages. (npm-project.md#packagejson)
 - [ ] Check scripts are `verify:*` and only read; `format` and `lint` are the writers. (npm-project.md#scripts)
 - [ ] `verify:full` exists and pre-push calls it. (npm-project.md#scripts)

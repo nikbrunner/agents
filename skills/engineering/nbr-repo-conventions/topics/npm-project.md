@@ -2,6 +2,11 @@
 
 Project metadata, scripts, and dependency policy live in `package.json`, `.npmrc`, and the lockfile.
 
+## Package manager
+
+npm, the one that ships with Node, with `package-lock.json` as the lockfile. No pnpm, Yarn or Bun: each is one more
+layer to learn, and the project stays on the native tool.
+
 ## package.json
 
 - ESM: `"type": "module"`.
