@@ -140,6 +140,8 @@ A skill's **Sources of Truth** section links official docs. Verify against them 
 
 When a skill turns out to have a gap, stale content, a missing cross-reference, or a preference of mine it doesn't capture, propose the change and let me decide.
 
+A preference or correction of mine goes into the skill that owns its topic, or into this file. Memory is the last resort, for what no skill or instruction file covers; a memory I never see changes nothing for the next project.
+
 ### Long-running processes
 
 A dev server, backend stack or watcher starts in a multiplexer pane, where I see its output live: the Shells tab, the third tab Helm's layout creates in every session (Agents, Edit, Shells). Type the command into an idle `Shell …` pane there, or split a labelled one when all are busy; the `rex` skill has the commands. Name the session and pane in the reply, and stop only what you started. A background task is the fallback outside a multiplexer.
