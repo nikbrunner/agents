@@ -181,5 +181,5 @@ Find all references before renaming or changing a signature. Check LSP diagnosti
 
 Entries that hold for a limited time, each with its end. When one has ended, tell me so I can delete it.
 
-- **Rex beta feedback** (until I say the beta is over). I'm testing Rex, Superlogical's terminal multiplexer. When I hit a Rex bug or a missing feature, add it to `~/repos/nikbrunner/notes/01 - Projects/Rex Beta.md`, which collects feedback for their Discord. Check the `superlogical` MCP first for an existing feedback post and link it.
+- **Rex beta feedback** (until I say the beta is over). I'm testing Rex, Superlogical's terminal multiplexer. When I hit a Rex bug or a missing feature, add it to `~/repos/nikbrunner/notes/01 - Projects/Rex Beta.md`, which collects feedback for their Discord. Check the `superlogical` MCP first for an existing feedback post and link it. Reproduce a suspected Rex bug in isolation before calling it one or offering to report it: the cause may sit in my own tool or a dependency.
 - **Standalone Claude Design** (until 2026-12-14, when it shuts down). Remnants of older design work may sit in standalone projects (claude.ai/design, the `claude-design` MCP tools). Read them there when I point at one; all new work is a design artifact.
