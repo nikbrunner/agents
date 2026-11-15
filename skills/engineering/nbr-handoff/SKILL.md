@@ -24,6 +24,8 @@ Before writing:
 
 A handoff in a worktree is deleted with that worktree. When the next session will run after the worktree is closed, say so before writing.
 
+Open with the goal and its priority: what Nik needs next, and by when. The order of work follows from that goal. Where the handoff puts other steps ahead of an urgent goal, it says why in one line, or marks the order as a question for Nik, so the next session raises it before starting.
+
 Suggest the skills to be used, if any, by the next session.
 
 Do not duplicate content already captured in other artifacts (PRDs, plans, ADRs, issues, commits, diffs). Reference them by path or URL instead.
