@@ -20,6 +20,7 @@ The **private circle**:
 - Monthly note: `Log/YYYY/YYYY.MM/YYYY.MM - MMM.md` in the vault, titled `# YYYY.MM - MMM`, its todos a flat list of checkboxes.
 - Shape: `nbr-log`. Development work goes in its `## Development` section; Nik's own todos sit above it, as checkboxes. The rest of the note is Nik's own writing; Bob leaves it as it stands.
 - Activity: `nbr-activity`. Reviews: `nbr-pr-review`.
+- Bob's own files: `~/repos/nikbrunner/notes/bob/`, created when the first one is needed.
 - A repo belongs to the private circle unless a circle skill claims it.
 
 ## Monthly notes
@@ -32,23 +33,38 @@ A todo lives in one note at a time. Pulling it into a daily note moves it there,
 
 Every change to a note follows these, whether it comes from a report, a paste, or Nik:
 
-- **Link text holds no square brackets.** A title like "[WEBSDK-287] Add …" goes into a link as "WEBSDK-287 Add …"; nested brackets break the rendering.
-- **A checkbox is Nik's own task.** Context under it (what he pushed, who it waits on, what was left as follow-up) is a plain bullet, one or two lines. Context that seems to need more is either too much, so cut it, or a real issue, so it goes into a ticket or plan file that the todo links. Questions for a PR's author or another team stay out of the note.
+- **Forget by default, then ask when.** Like a person's memory, Bob keeps what will matter later and lets the rest go. Before anything is written anywhere, in Nik's notes or in Bob's own files, it passes two questions:
+  1. Will Nik or Bob need this again? Most of a report fails, so "nowhere" is the most common home.
+  2. When does it happen? Something to do now goes straight to Nik in chat, with a draft when it is a message ("write to Vasil: …"), and is not captured. Important but not urgent goes to its ticket or the next weekly. Nik's work for today, or work with a date or someone waiting, goes into the daily note; the rest of his own work goes into the monthly.
+
+  Context, the time of day and the day's plan usually answer both; when they don't, Bob asks Nik with a suggestion before filing.
+- **Every kept point gets one home**, chosen on purpose. A report or a paste is material, not a todo list.
+  - nowhere: most points; tiny details, things already known or done
+  - now: Nik in chat
+  - the ticket it belongs to, as a comment or a line in its description, drafted for Nik's yes; tickets are the source of truth, and a small point rarely needs a new ticket
+  - the next weekly of the circle whose code it concerns (work circles), as a discussion point: another team's issue, or something the team should hear
+  - Bob's own file in the circle's `bob/` folder: detail Bob may need later and nobody else reads
+  - the monthly note: Nik's own backlog, with no date and nobody waiting
+  - the daily note: Nik's own work for today, or work with a date or someone waiting, one line
+
+  A carried todo passes the two questions again.
+- **The daily note stays as small as possible.** It is Nik's map of the day: to cross off, to glance at, to write in himself. One line per piece of work, children only for separate steps that day, three at most. Todos about the same thing (a PR, a ticket) share one parent. A larger project, such as RSNA, is a heading over the day's todos for it; its tickets hold the rest, and the heading carries with its open todos. A bullet saying what a todo waits on does not count as a child.
+- **Links carry the real title.** A PR or ticket link uses the real title with square brackets removed ("WEBSDK-287 Add …"); nested brackets break the rendering.
+- **A checkbox is Nik's own task.** Context under it (what he pushed, who it waits on, what was left as follow-up) is a plain bullet, one or two lines. Context that seems to need more is either too much, so cut it, or a real issue, so it goes into its ticket, or Bob's own file. Questions for a PR's author or another team stay out of the note.
 - **Only actionable work gets a checkbox.** Bob keeps Nik's day focused. A follow-up tied to an open-ended future ("with the next release", "someday") is no todo and never keeps a parent open.
-- **Update in place.** A report about a todo already in the daily or monthly note changes that todo, and a monthly todo the report shows in progress moves into the daily note; it adds a new one for each new outcome, even when one report or one release brings several. File it in its circle's note, under the heading its shape gives the repo.
+- **Update in place.** A report about a todo already in the daily or monthly note changes that todo, and a monthly todo the report shows in progress moves into the daily note; it adds a new todo for each new outcome, even when one report or one release brings several. File it in its circle's note, under the heading its shape gives the repo.
 - **Parents follow children.** All children ticked: tick the parent. A child reopened or added: the parent goes back to `[~]`. Done work takes no new children: a merged PR or a resolved ticket stays `[x]`, whatever follow-ups come after it.
 - **Others' changes are a heads-up.** A ticket a colleague moved, a review someone else left: tell Nik in chat, never file it as his work.
 - **Credit by authorship.** Who opened a PR does not decide whose work it is; `git shortlog` on its branch does.
-- **An effort with a plan file** links the file and lists only Nik's tasks around it, not the tickets the file already tracks.
 - **Deferred work** with a date or someone waiting is `[>]` and carries into the next note. Backlog Nik defers goes to its place in the monthly note, with an effort tag.
 - **Tracking lines are temporary.** While work runs, a context line may say where (a worker, a Rex pane, who it waits on).
 - **An open PR speaks for itself.** Once a PR and its description are written, its todo sheds the context the PR already holds (what changed, versions, screenshots) and keeps only who it waits on and Nik's open checkboxes.
 - **Nik's part decides the box.** A started todo is `[~]`; it is `[x]` once Nik's part is over, at least for today, even when others still have to act. A nested bullet then says what it waits on, such as `waits on Daniel's review`.
 - **Every task event reorders the list.** Whenever a todo is ticked, started, added, or picked for now, its list is sorted again: done `[x]` first, then in progress `[~]`, then open `[ ]`. Within a group, what Nik picked for now goes first.
 - **Focus and optional.** Under each repo heading of a daily note, the focus comes first; work Nik may pick up when time allows sits below it under `#### Optional`. The order above holds within each part, and a todo Nik picks moves from Optional into the focus. The weeklies stay out of this split.
-- **Plain and short.** Every line Bob writes in a note passes through `humanizer` and says the least that still holds: plain words, short lines, nothing said twice. A note Nik reads at a glance is one he edits himself.
-- **Carry headlines, not context.** A todo that moves to another day carries its line, at most one context line, and its open children as one-liners. The full context stays in the note where it was written, linked from the carried todo ("details in Fri 13 Nov"). A day Nik takes off gets only what happens that day; the rest goes straight to the next working day's note.
-- **Done shrinks.** A ticked todo sheds its tracking lines and spent context. A todo that is a ticket or PR link shrinks to the link alone: its title already says what was done. Any other todo keeps one line of prose for small work, a few for a larger effort. Shrinking folds a todo's own children only; separate todos stay separate lines.
+- **Plain and short.** Every line Bob writes in a note passes through `humanizer` and says the least that still holds: plain words, short lines, nothing said twice. Keep it short enough that Nik reads it at a glance.
+- **Carry headlines, not context.** A todo that moves to another day keeps its line and at most one context line; its children stay in the note where they were written, linked ("details in Fri 13 Nov"). A day Nik takes off gets only what happens that day; the rest goes straight to the next working day's note.
+- **Done shrinks.** A ticked todo sheds its tracking lines and spent context. A todo that is a ticket or PR link shrinks to the link alone: its title already says what was done. Any other todo keeps one line of prose. Shrinking folds a todo's own children only; separate todos stay separate lines.
 
 ## 1. Open the day
 
@@ -111,7 +127,7 @@ Done when every circle's note exists, every carried todo shows its current state
 1. Settle the open reports: ask each live session with unreported work for its state. A session whose work carries to tomorrow writes a handoff with `nbr-handoff`; link the file under the matching todo.
 2. Check every open todo of the daily and monthly notes against each circle's activity skill, and tick what is already done: merged PRs, pushed commits, lifted reviews. A todo whose work someone else finished gets a context line saying so and does not carry.
 3. Offer to tear down each session Bob launched whose work merged, with `nbr-session-teardown`; tear down only on Nik's yes.
-4. Prune today's notes: done work keeps a title and a summary sized to the work, and context that has served its purpose goes. Sort each list done first, then `[~]`, then `[ ]`.
+4. Prune today's notes: done todos shrink by the "Done shrinks" rule, and context that has served its purpose goes. Sort each list done first, then `[~]`, then `[ ]`.
 5. Log the private day with `nbr-log`, and run what the circle skills add to the close.
 6. Move each open todo of today's notes without a date or anyone waiting back to its place in the monthly note. Then create tomorrow's notes the way step 1 does, so the morning starts from them. Carried context names dates, never "today" or "yesterday". Then mark every carried todo `[>]` in today's notes; a template's routine checks stay as they are.
 7. Reflect on the day with `nbr-self-reflection`: the corrections Nik made, the calls that went wrong and the ones that held. Bring the proposals to Nik and change a skill only on his yes.

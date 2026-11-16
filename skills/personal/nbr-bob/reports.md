@@ -6,10 +6,10 @@ The report's **Circle** line picks the note. When it is missing or the repo path
 
 Take the report field by field:
 
-- **What** finds the todo, in the daily or the monthly note. A todo already there changes in place; only new work adds one, under the heading the circle's shape gives the repo. New work with no date and nobody waiting goes to the monthly note.
-- **Done today** ticks the matching children, or adds one done line. A list of commits shrinks to the outcome. In the private note, done work goes under the repo's bullet in `## Development`, in `nbr-log`'s shape.
+- **What** finds the todo, in the daily or the monthly note. A todo already there changes in place; only new work that passes the two questions of "Forget by default, then ask when" adds one, under the heading the circle's shape gives the repo. New work with no date and nobody waiting goes to the monthly note.
+- **Done today** ticks the matching children. A done point that passes the two questions adds one line; otherwise it goes nowhere. A list of commits shrinks to the outcome. In the private note, done work goes under the repo's bullet in `## Development`, in `nbr-log`'s shape.
 - **Waiting** becomes one context line under the todo: who holds the next move, on what. It is no checkbox, since the move is not Nik's.
-- **Next for Nik** is the worker's view, not Nik's list. Keep a point only when Nik must act on it today or on a known trigger, as its own todo, never as a child of the finished one. Decisions about tickets, follow-up tickets to write someday, extra checks and side questions are dropped unless Nik asks for them. Steps that belong together (merge, then clean up) go into one checkbox.
+- **Next for Nik** is the worker's view, not Nik's list. Each point goes through "Forget by default, then ask when" and gets its home there; a point that lands in the daily note is its own todo, never a child of the finished one. Steps that belong together (merge, then clean up) go into one checkbox.
 - **Heads-up** goes to Nik in chat, never into the note.
 
 When the report is ambiguous (which todo it means, whether something is merged), ask the sender back; ask Nik only what no session can know.
