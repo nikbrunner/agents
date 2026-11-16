@@ -25,6 +25,8 @@ deviation names the baseline, the local choice, and why it exists.
 
 ## How docs are written
 
+- English for code, comments, docs, issues, and commits, whatever language the conversation runs in. Product copy uses
+  the language of its users.
 - One reader goal per page.
 - Plain language and active verbs.
 - A reason where it helps someone make the right choice.

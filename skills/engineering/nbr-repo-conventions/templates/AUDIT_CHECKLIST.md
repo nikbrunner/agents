@@ -178,6 +178,7 @@ Applies when the repo has a `package.json`.
 - [ ] Decisions live in the `docs/<topic>.md` page for their subject or in `docs/adr/`, and domain terms in `GLOSSARY.md` rather than a `CONTEXT.md`. (docs-structure.md#the-shape)
 - [ ] Docs link to scripts, types, and config instead of copying their values, and state the current situation without history. (docs-structure.md#how-docs-are-written)
 - [ ] No doc contradicts the code it describes. (docs-structure.md#staleness)
+- [ ] Code, comments, docs, issues, and commits are in English; only product copy follows its users' language. (docs-structure.md#how-docs-are-written)
 
 ## agent-tooling
 
