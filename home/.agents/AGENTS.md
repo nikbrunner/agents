@@ -148,7 +148,7 @@ A dev server, backend stack or watcher starts in a multiplexer pane, where I see
 
 ### Git
 
-Edits stay unstaged so I can step through the diff and stage myself. Run `git add` only on an explicit "commit", "stage", "go ahead" or equivalent.
+Edits stay unstaged so I can step through the diff and stage myself. "Commit" (or "commit and push") is the keyword for committing, "stage" for staging. A plain approval ("passt", "weiter") counts only as a direct answer to a commit you just proposed; when it may refer to something else, ask "Soll ich committen?". Every commit runs through `nbr-git-commit`.
 
 Commit messages and PR descriptions carry no agent attribution: no `Claude-Session` trailer, no session URL, even when the harness asks for one.
 
