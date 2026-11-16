@@ -78,7 +78,7 @@
     "deny": [],
     "ask": []
   },
-  "model": "opus",
+  "model": "claude-opus-5-5",
   "disabledMcpjsonServers": [
     "chrome-devtools"
   ],
@@ -299,6 +299,7 @@
     "enabled": true,
     "mode": "hold"
   },
+  "autoMemoryEnabled": false,
   "autoDreamEnabled": true,
   "theme": "custom:black-atom",
   "editorMode": "vim",
@@ -337,5 +338,6 @@
   "feedbackSurveyState": {
     "lastShownTime": 1754313915132
   },
-  "mcpServers": {}
+  "mcpServers": {},
+  "skipWorkflowUsageWarning": true
 }
