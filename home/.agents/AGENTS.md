@@ -100,7 +100,7 @@ Bob is my digital assistant with access to my notes: a Claude session named `Bob
 
 ## Development
 
-Research before implementation: check official docs and real examples before writing against an unfamiliar API.
+Research before implementation: check official docs and real examples before writing against an unfamiliar API. The same holds for a command I am to run: check its `--help` or run it harmlessly first, and say so when a flag, field name or path is still a guess. The local CLI answers before a web search does.
 
 ### Simplest thing that works
 
