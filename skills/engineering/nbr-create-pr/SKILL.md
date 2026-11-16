@@ -12,7 +12,7 @@ metadata:
 # nbr-create-pr
 
 A PR description is **durable**: it states what the PR is and does, and still reads true after merge. Everything in it is a
-short nested bullet a reviewer scans top to bottom.
+short bullet a reviewer scans top to bottom.
 
 ## Steps
 
@@ -40,8 +40,11 @@ Title, set as the PR title and never repeated in the body: `[TICKET] <what this 
 
 ## What changed
 
-- <Area>
-  - <short point>
+- New: <one thing that exists now>
+- Updated: <one thing that works differently>
+- Fixed: <one thing that was wrong>
+- Removed: <one thing that is gone>
+- Unchanged: <the one thing a reviewer needs to hear stayed the same>
 
 ## Tests added
 
@@ -83,9 +86,14 @@ Steps
 
 ## Section rules
 
-- **Bullets**: one idea each, about a line long, grouped under a parent bullet by area. Results read `case: result`.
-- **What changed**: user-visible behaviour and the conventions a reviewer must know, in the product's language. Code shape
-  stays in the commits: write lists, never diffs, file trees or call graphs.
+- **Bullets**: one idea each, about a line long. Results read `case: result`. Tests added and How to test group their
+  bullets under a parent by area; What changed stays flat.
+- **What changed**: one flat list of user-visible behaviour and the conventions a reviewer must know, in the product's
+  language. Every line starts with its trigger word, `New:`, `Updated:`, `Fixed:`, `Removed:` or `Unchanged:`, in that
+  order, and holds one change in one short sentence. Two facts joined by "and" or a semicolon are two lines. A new skill,
+  command, page or export gets its own `New:` line. How a thing works belongs in How to test or the docs. Code shape stays
+  in the commits: write lists, never diffs, file trees or call graphs.
+- **Shortening**: cut whole lines. Merging two lines into one sentence hides the second.
 - **Tests added**: every new end-to-end scenario, named by what the user does and sees. Unit tests get one line.
 - **How to test**: a setup block, then numbered steps a tester can follow without reading code.
 - **Screenshots**: only for a visual change with images at hand, else omit the heading. A table, one row per image: what
@@ -93,4 +101,6 @@ Steps
   path under `~/Pictures/agents/`, which Nik replaces with the upload. A folder named `<repo>-pr-<topic>` from before the
   PR existed is renamed to `<repo>-pr-<n>` once the PR has its number, and the paths in the description follow.
 - **Design file**: only when the design source (Figma, Claude Design board) changed with this PR. Link it in the intro.
-- **Open decision**: only questions reviewers or colleagues still have to settle. Settled choices belong in What changed.
+- **Open decision**: only questions reviewers or colleagues still have to settle. Settled choices belong in What changed. A
+  choice the author already made is settled, even where a reviewer could disagree, and a point the user was never asked
+  about goes to the user first.
