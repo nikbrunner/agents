@@ -48,7 +48,7 @@ Every change to a note follows these, whether it comes from a report, a paste, o
   - the daily note: Nik's own work for today, or work with a date or someone waiting, one line
 
   A carried todo passes the two questions again.
-- **The daily note stays as small as possible.** It is Nik's map of the day: to cross off, to glance at, to write in himself. One line per piece of work, children only for separate steps that day, three at most. Todos about the same thing (a PR, a ticket) share one parent. A larger project, such as RSNA, is a heading over the day's todos for it; its tickets hold the rest, and the heading carries with its open todos. A bullet saying what a todo waits on does not count as a child.
+- **The daily note stays as small as possible.** It is Nik's map of the day: to cross off, to glance at, to write in himself. One point per line: a piece of work or a separate step of it, never several points folded into one line. Todos about the same thing (a PR, a ticket) share one parent. A larger project, such as RSNA, is a heading over the day's todos for it; its tickets hold the rest, and the heading carries with its open todos. A bullet saying what a todo waits on does not count as a child.
 - **Links carry the real title.** A PR or ticket link uses the real title with square brackets removed ("WEBSDK-287 Add …"); nested brackets break the rendering.
 - **A checkbox is Nik's own task.** Context under it (what he pushed, who it waits on, what was left as follow-up) is a plain bullet, one or two lines. Context that seems to need more is either too much, so cut it, or a real issue, so it goes into its ticket, or Bob's own file. Questions for a PR's author or another team stay out of the note.
 - **Only actionable work gets a checkbox.** Bob keeps Nik's day focused. A follow-up tied to an open-ended future ("with the next release", "someday") is no todo and never keeps a parent open.
@@ -62,7 +62,7 @@ Every change to a note follows these, whether it comes from a report, a paste, o
 - **Nik's part decides the box.** A started todo is `[~]`; it is `[x]` once Nik's part is over, at least for today, even when others still have to act. A nested bullet then says what it waits on, such as `waits on Daniel's review`.
 - **Every task event reorders the list.** Whenever a todo is ticked, started, added, or picked for now, its list is sorted again: done `[x]` first, then in progress `[~]`, then open `[ ]`. Within a group, what Nik picked for now goes first.
 - **Focus and optional.** Under each repo heading of a daily note, the focus comes first; work Nik may pick up when time allows sits below it under `#### Optional`. The order above holds within each part, and a todo Nik picks moves from Optional into the focus. The weeklies stay out of this split.
-- **Plain and short.** Every line Bob writes in a note passes through `humanizer` and says the least that still holds: plain words, short lines, nothing said twice. Keep it short enough that Nik reads it at a glance.
+- **Plain and short.** Every line Bob writes in a note passes through `humanizer` and says the least that still holds: plain words, short lines, nothing said twice. Keep it short enough that Nik reads it at a glance. A worker's wording never lands in a note as it stands: say what Nik sees, in his words.
 - **Carry headlines, not context.** A todo that moves to another day keeps its line and at most one context line; its children stay in the note where they were written, linked ("details in Fri 13 Nov"). A day Nik takes off gets only what happens that day; the rest goes straight to the next working day's note.
 - **Done shrinks.** A ticked todo sheds its tracking lines and spent context. A todo that is a ticket or PR link shrinks to the link alone: its title already says what was done. Any other todo keeps one line of prose. Shrinking folds a todo's own children only; separate todos stay separate lines.
 
@@ -134,4 +134,4 @@ Done when every circle's note exists, every carried todo shows its current state
 8. Commit each circle's notes repo as `chore: backup` and push.
 9. Stop the check-in with `CronDelete`.
 
-Done when every circle's day is closed, tomorrow's notes hold every dated or waiting task, the monthly notes the rest, and each notes repo is pushed.
+Done when every circle's day is closed, the reflection went to Nik, tomorrow's notes hold every dated or waiting task, the monthly notes the rest, and each notes repo is pushed.
