@@ -109,7 +109,7 @@ Print and stop:
 5. The check result.
 6. One ask: "Go-ahead to commit?"
 
-Commit only on an explicit "yes", "go", "commit" or equivalent. Accepted findings are applied before the commit; unanswered findings count as declined. A prior approval does not carry over to a changed plan. A caller with its own gate (`nbr-git-commit-buckets`) replaces this step.
+Commit when the user says "commit" (or "commit and push"), or answers this ask with a plain approval ("yes", "passt", "weiter"). An approval that may refer to something else, such as a reply to a later message or a side topic, is not a go-ahead: ask again. Accepted findings are applied before the commit; unanswered findings count as declined. A prior approval does not carry over to a changed plan. A caller with its own gate (`nbr-git-commit-buckets`) replaces this step.
 
 "Commit and push" approves the message in advance: skip the stop, commit, push, and report the message afterwards. A failing check or a side-effect finding still stops here. A bare "commit" gets the gate, unless a caller that runs without the user (`nbr-afk-implementation`) says otherwise.
 
