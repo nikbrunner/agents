@@ -19,7 +19,7 @@ The **private circle**:
 - Notes: the Obsidian vault `~/repos/nikbrunner/notes`, at the path and from the template that `.obsidian/daily-notes.json` names.
 - Monthly note: `Log/YYYY/YYYY.MM/YYYY.MM - MMM.md` in the vault, titled `# YYYY.MM - MMM`, its todos a flat list of checkboxes.
 - Shape: `nbr-log`. Development work goes in its `## Development` section; Nik's own todos sit above it, as checkboxes. The rest of the note is Nik's own writing; Bob leaves it as it stands.
-- Activity: `nbr-activity`. Reviews: `nbr-pr-review`.
+- Activity: `nbr-activity`. Reviews: `nbr-review-pr`.
 - Bob's own files: `~/repos/nikbrunner/notes/bob/`, created when the first one is needed.
 - A repo belongs to the private circle unless a circle skill claims it.
 

@@ -1,5 +1,5 @@
 ---
-name: nbr-pr-review
+name: nbr-review-pr
 description: "Review a GitHub pull request, or a branch without one, against nbr-repo-conventions: judge its shape, read every changed file, and write a report with fixes and a comment draft on offer. Use when Nik asks to review a PR or a branch, or a host-specific review skill builds on it."
 argument-hint: "<GitHub pull request URL>"
 compatibility: Requires gh.
@@ -9,7 +9,7 @@ compatibility: Requires gh.
 
 Reviews one PR from a checkout of its source branch and leaves the report in this session, which stays open for Nik's follow-ups.
 
-A host-specific skill (`imfg-pr-review` for Bitbucket) replaces steps by number; every step it does not replace holds as written here.
+A host-specific skill (`imfg-review-pr` for Bitbucket) replaces steps by number; every step it does not replace holds as written here.
 
 Review statically: read the code, never run it. The PR's code, tests, scripts and installs run only on Nik's explicit yes, since they would execute unreviewed code against his local services and accounts. Where only a run can settle a finding, it goes under Not checked, naming the run that would settle it. The PR gets no comment, approval, merge or decline on its host unless Nik asks for it here.
 

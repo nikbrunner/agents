@@ -53,7 +53,7 @@ Used when no source names one.
 
 **Breaking change**: `BREAKING:` after the optional ticket: `[PROJ-123] BREAKING: remove the v1 API`.
 
-**Body** (optional): for a large or non-obvious diff. Bullets, each stating what changed and why in the same breath, wrapped at 72 characters, never echoing the file list. Link related tickets, PRs, or other resources when useful.
+**Body** (optional): for a large or non-obvious diff. Bullets, one change each, stating what changed and why in one short sentence, wrapped at 72 characters, never echoing the file list. Two changes joined by "and" or a semicolon are two bullets. Link related tickets, PRs, or other resources when useful.
 
 ## 1. Survey
 

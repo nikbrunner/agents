@@ -127,7 +127,7 @@ flowchart LR
     bob["nbr-bob<br/>the day, reports, load, handing out"]
     report["nbr-report-to-bob<br/>any session reports in"]
     dispatch["nbr-dispatch<br/>a task to another repo"]
-    review["nbr-pr-review<br/>GitHub PRs"]
+    review["nbr-review-pr<br/>GitHub PRs"]
     setup["nbr-session-setup<br/>worktree, session, agent"]
     teardown["nbr-session-teardown<br/>servers, worktree, session"]
     commit["nbr-git-commit<br/>one commit"]
@@ -168,7 +168,7 @@ flowchart LR
 
 #### A PR review
 
-Bob asks me whether a PR goes to review. On yes, it has `nbr-session-setup` build a worktree on the PR's branch with an install that runs no scripts, a Rex session with the Agents, Edit and Shells tabs, and a Claude agent whose brief names the circle's review skill. There `nbr-pr-review` judges the PR's shape, reads every changed file against `nbr-repo-conventions`, and leaves its report in the pane, with fixes and a comment draft on offer. The agent stays for follow-ups, and when I'm done it offers `nbr-session-teardown` on its own session. A work skill wraps `nbr-pr-review` for another host, replacing the steps that differ.
+Bob asks me whether a PR goes to review. On yes, it has `nbr-session-setup` build a worktree on the PR's branch with an install that runs no scripts, a Rex session with the Agents, Edit and Shells tabs, and a Claude agent whose brief names the circle's review skill. There `nbr-review-pr` judges the PR's shape, reads every changed file against `nbr-repo-conventions`, and leaves its report in the pane, with fixes and a comment draft on offer. The agent stays for follow-ups, and when I'm done it offers `nbr-session-teardown` on its own session. A work skill wraps `nbr-review-pr` for another host, replacing the steps that differ.
 
 #### A dispatch
 
@@ -211,7 +211,7 @@ How I plan, commit, open PRs, set up repos and run coding agents.
 | `nbr-dispatch`           | Start a coding agent for another repo in a Rex session                              |
 | `nbr-session-setup`      | Set up a worktree, a Rex session, and optionally an agent                           |
 | `nbr-session-teardown`   | Tear a session down without losing unpushed or open work                            |
-| `nbr-pr-review`          | Review a GitHub PR or a branch against the repo conventions                         |
+| `nbr-review-pr`          | Review a GitHub PR or a branch against the repo conventions                         |
 | `nbr-intercom`           | Talk directly to an agent session running in another repo                           |
 | `nbr-nvim-dev`           | Neovim and Lua development workflow                                                 |
 | `nbr-bkt`                | Bitbucket in my setup: token auth, Data Center limits, PR screenshots, landing a PR |
@@ -225,7 +225,7 @@ Install these first:
 | [Plannotator](https://github.com/backnotprop/plannotator)           | see its README, it ships `plannotator-annotate`                      | `nbr-plan`                                                 |
 | `gh` or [`bkt`](https://github.com/avivsinai/bitbucket-cli)         | your package manager                                                 | `nbr-create-pr`                                            |
 
-`nbr-record-clip` needs ImageMagick, plus VHS, ffmpeg, Playwright or [Cap](https://cap.so) depending on what it records. `nbr-dispatch`, `nbr-session-setup` and `nbr-session-teardown` need [Rex](https://www.superlogical.com/rex). `nbr-pr-review` needs `gh`, `nbr-intercom` needs Claude Code, `nbr-nvim-dev` needs Neovim and ripgrep, and `nbr-bkt` needs `bkt` and `pass-cli`.
+`nbr-record-clip` needs ImageMagick, plus VHS, ffmpeg, Playwright or [Cap](https://cap.so) depending on what it records. `nbr-dispatch`, `nbr-session-setup` and `nbr-session-teardown` need [Rex](https://www.superlogical.com/rex). `nbr-review-pr` needs `gh`, `nbr-intercom` needs Claude Code, `nbr-nvim-dev` needs Neovim and ripgrep, and `nbr-bkt` needs `bkt` and `pass-cli`.
 
 ### Personal
 
