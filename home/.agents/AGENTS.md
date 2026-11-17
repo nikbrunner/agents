@@ -72,7 +72,8 @@ In docs, comments and any durable prose, state what _is_, in positive present te
 ### Web and browser
 
 - **Exa MCP** for web search: examples, patterns, solutions the docs lack.
-- **Chrome DevTools MCP** for anything in a browser, driving and inspecting alike. It launches its own Chrome with a throwaway profile per server instance, so auth-dependent work logs in every time. A session that persists needs `--userDataDir <path>`, `--autoConnect` or `--browserUrl` in the MCP server config, then an agent restart. Prefer `take_snapshot` over `take_screenshot` when the question is structure or text; the snapshot costs less context.
+- **Claude in Chrome** first for anything in a browser, whenever its tools (`mcp__claude-in-chrome__*`) are available. It drives my own Chrome with my logins in place. Load the `claude-in-chrome` skill before the first call.
+- **Chrome DevTools MCP** for anything in a browser when Claude in Chrome is not available, and for what it lacks: performance traces, Lighthouse, heap snapshots, device emulation. It launches its own Chrome with a throwaway profile per server instance, so auth-dependent work logs in every time. A session that persists needs `--userDataDir <path>`, `--autoConnect` or `--browserUrl` in the MCP server config, then an agent restart. Prefer `take_snapshot` over `take_screenshot` when the question is structure or text; the snapshot costs less context.
 
 If one of them fails, report it, then use the matching native tool. A search with no matches is a result, not a failure.
 
