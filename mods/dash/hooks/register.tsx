@@ -572,15 +572,29 @@ async function draw($: EngineInterface, e: ResolveInput, cols: number, isSplit: 
         {extra !== '' && <Text dimColor> {extra}</Text>}
       </Box>
     )
+    const field = (name: string, value: RenderChildren) => (
+      <Box>
+        <Box width={7} flexShrink={0}>
+          <Text dimColor>{name}</Text>
+        </Box>
+        {value}
+      </Box>
+    )
     return (
       <Box flexDirection="column" paddingX={1}>
         {t !== '' && (
           <Text color="claude" bold wrap="wrap">
-            [{t}]
+            {t}
           </Text>
         )}
         <Box flexDirection="column">
-          {rule}
+          {t !== '' ? (
+            <Text color="claude" wrap="truncate-end">
+              {'╌'.repeat(Math.max(0, cols - 2))}
+            </Text>
+          ) : (
+            rule
+          )}
           <Box flexDirection="column" gap={1}>
             {accountLine && section('account', accountLine)}
             {section(
@@ -592,7 +606,9 @@ async function draw($: EngineInterface, e: ResolveInput, cols: number, isSplit: 
                 {a.effort && <Text color="warning"> {a.effort}</Text>}
                 {a.style && a.style !== 'default' && <Text> · {a.style}</Text>}
               </Text>,
-              <Text>{w.turns} turns</Text>,
+              <Text>
+                {w.turns} turns{tail}
+              </Text>,
             )}
             {(u.context !== undefined || u.limits.length > 0) &&
               section(
@@ -635,33 +651,40 @@ async function draw($: EngineInterface, e: ResolveInput, cols: number, isSplit: 
           <Box flexDirection="column" gap={1}>
             {section(
               'repo',
-              <Text wrap="truncate-end">
-                <Text color="claude" bold>
-                  {g?.repo ?? '-'}
-                </Text>
-                {g?.isWorktree && <Text color="suggestion"> worktree</Text>}
-                {tail !== '' && <Text dimColor>{tail}</Text>}
-              </Text>,
-              <Text dimColor wrap="truncate-start">
-                {w.cwd}
-              </Text>,
-              g && (
+              field(
+                'name',
                 <Text wrap="truncate-end">
-                  <Text color="claude" bold>
-                    {g.branch ?? 'detached'}
-                  </Text>
-                  {status.map(([s, color]) => (
-                    <Text color={color}>{s}</Text>
-                  ))}
-                </Text>
+                  <Text bold>{g?.repo ?? '-'}</Text>
+                  {g?.isWorktree && <Text color="suggestion"> · worktree</Text>}
+                </Text>,
               ),
-              g?.last && (
-                <Text wrap="truncate-end">
-                  <Text color="warning">{g.last.hash}</Text>
-                  <Text> {g.last.subject}</Text>
-                  <Text dimColor> · {g.last.age}</Text>
-                </Text>
+              field(
+                'path',
+                <Text dimColor wrap="truncate-start">
+                  {w.cwd}
+                </Text>,
               ),
+              g &&
+                field(
+                  'branch',
+                  <Text wrap="truncate-end">
+                    <Text color="claude" bold>
+                      {g.branch ?? 'detached'}
+                    </Text>
+                    {status.map(([s, color]) => (
+                      <Text color={color}>{s}</Text>
+                    ))}
+                  </Text>,
+                ),
+              g?.last &&
+                field(
+                  'commit',
+                  <Text wrap="truncate-end">
+                    <Text color="warning">{g.last.hash}</Text>
+                    <Text> {g.last.subject}</Text>
+                    <Text dimColor> · {g.last.age}</Text>
+                  </Text>,
+                ),
             )}
             {g &&
               section(
@@ -735,7 +758,7 @@ async function draw($: EngineInterface, e: ResolveInput, cols: number, isSplit: 
       <Box paddingX={1}>
         {t !== '' && (
           <Text color="claude" bold wrap="truncate-end">
-            [{t}]
+            {t}
           </Text>
         )}
         <Box flexGrow={1} />
