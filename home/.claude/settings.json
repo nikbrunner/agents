@@ -301,6 +301,7 @@
   },
   "autoMemoryEnabled": false,
   "autoDreamEnabled": true,
+  "skipWorkflowUsageWarning": true,
   "theme": "custom:black-atom",
   "editorMode": "vim",
   "idleCompaction": false,
@@ -339,5 +340,5 @@
     "lastShownTime": 1754313915132
   },
   "mcpServers": {},
-  "skipWorkflowUsageWarning": true
+  "cleanupPeriodDays": 365
 }
