@@ -97,6 +97,28 @@ function queueGit($: EngineInterface) {
   })
 }
 
+// Ctrl-\ Ctrl-N reaches normal mode from any nvim mode, where a bare Esc before ':' can read as Alt-:.
+const OPEN_IN_EDITOR = `
+s="$REX_SESSION"
+b=$(rex block ls -s "$s" --json | jq -r '.blocks[] | select(.label == "Editor") | .block_id' | head -1)
+[ -n "$b" ] || exit 1
+p=$(printf %s "$1" | sed 's/[ %#|"\\\\]/\\\\&/g')
+fg=$(rex api call -s "$s" block.method "{\\"block_id\\":\\"$b\\",\\"method\\":\\"process\\"}" | jq -r .foreground.name)
+case "$fg" in
+  nvim) printf '\\034\\016:e %s\\r' "$p" ;;
+  *) printf 'nvim %s\\r' "$p" ;;
+esac | rex send -s "$s" -b "$b" || exit 1
+w=$(rex window ls -s "$s" --json | jq -r '.. | objects | select(.label? == "Edit") | .window_id' | head -1)
+c=$(rex client ls --json | jq -r --arg s "$s" '[.clients[] | select(.info.kind == "app" and (.session_ids | index($s)))][0].client_id')
+rex do -C "$c" session.select session_id="$s" window_id="$w"
+`
+
+async function openInEditor($: EngineInterface, path: string) {
+  const root = (await $.session.repo())?.root ?? (await $.session.cwd())
+  const run = await $.process.run(['sh', '-c', OPEN_IN_EDITOR, 'sh', `${root}/${path}`], { timeoutMs: 5000 })
+  if (run.exitCode !== 0) $.ui.toast(`Opening ${path} failed: ${run.stderr.trim() || `exit ${run.exitCode}`}`)
+}
+
 async function refreshTasks($: EngineInterface) {
   const dir = `${configDir}/tasks/${await $.session.id()}`
   if (!(await $.fs.exists(dir))) return
@@ -547,7 +569,6 @@ async function draw($: EngineInterface, e: ResolveInput, cols: number, isSplit: 
   const repoLine = { branch, cwd: clip(w.cwd, repoRoom - branch.length, true) }
 
   if (isSide) {
-    const FILES = 12
     const rule = (
       <Text dimColor wrap="truncate-end">
         {'╌'.repeat(Math.max(0, cols - 2))}
@@ -649,62 +670,6 @@ async function draw($: EngineInterface, e: ResolveInput, cols: number, isSplit: 
         <Box flexDirection="column">
           {rule}
           <Box flexDirection="column" gap={1}>
-            {section(
-              'repo',
-              field(
-                'name',
-                <Text wrap="truncate-end">
-                  <Text bold>{g?.repo ?? '-'}</Text>
-                  {g?.isWorktree && <Text color="suggestion"> · worktree</Text>}
-                </Text>,
-              ),
-              field(
-                'path',
-                <Text dimColor wrap="truncate-start">
-                  {w.cwd}
-                </Text>,
-              ),
-              g &&
-                field(
-                  'branch',
-                  <Text wrap="truncate-end">
-                    <Text color="claude" bold>
-                      {g.branch ?? 'detached'}
-                    </Text>
-                    {status.map(([s, color]) => (
-                      <Text color={color}>{s}</Text>
-                    ))}
-                  </Text>,
-                ),
-              g?.last &&
-                field(
-                  'commit',
-                  <Text wrap="truncate-end">
-                    <Text color="warning">{g.last.hash}</Text>
-                    <Text> {g.last.subject}</Text>
-                    <Text dimColor> · {g.last.age}</Text>
-                  </Text>,
-                ),
-            )}
-            {g &&
-              section(
-                g.files.length === 0 ? 'changes' : `changes · ${g.files.length}`,
-                g.files.length === 0 && <Text color="success">✓ clean</Text>,
-                ...g.files.slice(0, FILES).map(f => (
-                  <Text wrap="truncate-start">
-                    <Text color={fileColor[f.status] ?? 'warning'}>{f.status} </Text>
-                    <Text>{f.path}</Text>
-                    {f.added !== undefined && <Text color="success"> +{f.added}</Text>}
-                    {f.removed !== undefined && <Text color="error"> -{f.removed}</Text>}
-                  </Text>
-                )),
-                g.files.length > FILES && <Text dimColor>… {g.files.length - FILES} more</Text>,
-              )}
-          </Box>
-        </Box>
-        <Box flexDirection="column">
-          {rule}
-          <Box flexDirection="column" gap={1}>
             {tk.length > 0 &&
               section(
                 'tasks',
@@ -749,6 +714,61 @@ async function draw($: EngineInterface, e: ResolveInput, cols: number, isSplit: 
         </Box>
         {rule}
         {actions}
+        <Box flexDirection="column">
+          {rule}
+          <Box flexDirection="column" gap={1}>
+            {section(
+              'repo',
+              field(
+                'name',
+                <Text wrap="truncate-end">
+                  <Text bold>{g?.repo ?? '-'}</Text>
+                  {g?.isWorktree && <Text color="suggestion"> · worktree</Text>}
+                </Text>,
+              ),
+              field(
+                'path',
+                <Text dimColor wrap="truncate-start">
+                  {w.cwd}
+                </Text>,
+              ),
+              g &&
+                field(
+                  'branch',
+                  <Text wrap="truncate-end">
+                    <Text color="claude" bold>
+                      {g.branch ?? 'detached'}
+                    </Text>
+                    {status.map(([s, color]) => (
+                      <Text color={color}>{s}</Text>
+                    ))}
+                  </Text>,
+                ),
+              g?.last &&
+                field(
+                  'commit',
+                  <Text wrap="truncate-end">
+                    <Text color="warning">{g.last.hash}</Text>
+                    <Text> {g.last.subject}</Text>
+                    <Text dimColor> · {g.last.age}</Text>
+                  </Text>,
+                ),
+            )}
+            {g &&
+              section(
+                g.files.length === 0 ? 'changes' : `changes · ${g.files.length}`,
+                g.files.length === 0 && <Text color="success">✓ clean</Text>,
+                ...g.files.map(f => (
+                  <Button key={`file:${f.path}`} plain onPress={() => void openInEditor($, f.path)}>
+                    <Text color={fileColor[f.status] ?? 'warning'}>{f.status} </Text>
+                    <Text>{f.path}</Text>
+                    {f.added !== undefined && <Text color="success"> +{f.added}</Text>}
+                    {f.removed !== undefined && <Text color="error"> -{f.removed}</Text>}
+                  </Button>
+                )),
+              )}
+          </Box>
+        </Box>
       </Box>
     )
   }

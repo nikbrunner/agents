@@ -8,6 +8,8 @@ On a terminal of 144 columns and wider, the dash sits in a pane beside the trans
 
 Its **Review** and **Audit** buttons run `/ponytail-review` and `/ponytail-audit` from the ponytail plugin.
 
+Pressing a changed file opens it in the `Editor` block of the current Rex session: in its nvim when one runs there, else as `nvim <file>` in its shell. The Edit tab then takes the focus.
+
 ## Settings
 
 | Variable     | Does                                                                                              |
