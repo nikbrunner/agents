@@ -90,7 +90,7 @@ Done when every circle's note exists, every carried todo shows its current state
 
 - A PR review: ask Nik every time whether it goes to the circle's review skill or he handles it himself. For each PR that gets the skill, check first whether PRs depend on each other, then give each its own session:
   1. Read the PR as far as the session needs: state, title, source and target branch, and whether it comes from a fork (`gh pr view <URL> --json number,title,state,headRefName,baseRefName,isCrossRepository`, or the circle's own read). A closed PR or one from a fork stops with a line to Nik.
-  2. Find the primary checkout: the repo under `~/repos` whose `origin` points at the PR's repo and whose `git rev-parse --git-common-dir` is its own `.git`. None found: name the remote Nik needs to clone. Take `git diff --stat origin/<target>...origin/<source>` there after a fetch, and name the topic in two to four words from the title, labelled `<Topic in words> · PR <number>`.
+  2. Find the primary checkout: the repo under `~/repos` whose `origin` points at the PR's repo and whose `git rev-parse --git-common-dir` is its own `.git`. None found: name the remote Nik needs to clone. Take `git diff --stat origin/<target>...origin/<source>` there after a fetch, and name the topic in two to four words from the title, labelled `<repo> · <Topic in words> · PR <number>`.
   3. Write the brief to a scratch file: the PR URL, `Run <the circle's review skill> on this PR.`, the questions waiting in the PR's comments, and these lines:
 
      ```text

@@ -152,14 +152,14 @@ Edits stay unstaged so I can step through the diff and stage myself. "Commit" (o
 
 Commit messages and PR descriptions carry no agent attribution: no `Claude-Session` trailer, no session URL, even when the harness asks for one.
 
-A worktree sits beside the main checkout and is named by its topic: two to four words, as I would say them out loud. The branch carries the type prefix and the ticket key, the folder starts with the repo and never changes, and the Rex session label is the topic in words with the ticket key and PR number appended once they exist. A session on the main checkout is labelled with the project name. Agent names stay out of the label.
+A worktree sits beside the main checkout and is named by its topic: two to four words, as I would say them out loud. The branch carries the type prefix and the ticket key, the folder starts with the repo and never changes, and the Rex session label is the repo, then the topic in words, with the ticket key and PR number appended once they exist. A session on the main checkout is labelled with the project name. Agent names stay out of the label.
 
-| Case           | Branch                              | Folder                                    | Rex label                       |
-| -------------- | ----------------------------------- | ----------------------------------------- | ------------------------------- |
-| No ticket      | `feat/project-settings-refinements` | `labels-web-project-settings-refinements` | `Project settings refinements`  |
-| With a ticket  | `CP-244-sign-in-page`               | `labels-web-sign-in-page`                 | `Sign-in page · CP-244`         |
-| PR open        | unchanged                           | unchanged                                 | `Sign-in page · CP-244 · PR 28` |
-| Reviewing a PR | the PR's own branch                 | `labels-web-upload-images`                | `Upload images · PR 24`         |
+| Case           | Branch                              | Folder                                    | Rex label                                    |
+| -------------- | ----------------------------------- | ----------------------------------------- | -------------------------------------------- |
+| No ticket      | `feat/project-settings-refinements` | `labels-web-project-settings-refinements` | `labels-web · Project settings refinements`  |
+| With a ticket  | `CP-244-sign-in-page`               | `labels-web-sign-in-page`                 | `labels-web · Sign-in page · CP-244`         |
+| PR open        | unchanged                           | unchanged                                 | `labels-web · Sign-in page · CP-244 · PR 28` |
+| Reviewing a PR | the PR's own branch                 | `labels-web-upload-images`                | `labels-web · Upload images · PR 24`         |
 
 ### Comments
 
