@@ -1,5 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "cleanupPeriodDays": 365,
   "syncClaudeAiSkills": false,
   "env": {
     "DISABLE_AUTOUPDATER": "0",
@@ -78,7 +79,7 @@
     "deny": [],
     "ask": []
   },
-  "model": "claude-opus-5-5",
+  "model": "opus",
   "disabledMcpjsonServers": [
     "chrome-devtools"
   ],
@@ -340,5 +341,9 @@
     "lastShownTime": 1754313915132
   },
   "mcpServers": {},
-  "cleanupPeriodDays": 365
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "xhigh"
+    }
+  }
 }
