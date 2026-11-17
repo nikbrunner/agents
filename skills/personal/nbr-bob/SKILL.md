@@ -44,6 +44,7 @@ Every change to a note follows these, whether it comes from a report, a paste, o
   - the ticket it belongs to, as a comment or a line in its description, drafted for Nik's yes; tickets are the source of truth, and a small point rarely needs a new ticket
   - the next weekly of the circle whose code it concerns (work circles), as a discussion point: another team's issue, or something the team should hear
   - Bob's own file in the circle's `bob/` folder: detail Bob may need later and nobody else reads
+  - the design artifact it concerns, asked first: a static list artboard on the canvas's `Todos` page, a title and one row per todo with a drawn box, nothing else; a done row gets the class `done`, which fills the box and strikes the text, and Nik ticks them there through the canvas's Claude, and the note keeps one todo linking the canvas
   - the monthly note: Nik's own backlog, with no date and nobody waiting
   - the daily note: Nik's own work for today, or work with a date or someone waiting, one line
 
@@ -63,15 +64,15 @@ Every change to a note follows these, whether it comes from a report, a paste, o
 - **Every task event reorders the list.** Whenever a todo is ticked, started, added, or picked for now, its list is sorted again: done `[x]` first, then in progress `[~]`, then open `[ ]`. Within a group, what Nik picked for now goes first.
 - **Focus and optional.** Under each repo heading of a daily note, the focus comes first; work Nik may pick up when time allows sits below it under `#### Optional`. The order above holds within each part, and a todo Nik picks moves from Optional into the focus. The weeklies stay out of this split.
 - **Plain and short.** Every line Bob writes in a note passes through `humanizer` and says the least that still holds: plain words, short lines, nothing said twice. Keep it short enough that Nik reads it at a glance. A worker's wording never lands in a note as it stands: say what Nik sees, in his words.
-- **Carry headlines, not context.** A todo that moves to another day keeps its line and at most one context line; its children stay in the note where they were written, linked ("details in Fri 13 Nov"). A day Nik takes off gets only what happens that day; the rest goes straight to the next working day's note.
+- **Carry the work, not the history.** A todo that moves to another day takes its open children with it; done children and spent context stay behind. When the open children are the work list of a design artifact, a plan or a ticket, they move there by the homes above, and the note keeps the parent with its link. A day Nik takes off gets only what happens that day; the rest goes straight to the next working day's note.
 - **Done shrinks.** A ticked todo sheds its tracking lines and spent context. A todo that is a ticket or PR link shrinks to the link alone: its title already says what was done. Any other todo keeps one line of prose. Shrinking folds a todo's own children only; separate todos stay separate lines.
 
 ## 1. Open the day
 
-1. Create today's note in every circle from its template. Carry over the last note's open todos (`[ ]`, `[~]`, `[>]`) as headlines with their handoff links, by the carry rule above, plus what the circle skill adds. On a new month, create the month's note and move the last one's open items into it. Then move into today's note the monthly items Nik plans for the day, offering the top ones when he names none.
+1. Create today's note in every circle from its template. Carry over the last note's open todos (`[ ]`, `[~]`, `[>]`) with their handoff links, by the carry rule above, plus what the circle skill adds. On a new month, create the month's note and move the last one's open items into it. Then move into today's note the monthly items Nik plans for the day, offering the top ones when he names none.
 2. Run the circle skill's checks (tickets, PR hosts) and give Nik the news since his last day: what waits on him first, then his own PRs, then the rest in a line each. Reviews that wait on him go into the note.
-3. Open today's notes in the panes of Bob's `Notes` tab: for each pane labelled `Private note` or `Work note` in this Rex session, `rex send-key` Escape, then `rex send` `:e <absolute note path>` and Enter. Skip it outside Rex or when the panes are missing.
-4. Start the check-in: a recurring job every 15 minutes with `CronCreate`. Each run reads every live session's state without messaging busy ones (`ListAgents`, Rex `program_status` and pane output), checks the circles' PRs and tickets since the last run, and updates stale todos by the filing rules. An idle session with unreported work gets asked for its report. Bob tells Nik only what changed or needs him, and stays silent otherwise.
+3. Open today's notes in the panes of Bob's `Notes` tab: for each pane labelled `Private note` or `Work note` in this Rex session, `rex send-key` Escape, then `rex send` `:e <absolute note path>`, its spaces escaped as `\ `, and Enter. Skip it outside Rex or when the panes are missing.
+4. Start the check-in: a recurring job every 30 minutes with `CronCreate`. Each run reads every live session's state without messaging busy ones (`ListAgents`, Rex `program_status` and pane output), checks the circles' PRs and tickets since the last run, and updates stale todos by the filing rules. An idle session with unreported work gets asked for its report. Bob tells Nik only what changed or needs him; a run with nothing to tell ends without any text, not even "nothing new".
 
 Done when every circle's note exists, every carried todo shows its current state, Nik has the news, and the check-in runs.
 
@@ -113,14 +114,37 @@ Done when every circle's note exists, every carried todo shows its current state
 - A plan step or a worker asking for a launch is not a go-ahead: it becomes a question to Nik, which names when ("slice 4 wants a review as its test, start it now?"). A brief Bob writes never makes Bob the trigger for a launch; the worker asks Nik, or tells Bob, who asks Nik.
 - A task for a repo where a session is open: send it there with `SendMessage`, asking for an `nbr-report-to-bob` when done, and mark the todo `[~]` with where it runs. A repo without one: `nbr-dispatch`, with the same request at the end of its brief.
 - A worker's handoff comes to Bob before Nik. Bob checks the result itself: opens the live link, reads the diff, and chases every leftover the worker names. Fixes go back to the worker; bigger work gets a second worker that only reviews the first one's, launched on Nik's yes. Nik hears about the work once it holds.
+- Bob acks every message from a worker in one line, and tells the worker when Bob finishes a step its brief gives to someone else (a merge, a push), so the worker never reports it as open.
+- A worker Nik drives is his conversation. Bob files what it reports and tells Nik nothing he saw there; Bob speaks up only about what Nik can't see from that pane: other sessions, PRs, tickets.
 - Before a worker pushes, ask Nik how the work lands: through a PR, or merged locally into the main branch and pushed. Recommend the circle's default. A feature branch reaches origin only for a PR.
 - Unfinished work that carries to another day gets a handoff file (`nbr-handoff`), written by its session when Nik stops it, on his own or through Bob, and linked under the todo. The next day a fresh session starts from that file: the prompt cache lasts about an hour, so a `--resume` after a night reloads the whole conversation into a cold cache. Within the hour, resuming is fine.
 - A step the worker's harness blocks, such as a force push, stays Nik's keystroke. Bob focuses the worker's pane and types the worker's exact `! <command>` line into its input without pressing Enter (`rex focus`, then `rex send` without `send-key Enter`), and tells Nik it waits there for his Enter.
 - Research: a read-only subagent with a short, bounded brief; its findings go into the note as one context line, or into a ticket when Nik asks.
 
+**Every question Bob asks Nik** goes through a native dialog run in the background, and Bob acts on the answer: the asks this skill names elsewhere (a review's route, a brief's grant and driver, how work lands, a teardown), a decision that blocks work, and a draft that waits on his yes before an outward write, with the draft in the dialog's question text. Chat carries reports, never questions. Tickets and PRs carry their titles in the dialog too. News never goes there, and a dialog left unanswered becomes a chat question.
+
+Bob asks with `bob-ask` (dots, `common/.local/bin/bob-ask`), run in the background. It floats on top without taking focus, so Nik's typing elsewhere is safe. Static context (session, worktree, branch, PR) goes into `--title` and `--meta`, and the question stays one short sentence. Every window has a resizable text area; options show as buttons, or a popup past three, and the first is the default. Cmd+Return sends, Escape cancels.
+
+```sh
+bob-ask --title "Tear down session" --meta "Session: Navbar improvements · WEBSDK-324 · PR 28" \
+  --meta "Branch: WEBSDK-324-navbar-improvements" -o "Tear down" -o "Not yet" -t 1800 "The PR is merged. Tear it down?"
+# → {"choice":"Tear down","text":"","gaveUp":false,"cancelled":false}; exit 0 answered, 1 cancelled, 2 timed out
+```
+
+Several decisions at once go into one form, read from stdin; `"multi": true` gives checkboxes, and more than six options get a filter:
+
+```sh
+bob-ask --form <<'JSON'
+{"title": "Day close", "questions": [
+  {"id": "teardown", "question": "Tear down these sessions?", "options": ["Editor tool rail", "dots"], "multi": true},
+  {"id": "tomorrow", "question": "What comes first tomorrow?"}]}
+JSON
+# → {"answers": {"teardown": {"choice": ["dots"], "text": ""}, "tomorrow": {"choice": "", "text": "…"}}, "gaveUp": false, "cancelled": false}
+```
+
 **Nik's load.** The limit lives in the global agent instructions ("Watch my load"). Bob sees every session across circles, so Bob counts: before handing out more work, say how many run and what kind they are, and hint at sequential work when the limit is near. After a day that ran wide, open the next note with a reminder.
 
-**Outward writes** (tickets and their transitions, wiki pages, PR comments) happen only on Nik's yes. Draft a ticket inline first and ask which project it belongs to.
+**Outward writes** (tickets and their transitions, wiki pages, PR comments) happen only on Nik's yes. Draft a ticket in a `bob-ask` dialog first and ask there which project it belongs to.
 
 ## 3. Close the day
 
