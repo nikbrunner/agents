@@ -140,7 +140,8 @@ Writing a dialog:
 Reading the answer:
 
 - Cmd+Return sends with an option, Cmd+Shift+Return sends the text alone, Escape cancels.
-- `"choice": ""` or `[]` means Nik picked nothing. His text is the whole answer.
+- `"choice": ""` or `[]` with no text means no answer, not no: ask that question again, without presets.
+- `"choice": ""` with text: his text is the whole answer.
 - Pasted images come back as PNG paths under `"images"`.
 
 ```sh
