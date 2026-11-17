@@ -118,3 +118,13 @@ export function clip(text: string, width: number, fromStart = false): string {
   if (width <= 0) return ''
   return fromStart ? `…${text.slice(text.length - width + 1)}` : `${text.slice(0, width - 1)}…`
 }
+
+export function planName(tier: unknown): string | undefined {
+  if (typeof tier !== 'string' || tier === '') return undefined
+  return tier
+    .replace(/^default_/, '')
+    .replace(/^claude_/, '')
+    .split('_')
+    .map(w => w[0]!.toUpperCase() + w.slice(1))
+    .join(' ')
+}

@@ -1,11 +1,12 @@
 import { atom, read, update } from 'claude-code'
-import type { EngineInterface, Register, RenderChildren, SessionUsage } from 'claude-code'
+import type { EngineInterface, Register, RenderChildren, ResolveInput, SessionUsage } from 'claude-code'
 
 import type { Agent, Task, Usage } from '../types'
-import { bar, clip, describeCall, editDelta, duration, heat, oneLine, parseGit, prettyModel, until } from './lib'
+import { bar, clip, describeCall, editDelta, duration, heat, oneLine, parseGit, planName, prettyModel, until } from './lib'
 
 const CACHE_TTL_MS = 60 * 60 * 1000
 const MODEL = 'haiku'
+const PANE = 'dash'
 const SUMMARY_INTERVAL_MS = 10_000
 
 const git = atom({ plugin: 'dash', key: 'git' } as const, null)
@@ -29,6 +30,7 @@ const thread = atom({ plugin: 'dash', key: 'thread' } as const, '')
 const now = atom({ plugin: 'dash', key: 'now' } as const, '')
 const tool = atom({ plugin: 'dash', key: 'tool' } as const, '')
 const isHidden = atom({ plugin: 'dash', key: 'isHidden' } as const, false)
+const isPaneClosed = atom({ plugin: 'dash', key: 'isPaneClosed' } as const, false)
 const work = atom({ plugin: 'dash', key: 'work' } as const, {
   cwd: '',
   turns: 0,
@@ -65,6 +67,7 @@ let recent: string[] = []
 let lastSummaryAt = 0
 let isSummarizing = false
 let isThreading = false
+let isReseating = false
 
 async function refreshGit($: EngineInterface) {
   const cwd = await $.session.cwd()
@@ -118,14 +121,21 @@ async function loadAgent($: EngineInterface) {
   configDir = dir
   home = homeDir
   let account: string | undefined
+  let plan: string | undefined
+  let isExtraUsage = false
   try {
-    account = JSON.parse(await $.fs.read(configFile)).oauthAccount?.emailAddress?.split('@')[0]
+    const o = JSON.parse(await $.fs.read(configFile)).oauthAccount
+    account = o?.emailAddress
+    plan = planName(o?.organizationRateLimitTier ?? o?.organizationType)
+    isExtraUsage = o?.hasExtraUsageEnabled === true
   } catch {}
   const model = prettyModel(await $.session.model())
   await update($, agent, a => ({
     ...a,
     model,
     account,
+    plan,
+    isExtraUsage,
     badge: badge.trim() || undefined,
   }))
 }
@@ -230,7 +240,9 @@ async function summarizeNow($: EngineInterface, answer: string, isDone: boolean)
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
-    await $.command.register({ name: 'dash', description: 'Hide or show the dash' })
+    await $.command.register({ name: 'dash', description: 'Hide or show the dash; `side` moves it to a side pane' })
+    // Opened unasked, the engine seats it only on a wide terminal and waits otherwise.
+    if (!(await read($, isHidden)) && !(await read($, isPaneClosed))) void $.ui.open({ id: PANE, title: 'Dash' })
     await loadAgent($)
     void refreshTitle($)
     void refreshWork($)
@@ -303,10 +315,23 @@ export const register: Register = on => {
     return ran
   })
 
-  on('command.run', { command: 'dash' }, async $ => {
+  on('command.run', { command: 'dash' }, async ($, e) => {
+    if (e.args.trim() === 'side') {
+      await update($, isHidden, () => false)
+      await update($, isPaneClosed, () => false)
+      await $.ui.open({ id: PANE, title: 'Dash' })
+      return { text: 'Dash moved to the side.' }
+    }
     let hidden = false
     await update($, isHidden, h => (hidden = !h))
+    if (hidden) await $.ui.close({ id: PANE })
+    else if (!(await read($, isPaneClosed))) void $.ui.open({ id: PANE, title: 'Dash' })
     return { text: hidden ? 'Dash hidden.' : 'Dash shown.' }
+  })
+
+  on('ui.close', async ($, e, next) => {
+    if (e.id === PANE && e.origin.kind === 'person') await update($, isPaneClosed, () => true)
+    return next(e)
   })
 
   on('command.run', { command: 'rename' }, async ($, e, next) => {
@@ -339,294 +364,522 @@ export const register: Register = on => {
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (e.props.hasSurvey || (await read($, isHidden))) return next(e)
-    const els = $.ui.resolve(e)
-    const { Box, Text } = els
-    // The desktop app's font carries no Nerd Font glyphs and lays text out proportionally.
-    const isDesktop = e.surface === 'desktop'
-    const isSplit = e.props.bodyColumns >= 150
-    const below = await next(e)
-    const Svg = 'Svg' in els ? els.Svg : undefined
-    const mark = (key: keyof typeof ICON, color: string) =>
-      isDesktop && Svg ? (
-        <Svg
-          alt={key}
-          width={14}
-          height={14}
-          source={`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${SVG_COLOR[color] ?? color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON_SVG[key]}</svg>`}
-        />
-      ) : (
-        <Text color={color === 'dim' ? undefined : color} dimColor={color === 'dim'}>
-          {ICON[key]}
-        </Text>
-      )
-    const g = await read($, git)
-    const a: Agent = await read($, agent)
-    const t = await read($, title)
-    const tk = await read($, tasks)
-    const u = await read($, usage)
-    const c = await read($, cache)
-    const ln = await read($, lines)
-    const w = await read($, work)
-    const th = await read($, thread)
-    const nw = await read($, now)
-    const live = e.props.isWorking ? await read($, tool) : ''
     await read($, tick)
-    const at = await $.clock.now()
-    const done = tk.filter(x => x.status === 'completed').length
-    const isCacheWarm = c.lastAt !== undefined && at - c.lastAt < CACHE_TTL_MS
-
-    const LABEL = 9
-    const kv = (
-      name: string,
-      value: RenderChildren,
-      wrap: 'truncate-end' | 'truncate-start' = 'truncate-end',
-      lead?: RenderChildren,
-    ) => (
-      <Box alignItems="center">
-        <Box width={LABEL} flexShrink={0}>
-          <Text color="inactive">{name}</Text>
-        </Box>
-        {lead && (
-          <Box marginRight={1} flexShrink={0}>
-            {lead}
-          </Box>
-        )}
-        <Text wrap={wrap}>{value}</Text>
-      </Box>
-    )
-
-    const gauge = (percent: number, width: number, fill = 'rate_limit_fill') => {
-      if (isDesktop) {
-        const pct = Math.min(100, Math.max(0, percent))
-        return (
-          <Box width={width} height={1} flexShrink={0} alignItems="center">
-            <Box width="100%" height={0.4} backgroundColor="rate_limit_empty" overflow="hidden">
-              <Box width={`${pct}%`} backgroundColor={fill} />
-            </Box>
-          </Box>
-        )
-      }
-      const b = bar(percent, width)
-      const n = b.lastIndexOf('▰') + 1
-      return (
-        <Text>
-          <Text color={fill}>{b.slice(0, n)}</Text>
-          <Text color="rate_limit_empty">{b.slice(n)}</Text>
-        </Text>
-      )
-    }
-
-    const meter = (name: string, percent: number, extra: string) => (
-      <Box flexShrink={0}>
-        <Text dimColor>{name} </Text>
-        {gauge(percent, 6, heat(percent))}
-        <Text bold> {String(Math.round(percent)).padStart(3)}%</Text>
-        {extra !== '' && <Text dimColor> {extra}</Text>}
-      </Box>
-    )
-
-    const label = (name: string) => (
-      <Box width={LABEL} flexShrink={0}>
-        <Text color="inactive">{name}</Text>
-      </Box>
-    )
-    const dot = <Text dimColor> · </Text>
-    const modelParts = [
-      a.account && (
-        <Text>
-          <Text color="suggestion">{a.account}</Text>
-          {a.badge && (
-            <Text color="error" bold>
-              {' '}
-              ⚠ {a.badge}
-            </Text>
-          )}
-        </Text>
-      ),
-      a.effort && <Text color="warning">{a.effort}</Text>,
-      a.style && a.style !== 'default' && <Text>{a.style}</Text>,
-      <Text>{w.turns} turns</Text>,
-    ].filter(Boolean)
-    const current = tk.find(x => x.status === 'in_progress')
-
-    const lead = th.length
-    const room = e.props.bodyColumns - 4 - lead
-    const isNowShown = nw !== '' && (lead === 0 || room >= nw.length + 3)
-    const isLiveShown = live !== '' && isNowShown && room >= nw.length + live.length + 6
-
-    const upstream = g?.upstream && g.upstream !== `origin/${g.branch}` ? g.upstream : undefined
-    const status = (
-      g
-        ? [
-            [upstream && ` ${upstream}`, undefined],
-            [g.ahead > 0 && ` ↑${g.ahead}`, 'success'],
-            [g.behind > 0 && ` ↓${g.behind}`, 'error'],
-            [g.upstream && g.ahead === 0 && g.behind === 0 && ' ✓', 'success'],
-          ]
-        : []
-    ).filter((s): s is [string, string | undefined] => typeof s[0] === 'string' && s[0] !== '')
-    const tail = u.startedAt !== undefined ? ` · ${duration(at - u.startedAt)}` : ''
-    const repoWidth = (isSplit ? Math.floor(e.props.bodyColumns / 2) - 2 : e.props.bodyColumns - 2) - LABEL
-    const repoRoom =
-      repoWidth -
-      `${g?.repo ?? '-'}${g?.isWorktree ? ' worktree' : ''} `.length -
-      tail.length -
-      (g ? 3 + status.reduce((n, [s]) => n + s.length, 0) : 0)
-    const branch = clip(g ? (g.branch ?? 'detached') : '', repoRoom)
-    const repoLine = { branch, cwd: clip(w.cwd, repoRoom - branch.length, true) }
-
+    if ((await $.ui.panes()).some(p => p.id === PANE && p.isPlaced)) return next(e)
+    const { Box, Text } = $.ui.resolve(e)
+    const below = await next(e)
+    const live = e.props.isWorking ? await read($, tool) : ''
     return (
       <Box flexDirection="column">
         {below}
         <Text dimColor wrap="truncate-end">
           {'╌'.repeat(e.props.bodyColumns)}
         </Text>
-        {t !== '' && (
-          <Box paddingX={1}>
-            <Text color="claude" bold wrap="truncate-end">
-              [{t}]
-            </Text>
-          </Box>
-        )}
-        <Box flexDirection={isSplit ? 'row' : 'column'} paddingX={1}>
-          <Box
-            flexDirection="column"
-            flexShrink={0}
-            width={isSplit ? Math.floor(e.props.bodyColumns / 2) : undefined}
-            paddingRight={isSplit ? 2 : 0}
-          >
-            <Box>
-              {label('repo')}
-              <Text wrap="truncate-end">
-                <Text color="claude" bold>
-                  {g?.repo ?? '-'}
-                </Text>
-                {g?.isWorktree && <Text color="suggestion"> worktree</Text>}
-                <Text> {repoLine.cwd}</Text>
-                {g && dot}
-                {g && (
-                  <Text color="claude" bold>
-                    {repoLine.branch}
-                  </Text>
-                )}
-                {status.map(([s, color]) => (
-                  <Text color={color === 'dim' ? undefined : color} dimColor={color === 'dim'}>
-                    {s}
-                  </Text>
-                ))}
-                {tail !== '' && <Text dimColor>{tail}</Text>}
-              </Text>
-            </Box>
-            {g &&
-              kv(
-                'changes',
-                g.files.length === 0 ? (
-                  <Text color="success">✓ clean</Text>
-                ) : (
-                  <Text>
-                    {g.added > 0 && <Text color="success">+{g.added} added </Text>}
-                    {g.modified > 0 && <Text color="warning">~{g.modified} modified </Text>}
-                    {g.deleted > 0 && <Text color="error">-{g.deleted} deleted </Text>}
-                    {g.untracked > 0 && <Text color="suggestion">?{g.untracked} untracked</Text>}
-                  </Text>
-                ),
-              )}
-            {g?.last &&
-              kv(
-                'last',
-                <Text>
-                  <Text color="warning">{g.last.hash}</Text>
-                  <Text> {g.last.subject}</Text>
-                  <Text dimColor> · {g.last.age}</Text>
-                </Text>,
-              )}
-          </Box>
+        {await draw($, e, e.props.bodyColumns, e.props.bodyColumns >= 150, live)}
+      </Box>
+    )
+  })
 
-          <Box flexDirection="column" flexGrow={1}>
-            {kv(
+  on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
+    if (e.props.placement === 'inline') {
+      // Inline it would replace the band; reopened unasked it waits undrawn until it can dock.
+      if (!isReseating) {
+        isReseating = true
+        const isFullscreen = e.viewport?.isFullscreen === true
+        $.clock.after(0, async () => {
+          await $.ui.close({ id: PANE })
+          if (isFullscreen) await $.ui.open({ id: PANE, title: 'Dash' })
+          isReseating = false
+        })
+      }
+      return $.ui.resolve(e).Box({})
+    }
+    return draw($, e, e.props.bodyColumns, false, await read($, tool), true)
+  })
+}
+
+async function draw($: EngineInterface, e: ResolveInput, cols: number, isSplit: boolean, live: string, isSide = false) {
+  const els = $.ui.resolve(e)
+  const { Box, Text, Button } = els
+  // The desktop app's font carries no Nerd Font glyphs and lays text out proportionally.
+  const isDesktop = e.surface === 'desktop'
+  const Svg = 'Svg' in els ? els.Svg : undefined
+  const mark = (key: keyof typeof ICON, color: string) =>
+    isDesktop && Svg ? (
+      <Svg
+        alt={key}
+        width={14}
+        height={14}
+        source={`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="${SVG_COLOR[color] ?? color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON_SVG[key]}</svg>`}
+      />
+    ) : (
+      <Text color={color === 'dim' ? undefined : color} dimColor={color === 'dim'}>
+        {ICON[key]}
+      </Text>
+    )
+  const g = await read($, git)
+  const a: Agent = await read($, agent)
+  const t = await read($, title)
+  const tk = await read($, tasks)
+  const u = await read($, usage)
+  const c = await read($, cache)
+  const ln = await read($, lines)
+  const w = await read($, work)
+  const th = await read($, thread)
+  const nw = await read($, now)
+  await read($, tick)
+  const at = await $.clock.now()
+  const done = tk.filter(x => x.status === 'completed').length
+  const isCacheWarm = c.lastAt !== undefined && at - c.lastAt < CACHE_TTL_MS
+
+  const LABEL = 9
+  const kv = (
+    name: string,
+    value: RenderChildren,
+    wrap: 'truncate-end' | 'truncate-start' = 'truncate-end',
+    lead?: RenderChildren,
+  ) => (
+    <Box alignItems="center">
+      <Box width={LABEL} flexShrink={0}>
+        <Text color="inactive">{name}</Text>
+      </Box>
+      {lead && (
+        <Box marginRight={1} flexShrink={0}>
+          {lead}
+        </Box>
+      )}
+      <Text wrap={wrap}>{value}</Text>
+    </Box>
+  )
+
+  const gauge = (percent: number, width: number, fill = 'rate_limit_fill') => {
+    if (isDesktop) {
+      const pct = Math.min(100, Math.max(0, percent))
+      return (
+        <Box width={width} height={1} flexShrink={0} alignItems="center">
+          <Box width="100%" height={0.4} backgroundColor="rate_limit_empty" overflow="hidden">
+            <Box width={`${pct}%`} backgroundColor={fill} />
+          </Box>
+        </Box>
+      )
+    }
+    const b = bar(percent, width)
+    const n = b.lastIndexOf('▰') + 1
+    return (
+      <Text>
+        <Text color={fill}>{b.slice(0, n)}</Text>
+        <Text color="rate_limit_empty">{b.slice(n)}</Text>
+      </Text>
+    )
+  }
+
+  const meter = (name: string, percent: number, extra: string) => (
+    <Box flexShrink={0}>
+      <Text dimColor>{name} </Text>
+      {gauge(percent, 6, heat(percent))}
+      <Text bold> {String(Math.round(percent)).padStart(3)}%</Text>
+      {extra !== '' && <Text dimColor> {extra}</Text>}
+    </Box>
+  )
+
+  const label = (name: string) => (
+    <Box width={LABEL} flexShrink={0}>
+      <Text color="inactive">{name}</Text>
+    </Box>
+  )
+  const dot = <Text dimColor> · </Text>
+  const modelParts = [
+    a.effort && <Text color="warning">{a.effort}</Text>,
+    a.style && a.style !== 'default' && <Text>{a.style}</Text>,
+    <Text>{w.turns} turns</Text>,
+  ].filter(Boolean)
+  const accountLine = a.account && (
+    <Text wrap="truncate-end">
+      <Text color="suggestion">{a.account}</Text>
+      {a.badge && (
+        <Text color="error" bold>
+          {' '}
+          ⚠ {a.badge}
+        </Text>
+      )}
+      {a.plan && dot}
+      {a.plan && <Text>{a.plan}</Text>}
+      {a.isExtraUsage && dot}
+      {a.isExtraUsage && <Text color="warning">extra usage on</Text>}
+    </Text>
+  )
+  const actions = (
+    <Box gap={1} flexShrink={0}>
+      <Box backgroundColor="subtle" paddingX={1}>
+        <Button key="review" plain label="Ponytail Review" onPress={() => void $.command.run({ command: 'ponytail:ponytail-review', args: '' })} />
+      </Box>
+      <Box backgroundColor="subtle" paddingX={1}>
+        <Button key="audit" plain label="Ponytail Repo Audit" onPress={() => void $.command.run({ command: 'ponytail:ponytail-audit', args: '' })} />
+      </Box>
+    </Box>
+  )
+  const current = tk.find(x => x.status === 'in_progress')
+
+  const lead = th.length
+  const room = cols - 4 - lead
+  const isNowShown = nw !== '' && (lead === 0 || room >= nw.length + 3)
+  const isLiveShown = live !== '' && isNowShown && room >= nw.length + live.length + 6
+
+  const upstream = g?.upstream && g.upstream !== `origin/${g.branch}` ? g.upstream : undefined
+  const status = (
+    g
+      ? [
+          [upstream && ` ${upstream}`, undefined],
+          [g.ahead > 0 && ` ↑${g.ahead}`, 'success'],
+          [g.behind > 0 && ` ↓${g.behind}`, 'error'],
+          [g.upstream && g.ahead === 0 && g.behind === 0 && ' ✓', 'success'],
+        ]
+      : []
+  ).filter((s): s is [string, string | undefined] => typeof s[0] === 'string' && s[0] !== '')
+  const tail = u.startedAt !== undefined ? ` · ${duration(at - u.startedAt)}` : ''
+  const repoWidth = (isSplit ? cols - Math.floor(cols / 2) - 2 : cols - 2) - LABEL
+  const repoRoom =
+    repoWidth -
+    `${g?.repo ?? '-'}${g?.isWorktree ? ' worktree' : ''} `.length -
+    tail.length -
+    (g ? 3 + status.reduce((n, [s]) => n + s.length, 0) : 0)
+  const branch = clip(g ? (g.branch ?? 'detached') : '', repoRoom)
+  const repoLine = { branch, cwd: clip(w.cwd, repoRoom - branch.length, true) }
+
+  if (isSide) {
+    const FILES = 12
+    const rule = (
+      <Text dimColor wrap="truncate-end">
+        {'╌'.repeat(Math.max(0, cols - 2))}
+      </Text>
+    )
+    const section = (name: string, ...rows: RenderChildren[]) => (
+      <Box flexDirection="column">
+        <Text color="inactive" bold>
+          {name}
+        </Text>
+        {rows.filter(Boolean)}
+      </Box>
+    )
+    const fileColor: Record<string, string> = { A: 'success', D: 'error', '?': 'suggestion' }
+    const wide = (name: string, percent: number, extra: string) => (
+      <Box>
+        <Box width={5} flexShrink={0}>
+          <Text dimColor>{name}</Text>
+        </Box>
+        {gauge(percent, 12, heat(percent))}
+        <Text bold> {String(Math.round(percent)).padStart(3)}%</Text>
+        {extra !== '' && <Text dimColor> {extra}</Text>}
+      </Box>
+    )
+    return (
+      <Box flexDirection="column" paddingX={1}>
+        {t !== '' && (
+          <Text color="claude" bold wrap="wrap">
+            [{t}]
+          </Text>
+        )}
+        <Box flexDirection="column">
+          {rule}
+          <Box flexDirection="column" gap={1}>
+            {accountLine && section('account', accountLine)}
+            {section(
               'model',
-              <Text>
+              <Text wrap="truncate-end">
                 <Text color="success" bold>
                   {a.model}
                 </Text>
-                <Text> </Text>
-                {modelParts.map((p, i) => (
-                  <Text>
-                    {i > 0 && dot}
-                    {p}
-                  </Text>
-                ))}
+                {a.effort && <Text color="warning"> {a.effort}</Text>}
+                {a.style && a.style !== 'default' && <Text> · {a.style}</Text>}
               </Text>,
+              <Text>{w.turns} turns</Text>,
             )}
-            {(u.context !== undefined || u.limits.length > 0) && (
-              <Box>
-                {label('usage')}
-                <Box gap={3} overflow="hidden">
-                  {u.context !== undefined &&
-                    meter(
-                      'ctx',
-                      u.context,
-                      u.tokens !== undefined && u.window !== undefined
-                        ? `${Math.round(u.tokens / 1000)}k/${u.window >= 1_000_000 ? `${u.window / 1_000_000}M` : `${Math.round(u.window / 1000)}k`}`
-                        : '',
-                    )}
-                  {u.limits.map(l => meter(LIMIT_LABEL[l.kind] ?? l.kind, l.percent, until(l.resetsAt, at)))}
-                </Box>
-              </Box>
-            )}
-            {kv(
+            {(u.context !== undefined || u.limits.length > 0) &&
+              section(
+                'usage',
+                u.context !== undefined &&
+                  wide(
+                    'ctx',
+                    u.context,
+                    u.tokens !== undefined && u.window !== undefined
+                      ? `${Math.round(u.tokens / 1000)}k/${u.window >= 1_000_000 ? `${u.window / 1_000_000}M` : `${Math.round(u.window / 1000)}k`}`
+                      : '',
+                  ),
+                ...u.limits.map(l => wide(LIMIT_LABEL[l.kind] ?? l.kind, l.percent, until(l.resetsAt, at))),
+              )}
+            {section(
               'cache',
-              <Text>
-                <Text>{c.hit !== undefined ? `${Math.round(c.hit * 100)}% hit` : '–'}</Text>
-                <Text dimColor>
-                  {' '}
-                  · {isCacheWarm && c.lastAt ? `expires ${until(c.lastAt + CACHE_TTL_MS, at)}` : 'cold'}
+              <Box>
+                <Box marginRight={1} flexShrink={0}>
+                  {mark('cache', isCacheWarm ? 'warning' : 'dim')}
+                </Box>
+                <Text wrap="truncate-end">
+                  <Text>{c.hit !== undefined ? `${Math.round(c.hit * 100)}% hit` : '–'}</Text>
+                  <Text dimColor> · {isCacheWarm && c.lastAt ? `expires ${until(c.lastAt + CACHE_TTL_MS, at)}` : 'cold'}</Text>
+                  {c.misses > 0 && <Text color="error"> · {c.misses} miss</Text>}
                 </Text>
-                {c.misses > 0 && <Text color="error"> · {c.misses} miss</Text>}
-                {u.cost !== undefined && dot}
+              </Box>,
+              <Text wrap="truncate-end">
                 {u.cost !== undefined && <Text color="warning">${u.cost.toFixed(2)}</Text>}
-                {dot}
+                {u.cost !== undefined && dot}
                 <Text color="success">+{ln.added}</Text>
                 <Text dimColor>/</Text>
                 <Text color="error">-{ln.removed}</Text>
                 <Text dimColor> lines</Text>
               </Text>,
-              'truncate-end',
-              mark('cache', isCacheWarm ? 'warning' : 'dim'),
             )}
           </Box>
         </Box>
-        {tk.length > 0 && done < tk.length && (
-          <Box paddingX={1}>
-            {label('tasks')}
-            {gauge((done / tk.length) * 100, 6)}
-            <Text bold>
-              {' '}
-              {done}/{tk.length}
-            </Text>
-            {current && (
-              <Text color="warning" wrap="truncate-end">
-                {'  ▸ '}
-                {current.subject}
-              </Text>
+        <Box flexDirection="column">
+          {rule}
+          <Box flexDirection="column" gap={1}>
+            {section(
+              'repo',
+              <Text wrap="truncate-end">
+                <Text color="claude" bold>
+                  {g?.repo ?? '-'}
+                </Text>
+                {g?.isWorktree && <Text color="suggestion"> worktree</Text>}
+                {tail !== '' && <Text dimColor>{tail}</Text>}
+              </Text>,
+              <Text dimColor wrap="truncate-start">
+                {w.cwd}
+              </Text>,
+              g && (
+                <Text wrap="truncate-end">
+                  <Text color="claude" bold>
+                    {g.branch ?? 'detached'}
+                  </Text>
+                  {status.map(([s, color]) => (
+                    <Text color={color}>{s}</Text>
+                  ))}
+                </Text>
+              ),
+              g?.last && (
+                <Text wrap="truncate-end">
+                  <Text color="warning">{g.last.hash}</Text>
+                  <Text> {g.last.subject}</Text>
+                  <Text dimColor> · {g.last.age}</Text>
+                </Text>
+              ),
+            )}
+            {g &&
+              section(
+                g.files.length === 0 ? 'changes' : `changes · ${g.files.length}`,
+                g.files.length === 0 && <Text color="success">✓ clean</Text>,
+                ...g.files.slice(0, FILES).map(f => (
+                  <Text wrap="truncate-start">
+                    <Text color={fileColor[f.status] ?? 'warning'}>{f.status} </Text>
+                    <Text>{f.path}</Text>
+                    {f.added !== undefined && <Text color="success"> +{f.added}</Text>}
+                    {f.removed !== undefined && <Text color="error"> -{f.removed}</Text>}
+                  </Text>
+                )),
+                g.files.length > FILES && <Text dimColor>… {g.files.length - FILES} more</Text>,
+              )}
+          </Box>
+        </Box>
+        <Box flexDirection="column">
+          {rule}
+          <Box flexDirection="column" gap={1}>
+            {tk.length > 0 &&
+              section(
+                'tasks',
+                <Box>
+                  {gauge((done / tk.length) * 100, 12)}
+                  <Text bold>
+                    {' '}
+                    {done}/{tk.length}
+                  </Text>
+                </Box>,
+                ...tk.map(x => (
+                  <Text
+                    wrap="truncate-end"
+                    color={x.status === 'in_progress' ? 'warning' : undefined}
+                    dimColor={x.status === 'completed'}
+                  >
+                    {x.status === 'completed' ? '✓ ' : x.status === 'in_progress' ? '▸ ' : '· '}
+                    {x.subject}
+                  </Text>
+                )),
+              )}
+            {(th !== '' || nw !== '') && (
+              <Box flexDirection="column">
+                {th !== '' && (
+                  <Text bold wrap="wrap">
+                    {th}
+                  </Text>
+                )}
+                {nw !== '' && (
+                  <Text dimColor wrap="wrap">
+                    {nw}
+                  </Text>
+                )}
+                {live !== '' && (
+                  <Text dimColor wrap="truncate-end">
+                    ↳ {live}
+                  </Text>
+                )}
+              </Box>
             )}
           </Box>
-        )}
-        {(lead > 0 || nw !== '') && (
-          <Box paddingX={1}>
-            <Text wrap="truncate-end">
-              {th !== '' && <Text bold>{th}</Text>}
-              {isNowShown && (
-                <Text dimColor>
-                  {lead > 0 ? ' · ' : ''}
-                  {nw}
-                </Text>
-              )}
-              {isLiveShown && <Text dimColor> ↳ {live}</Text>}
-            </Text>
-          </Box>
-        )}
+        </Box>
+        {rule}
+        {actions}
       </Box>
     )
-  })
+  }
+
+  return (
+    <Box flexDirection="column">
+      <Box paddingX={1}>
+        {t !== '' && (
+          <Text color="claude" bold wrap="truncate-end">
+            [{t}]
+          </Text>
+        )}
+        <Box flexGrow={1} />
+        {actions}
+      </Box>
+      <Box flexDirection={isSplit ? 'row' : 'column'} paddingX={1}>
+        <Box
+          flexDirection="column"
+          flexShrink={0}
+          width={isSplit ? Math.floor(cols / 2) : undefined}
+          paddingRight={isSplit ? 2 : 0}
+        >
+          {accountLine && kv('account', accountLine)}
+          {kv(
+            'model',
+            <Text>
+              <Text color="success" bold>
+                {a.model}
+              </Text>
+              <Text> </Text>
+              {modelParts.map((p, i) => (
+                <Text>
+                  {i > 0 && dot}
+                  {p}
+                </Text>
+              ))}
+            </Text>,
+          )}
+          {(u.context !== undefined || u.limits.length > 0) && (
+            <Box>
+              {label('usage')}
+              <Box gap={3} overflow="hidden">
+                {u.context !== undefined &&
+                  meter(
+                    'ctx',
+                    u.context,
+                    u.tokens !== undefined && u.window !== undefined
+                      ? `${Math.round(u.tokens / 1000)}k/${u.window >= 1_000_000 ? `${u.window / 1_000_000}M` : `${Math.round(u.window / 1000)}k`}`
+                      : '',
+                  )}
+                {u.limits.map(l => meter(LIMIT_LABEL[l.kind] ?? l.kind, l.percent, until(l.resetsAt, at)))}
+              </Box>
+            </Box>
+          )}
+          {kv(
+            'cache',
+            <Text>
+              <Text>{c.hit !== undefined ? `${Math.round(c.hit * 100)}% hit` : '–'}</Text>
+              <Text dimColor>
+                {' '}
+                · {isCacheWarm && c.lastAt ? `expires ${until(c.lastAt + CACHE_TTL_MS, at)}` : 'cold'}
+              </Text>
+              {c.misses > 0 && <Text color="error"> · {c.misses} miss</Text>}
+              {u.cost !== undefined && dot}
+              {u.cost !== undefined && <Text color="warning">${u.cost.toFixed(2)}</Text>}
+              {dot}
+              <Text color="success">+{ln.added}</Text>
+              <Text dimColor>/</Text>
+              <Text color="error">-{ln.removed}</Text>
+              <Text dimColor> lines</Text>
+            </Text>,
+            'truncate-end',
+            mark('cache', isCacheWarm ? 'warning' : 'dim'),
+          )}
+        </Box>
+
+        <Box flexDirection="column" flexGrow={1}>
+          <Box>
+            {label('repo')}
+            <Text wrap="truncate-end">
+              <Text color="claude" bold>
+                {g?.repo ?? '-'}
+              </Text>
+              {g?.isWorktree && <Text color="suggestion"> worktree</Text>}
+              <Text> {repoLine.cwd}</Text>
+              {g && dot}
+              {g && (
+                <Text color="claude" bold>
+                  {repoLine.branch}
+                </Text>
+              )}
+              {status.map(([s, color]) => (
+                <Text color={color === 'dim' ? undefined : color} dimColor={color === 'dim'}>
+                  {s}
+                </Text>
+              ))}
+              {tail !== '' && <Text dimColor>{tail}</Text>}
+            </Text>
+          </Box>
+          {g &&
+            kv(
+              'changes',
+              g.files.length === 0 ? (
+                <Text color="success">✓ clean</Text>
+              ) : (
+                <Text>
+                  {g.added > 0 && <Text color="success">+{g.added} added </Text>}
+                  {g.modified > 0 && <Text color="warning">~{g.modified} modified </Text>}
+                  {g.deleted > 0 && <Text color="error">-{g.deleted} deleted </Text>}
+                  {g.untracked > 0 && <Text color="suggestion">?{g.untracked} untracked</Text>}
+                </Text>
+              ),
+            )}
+          {g?.last &&
+            kv(
+              'last',
+              <Text>
+                <Text color="warning">{g.last.hash}</Text>
+                <Text> {g.last.subject}</Text>
+                <Text dimColor> · {g.last.age}</Text>
+              </Text>,
+            )}
+        </Box>
+      </Box>
+      {tk.length > 0 && done < tk.length && (
+        <Box paddingX={1}>
+          {label('tasks')}
+          {gauge((done / tk.length) * 100, 6)}
+          <Text bold>
+            {' '}
+            {done}/{tk.length}
+          </Text>
+          {current && (
+            <Text color="warning" wrap="truncate-end">
+              {'  ▸ '}
+              {current.subject}
+            </Text>
+          )}
+        </Box>
+      )}
+      {(lead > 0 || nw !== '') && (
+        <Box paddingX={1}>
+          <Text wrap="truncate-end">
+            {th !== '' && <Text bold>{th}</Text>}
+            {isNowShown && (
+              <Text dimColor>
+                {lead > 0 ? ' · ' : ''}
+                {nw}
+              </Text>
+            )}
+            {isLiveShown && <Text dimColor> ↳ {live}</Text>}
+          </Text>
+        </Box>
+      )}
+    </Box>
+  )
 }

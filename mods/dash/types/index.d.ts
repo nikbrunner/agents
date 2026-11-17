@@ -29,6 +29,8 @@ export type Usage = { context?: number; tokens?: number; window?: number; starte
 
 export type Agent = {
   account?: string
+  plan?: string
+  isExtraUsage?: boolean
   badge?: string
   model: string
   effort?: string
@@ -55,6 +57,7 @@ declare module 'claude-code' {
       now: string
       tool: string
       isHidden: boolean
+      isPaneClosed: boolean
     }
   }
 }

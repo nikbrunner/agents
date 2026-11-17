@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { describeCall, editDelta, oneLine, parseGit, prettyModel } from '../hooks/lib'
+import { describeCall, editDelta, oneLine, parseGit, planName, prettyModel } from '../hooks/lib'
 
 test('prettyModel names the model like the status line', async () => {
   expect(prettyModel('claude-opus-5-5[1m]')).toBe('Opus 5.5 (1M context)')
@@ -27,4 +27,10 @@ test('describeCall names the tool and its main argument', async () => {
 
 test('oneLine keeps the first non-empty line without a trailing period', async () => {
   expect(oneLine('\n  Splitting the dash pane.\nmore')).toBe('Splitting the dash pane')
+})
+
+test('planName names the plan from the rate limit tier', async () => {
+  expect(planName('default_claude_max_5x')).toBe('Max 5x')
+  expect(planName('claude_pro')).toBe('Pro')
+  expect(planName(null)).toBeUndefined()
 })
