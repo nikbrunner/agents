@@ -102,7 +102,7 @@ const OPEN_IN_EDITOR = `
 s="$REX_SESSION"
 b=$(rex block ls -s "$s" --json | jq -r '.blocks[] | select(.label == "Editor") | .block_id' | head -1)
 [ -n "$b" ] || exit 1
-p=$(printf %s "$1" | sed 's/[ %#|"\\\\]/\\\\&/g')
+p=$(printf %s "$(git rev-parse --show-toplevel)/$1" | sed 's/[ %#|"\\\\]/\\\\&/g')
 fg=$(rex api call -s "$s" block.method "{\\"block_id\\":\\"$b\\",\\"method\\":\\"process\\"}" | jq -r .foreground.name)
 case "$fg" in
   nvim) printf '\\034\\016:e %s\\r' "$p" ;;
@@ -114,8 +114,7 @@ rex do -C "$c" session.select session_id="$s" window_id="$w"
 `
 
 async function openInEditor($: EngineInterface, path: string) {
-  const root = (await $.session.repo())?.root ?? (await $.session.cwd())
-  const run = await $.process.run(['sh', '-c', OPEN_IN_EDITOR, 'sh', `${root}/${path}`], { timeoutMs: 5000 })
+  const run = await $.process.run(['sh', '-c', OPEN_IN_EDITOR, 'sh', path], { cwd: await $.session.cwd(), timeoutMs: 5000 })
   if (run.exitCode !== 0) $.ui.toast(`Opening ${path} failed: ${run.stderr.trim() || `exit ${run.exitCode}`}`)
 }
 
