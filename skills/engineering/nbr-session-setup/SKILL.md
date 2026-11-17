@@ -65,7 +65,14 @@ Stop when it fails.
 
 Skip this section without an agent.
 
-Name the agent first. The names are a loop of ten that survive dictation: Ben, Clara, Emma, Felix, Greta, Lena, Max, Pink, Sadie, Sophie. Take the first one after the last name in use, in loop order, that no live agent holds (`ListAgents`). The agent's Claude session is named `<Topic in words> · <Name>`, the topic capitalized as in the session label, e.g. `Tool panel · Clara`; the session's label never carries the name. The agent is addressed by its first name from then on.
+Name the agent first. The names are a loop of ten that survive dictation: Ben, Clara, Emma, Felix, Greta, Lena, Max, Pink, Sadie, Sophie. Take the first one after the last name in use, in loop order, that no live agent holds (`ListAgents`), and claim it before the launch, since a new agent shows in `ListAgents` only once it runs and two launchers can pick the same name:
+
+```sh
+mkdir -p "${TMPDIR:-/tmp}/agent-names"
+mkdir "${TMPDIR:-/tmp}/agent-names/$name"   # only one launcher wins; on failure take the next name
+```
+
+A claim is free again once no live agent holds the name and its folder is older than ten minutes. The agent's Claude session is named `<Topic in words> · <Name>`, the topic capitalized as in the session label, e.g. `Tool panel · Clara`; the session's label never carries the name. The agent is addressed by its first name from then on.
 
 Find the pane in the session's Agents tab: the window whose `.label` is `Agents` in `rex session inspect "$session" --json` (`.windows[]`); `rex block ls` shows no window labels.
 

@@ -56,6 +56,8 @@ Last, since the session may hold the caller:
 rex kill "$session"
 ```
 
+Then remove the name claim of each agent the session held: `rmdir "${TMPDIR:-/tmp}/agent-names/<Name>"`.
+
 When the session is the caller's own (`$REX_SESSION`), nothing after the kill runs: report first, then run steps 3 and 4 as one command, `git … worktree remove --force … && git … branch -d … && rex kill "$session"`.
 
 ## Return
