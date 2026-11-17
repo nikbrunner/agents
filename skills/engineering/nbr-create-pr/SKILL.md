@@ -16,15 +16,21 @@ short bullet a reviewer scans top to bottom.
 
 ## Steps
 
-1. **Gather.** Read the branch's commits against the base, the diff stat, the ticket (key, title, link), the test files the
-   diff adds or changes, and the existing PR body if there is one (`bkt pr view <n>` on Bitbucket, `gh pr view <n>` on
-   GitHub). Done when you can name every user-visible change and every added test scenario.
+1. **Gather.** Read the diff against the base, hunk by hunk, then the branch's commits, the ticket (key, title, link), the
+   test files the diff adds or changes, and the existing PR body if there is one (`bkt pr view <n>` on Bitbucket,
+   `gh pr view <n>` on GitHub). The diff is the source of truth; a commit message is a claim to check against it. Done
+   when you can name every user-visible change, each traced to a hunk, and every added test scenario.
 2. **Close the gaps.** List anything transient the draft would have to admit: a known bug, a missing spec, a decided but
-   unbuilt change, unpushed commits. Fix what was already decided, ask about the rest. Done when the list holds only genuine
-   open decisions for reviewers.
-3. **Draft** into a gitignored scratch file (the project's `tmp/` or the session scratchpad) using the template below, then
-   run the `humanizer` skill on it in embedded mode. Done when every section is filled or deliberately omitted.
-4. **Show and wait.** Give the user the file path and stop. Apply their edits until they approve the text.
+   unbuilt change, unpushed commits. Fix what was already decided, ask about the rest. A commit message the diff
+   contradicts (it claims a change the base already has, misses one, or gets its scope wrong) goes to the user with what
+   the diff shows, and an offer to reword it or to rebuild the run with `/nbr-git-commit-rebuild`, which the user starts.
+   On a pushed branch, either needs a force push the user approves. Done when the list holds only genuine open decisions
+   for reviewers.
+3. **Draft** using the template below, then run the `humanizer` skill on it in embedded mode. Done when every section is
+   filled or deliberately omitted.
+4. **Show and wait.** Put the title and the body into the reply as one fenced `markdown` block, copy-ready, and stop.
+   Apply the user's edits in the next reply the same way until they approve the text. Write the body to a gitignored
+   scratch file (the project's `tmp/` or the session scratchpad) only to hand it to the platform CLI when publishing.
 5. **Publish** only after explicit approval: push the branch if commits are local (ask first), set the title and body with
    the platform CLI, and give the PR link.
 
