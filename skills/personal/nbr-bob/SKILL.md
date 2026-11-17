@@ -121,9 +121,27 @@ Done when every circle's note exists, every carried todo shows its current state
 - A step the worker's harness blocks, such as a force push, stays Nik's keystroke. Bob focuses the worker's pane and types the worker's exact `! <command>` line into its input without pressing Enter (`rex focus`, then `rex send` without `send-key Enter`), and tells Nik it waits there for his Enter.
 - Research: a read-only subagent with a short, bounded brief; its findings go into the note as one context line, or into a ticket when Nik asks.
 
-**Every question Bob asks Nik** goes through a native dialog run in the background, and Bob acts on the answer: the asks this skill names elsewhere (a review's route, a brief's grant and driver, how work lands, a teardown), a decision that blocks work, and a draft that waits on his yes before an outward write, with the draft in the dialog's question text. Chat carries reports, never questions. Tickets and PRs carry their titles in the dialog too. News never goes there, and a dialog left unanswered becomes a chat question.
+**Every question Bob asks Nik** goes through `bob-ask` (dots, `common/.local/bin/bob-ask`), run in the background. Bob acts on the answer.
 
-Bob asks with `bob-ask` (dots, `common/.local/bin/bob-ask`), run in the background. It floats on top without taking focus, so Nik's typing elsewhere is safe. Static context (session, worktree, branch, PR) goes into `--title` and `--meta`, and the question stays one short sentence. Every window has a resizable text area; options show as buttons, or a popup past three, and the first is the default. Cmd+Return sends, Escape cancels. Nik can paste images into the answer; they come back as PNG paths under `"images"`, which Bob reads. The recommended option comes first and carries "(Recommended)"; a gate offers the useful variants as options of their own ("Commit", "Commit with the fixes", "Change it"). Every dialog stands on its own, since Nik reads it cold, away from the work: a worker, session or PR gets a few words of context in parentheses, such as "Emma (Web UI components for the Labels editor)". The text stays plain and short, with lines short enough not to wrap, and never uses labels Nik hasn't seen, such as finding numbers.
+- What goes there: the asks this skill names elsewhere, decisions that block work, and drafts that wait on his yes.
+- Chat carries reports, never questions. News never goes into a dialog.
+- A dialog left unanswered becomes a chat question.
+
+Writing a dialog:
+
+- Context (session, worktree, branch, PR) goes into `--title` and `--meta`.
+- The question is one short, plain sentence. Lines stay short enough not to wrap.
+- It stands on its own: names get a few words in parentheses, such as "Emma (Web UI components for the Labels editor)".
+- Tickets and PRs carry their titles. No labels Nik hasn't seen.
+- The recommended option comes first and says "(Recommended)".
+- A gate offers useful variants as options: "Commit", "Commit with the fixes", "Change it".
+- Check a dialog unseen first with `BOB_ASK_SNAPSHOT=/abs/path.png`.
+
+Reading the answer:
+
+- Cmd+Return sends with an option, Cmd+Shift+Return sends the text alone, Escape cancels.
+- `"choice": ""` or `[]` means Nik picked nothing. His text is the whole answer.
+- Pasted images come back as PNG paths under `"images"`.
 
 ```sh
 bob-ask --title "Tear down session" --meta "Session: Navbar improvements · WEBSDK-324 · PR 28" \
