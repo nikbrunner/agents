@@ -292,10 +292,10 @@ export const register: Register = on => {
   })
 
   on('turn.step', async function* ($, e, next) {
+    if (!e.agentId && e.effort !== undefined) void update($, agent, a => ({ ...a, effort: String(e.effort) }))
     const result = yield* next(e)
     if (e.agentId) return result
     if (result.toolUses.length > 0) void summarizeNow($, result.answer, false)
-    if (e.effort !== undefined) void update($, agent, a => ({ ...a, effort: String(e.effort) }))
     const u = result.usage
     if (u) {
       const at = await $.clock.now()
