@@ -80,9 +80,7 @@
     "ask": []
   },
   "model": "opus",
-  "disabledMcpjsonServers": [
-    "chrome-devtools"
-  ],
+  "disabledMcpjsonServers": ["chrome-devtools"],
   "hooks": {
     "Notification": [],
     "PreToolUse": [
@@ -285,7 +283,12 @@
   },
   "promptCacheTtl": "1h",
   "alwaysThinkingEnabled": false,
-  "advisorModel": "fable",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "xhigh"
+    }
+  },
+  "advisorModel": "opus",
   "pluginConfigs": {
     "ponytail@ponytail": {
       "options": {
@@ -340,10 +343,5 @@
   "feedbackSurveyState": {
     "lastShownTime": 1754313915132
   },
-  "mcpServers": {},
-  "modelSettings": {
-    "claude-opus-5-5": {
-      "effortLevel": "xhigh"
-    }
-  }
+  "mcpServers": {}
 }
