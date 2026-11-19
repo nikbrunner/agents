@@ -757,14 +757,17 @@ async function draw($: EngineInterface, e: ResolveInput, cols: number, isSplit: 
               section(
                 g.files.length === 0 ? 'changes' : `changes · ${g.files.length}`,
                 g.files.length === 0 && <Text color="success">✓ clean</Text>,
-                ...g.files.map(f => (
-                  <Button key={`file:${f.path}`} plain onPress={() => void openInEditor($, f.path)}>
-                    <Text color={fileColor[f.status] ?? 'warning'}>{f.status} </Text>
-                    <Text>{f.path}</Text>
-                    {f.added !== undefined && <Text color="success"> +{f.added}</Text>}
-                    {f.removed !== undefined && <Text color="error"> -{f.removed}</Text>}
-                  </Button>
-                )),
+                ...g.files.map(f => {
+                  const counts = `${f.added !== undefined ? ` +${f.added}` : ''}${f.removed !== undefined ? ` -${f.removed}` : ''}`
+                  return (
+                    <Button key={`file:${f.path}`} plain onPress={() => void openInEditor($, f.path)}>
+                      <Text color={fileColor[f.status] ?? 'warning'}>{f.status} </Text>
+                      <Text>{clip(f.path, cols - 2 - `${f.status} `.length - counts.length, true)}</Text>
+                      {f.added !== undefined && <Text color="success"> +{f.added}</Text>}
+                      {f.removed !== undefined && <Text color="error"> -{f.removed}</Text>}
+                    </Button>
+                  )
+                }),
               )}
           </Box>
         </Box>
