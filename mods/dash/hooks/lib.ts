@@ -128,3 +128,34 @@ export function planName(tier: unknown): string | undefined {
     .map(w => w[0]!.toUpperCase() + w.slice(1))
     .join(' ')
 }
+
+export type TreeRow = { depth: number; name: string; file?: GitFile }
+
+export function fileTree(files: GitFile[]): TreeRow[] {
+  type Dir = { dirs: Map<string, Dir>; files: GitFile[] }
+  const root: Dir = { dirs: new Map(), files: [] }
+  for (const f of [...files].sort((a, b) => a.path.localeCompare(b.path))) {
+    let d = root
+    for (const part of f.path.split('/').slice(0, -1)) {
+      if (!d.dirs.has(part)) d.dirs.set(part, { dirs: new Map(), files: [] })
+      d = d.dirs.get(part)!
+    }
+    d.files.push(f)
+  }
+  const rows: TreeRow[] = []
+  const walk = (d: Dir, depth: number) => {
+    for (let [name, child] of d.dirs) {
+      name += '/'
+      while (child.files.length === 0 && child.dirs.size === 1) {
+        const [only, next] = [...child.dirs][0]!
+        name += `${only}/`
+        child = next
+      }
+      rows.push({ depth, name })
+      walk(child, depth + 1)
+    }
+    for (const f of d.files) rows.push({ depth, name: f.path.slice(f.path.lastIndexOf('/') + 1), file: f })
+  }
+  walk(root, 0)
+  return rows
+}

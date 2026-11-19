@@ -2,7 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register, RenderChildren, ResolveInput, SessionUsage } from 'claude-code'
 
 import type { Agent, Task, Usage } from '../types'
-import { bar, clip, describeCall, editDelta, duration, heat, oneLine, parseGit, planName, prettyModel, until } from './lib'
+import { bar, clip, describeCall, editDelta, duration, fileTree, heat, oneLine, parseGit, planName, prettyModel, until } from './lib'
 
 const CACHE_TTL_MS = 60 * 60 * 1000
 const MODEL = 'haiku'
@@ -757,12 +757,22 @@ async function draw($: EngineInterface, e: ResolveInput, cols: number, isSplit: 
               section(
                 g.files.length === 0 ? 'changes' : `changes · ${g.files.length}`,
                 g.files.length === 0 && <Text color="success">✓ clean</Text>,
-                ...g.files.map(f => {
+                ...fileTree(g.files).map(({ depth, name, file: f }) => {
+                  const indent = '  '.repeat(depth)
+                  if (!f)
+                    return (
+                      <Text dimColor italic wrap="truncate-end">
+                        {indent}
+                        {clip(name, cols - 2 - indent.length, true)}
+                      </Text>
+                    )
                   const counts = `${f.added !== undefined ? ` +${f.added}` : ''}${f.removed !== undefined ? ` -${f.removed}` : ''}`
+                  const room = cols - 2 - indent.length - `${f.status} `.length - counts.length
                   return (
                     <Button key={`file:${f.path}`} plain onPress={() => void openInEditor($, f.path)}>
+                      <Text>{indent}</Text>
                       <Text color={fileColor[f.status] ?? 'warning'}>{f.status} </Text>
-                      <Text>{clip(f.path, cols - 2 - `${f.status} `.length - counts.length, true)}</Text>
+                      <Text>{clip(name, room, true).padEnd(room)}</Text>
                       {f.added !== undefined && <Text color="success"> +{f.added}</Text>}
                       {f.removed !== undefined && <Text color="error"> -{f.removed}</Text>}
                     </Button>
