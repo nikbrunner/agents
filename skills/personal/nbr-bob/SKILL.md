@@ -121,49 +121,46 @@ Done when every circle's note exists, every carried todo shows its current state
 - A step the worker's harness blocks, such as a force push, stays Nik's keystroke. Bob focuses the worker's pane and types the worker's exact `! <command>` line into its input without pressing Enter (`rex focus`, then `rex send` without `send-key Enter`), and tells Nik it waits there for his Enter.
 - Research: a read-only subagent with a short, bounded brief; its findings go into the note as one context line, or into a ticket when Nik asks.
 
-**Every question Bob asks Nik** goes through `bob-ask` (dots, `common/.local/bin/bob-ask`), run in the background. Bob acts on the answer.
+**Every question Bob asks Nik** goes to the Rex command palette through the `bob_ask` action (dots, `common/.config/rex/bob_ask.lua`), run in the background. A Glass sound announces it, and every Rex app Nik has connected shows it; the first answer wins. Bob acts on the answer.
 
-- What goes there: the asks this skill names elsewhere, decisions that block work, and drafts that wait on his yes.
-- Chat carries reports, never questions. News never goes into a dialog.
-- A dialog left unanswered becomes a chat question.
+- What goes there: the asks this skill names elsewhere, decisions that block work, and the yes a draft waits on.
+- A draft (ticket, PR text, commit message) goes into chat; then `bob_ask` asks "Send the draft above?" with "Send (Recommended)" and "Change it".
+- Chat carries reports and drafts. A question goes to chat only when it wants more than one line or a screenshot back. News never goes into the palette.
+- One question per call. The palette holds one prompt at a time, so several questions go one after another.
+- No answer (`timeout`, `cancelled`, `no_client`, `unsupported`, `failed`): ask in chat. `busy` means another prompt is open: wait a few minutes and ask again.
 
-Writing a dialog:
+Writing a question:
 
-- Context (session, worktree, branch, PR) goes into `--title` and `--meta`.
-- The question is one short, plain sentence. Lines stay short enough not to wrap.
+- It is one short, plain sentence: the palette shows it as a single title line.
+- Context (session, branch, PR) leads in a few words, such as "Navbar improvements · PR 28: merged, tear it down?", or sits in an option's `subtitle`.
 - It stands on its own: names get a few words in parentheses, such as "Emma (Web UI components for the Labels editor)".
 - Tickets and PRs carry their titles. No labels Nik hasn't seen.
 - The recommended option comes first and says "(Recommended)".
 - A gate offers useful variants as options: "Commit", "Commit with the fixes", "Change it".
-- Check a dialog unseen first with `BOB_ASK_SNAPSHOT=/abs/path.png`.
-
-Reading the answer:
-
-- Cmd+Return sends with an option, Cmd+Shift+Return sends the text alone, Escape cancels.
-- `"choice": ""` or `[]` with no text means no answer, not no: ask that question again, without presets.
-- `"choice": ""` with text: his text is the whole answer.
-- Pasted images come back as PNG paths under `"images"`.
 
 ```sh
-bob-ask --title "Tear down session" --meta "Session: Navbar improvements · WEBSDK-324 · PR 28" \
-  --meta "Branch: WEBSDK-324-navbar-improvements" -o "Tear down" -o "Not yet" -t 1800 "The PR is merged. Tear it down?"
-# → {"choice":"Tear down","text":"","gaveUp":false,"cancelled":false}; exit 0 answered, 1 cancelled, 2 timed out
-```
-
-Several decisions at once go into one form, read from stdin; `"multi": true` gives checkboxes, and more than six options get a filter:
-
-```sh
-bob-ask --form <<'JSON'
-{"title": "Day close", "questions": [
-  {"id": "teardown", "question": "Tear down these sessions?", "options": ["Editor tool rail", "dots"], "multi": true},
-  {"id": "tomorrow", "question": "What comes first tomorrow?"}]}
+rex do bob_ask --timeout 61m --args - <<'JSON'
+{"question": "Navbar improvements · PR 28: merged, tear it down?",
+ "options": ["Tear down (Recommended)", {"id": "Not yet", "subtitle": "Branch WEBSDK-324-navbar-improvements"}],
+ "timeout": 1800}
 JSON
-# → {"answers": {"teardown": {"choice": ["dots"], "text": ""}, "tomorrow": {"choice": "", "text": "…"}}, "gaveUp": false, "cancelled": false}
+# → {"choice":"Tear down (Recommended)"}
 ```
+
+- `options` are strings or palette items (`id`, `title`, `subtitle`); the answer names the `id`. Without options Nik types one line; `"multi": true` lets him tick several.
+- `timeout` counts seconds, 3600 at most and by default. `rex do --timeout` outlasts it, or `rex do` stops the action and prints nothing.
+
+Reading the answer (exit 0):
+
+- `{"choice": "<id>"}`, or a list with `multi`. Nothing ticked prints `{"choice": {}}` and means none.
+- `{"text": "…"}`: he typed instead of picking, and his text is the whole answer. An empty text is no answer: ask again.
+- `{"reason": "…"}`: no answer, handled as above.
+- Exit 1 with "configuration file was reloaded" on stderr: a Rex config reload ended the prompt. Ask again.
+- Any other exit 1 or 2 with a message on stderr: the call is wrong. Fix it and run it again.
 
 **Nik's load.** The limit lives in the global agent instructions ("Watch my load"). Bob sees every session across circles, so Bob counts: before handing out more work, say how many run and what kind they are, and hint at sequential work when the limit is near. After a day that ran wide, open the next note with a reminder.
 
-**Outward writes** (tickets and their transitions, wiki pages, PR comments) happen only on Nik's yes. Draft a ticket in a `bob-ask` dialog first and ask there which project it belongs to.
+**Outward writes** (tickets and their transitions, wiki pages, PR comments) happen only on Nik's yes. Draft a ticket in chat first, then ask with `bob_ask` which project it belongs to.
 
 ## 3. Close the day
 
