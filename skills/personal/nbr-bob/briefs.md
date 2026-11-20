@@ -52,8 +52,11 @@ session; it ends the session, so it runs last.
 Feedback a reviewer left on Nik's own PR.
 
 ```text
-Orient first: read every comment and the code it touches. Then go through the points with Nik one at a time, as
-points to discuss. Plan a change only for a point Nik decides, and change nothing before that.
+Orient first: read every comment and the code it touches, and check every assumption yourself (reproduce the
+behaviour, trace the related paths, confirm what the code relies on) until nothing you could check stays open. Sum
+up the points for Nik. Then grill them with him through nbr-plan, which stops after the grill: one point at a time,
+each as a question with the AskUserQuestion tool, until every point is decided. Plan a change only for a point Nik
+decides, and change nothing before that.
 ```
 
 ## Driver blocks
