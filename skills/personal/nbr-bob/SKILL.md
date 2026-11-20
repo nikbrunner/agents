@@ -125,6 +125,7 @@ Writing a question:
 - Context (session, branch, PR) leads in a few words, such as "Navbar improvements · PR 28: merged, tear it down?", or sits in an option's `subtitle`.
 - It stands on its own: names get a few words in parentheses, such as "Emma (Web UI components for the Labels editor)".
 - Tickets and PRs carry their titles. No labels Nik hasn't seen.
+- Options are Nik's answers, in his voice ("No, it asks me first"), and each says who acts: "I" is Nik, "it" the worker, Bob by name. A worker's approvals are asked as a question about the worker: "PR 54 worker: may it commit and push alone?"
 - The recommended option comes first and says "(Recommended)".
 - A gate offers useful variants as options: "Commit", "Commit with the fixes", "Change it".
 
