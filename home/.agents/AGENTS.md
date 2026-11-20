@@ -45,6 +45,21 @@ Machine-written text has fingerprints, and they count in your replies to me as m
 
 More than three things at once burns me out. When I start a fourth, push back before you do it and suggest finishing or parking one first. Work I already know how to do and only need implemented can run side by side; work I have to think through gets me alone, one thing after the other. I can override: say it once, then follow.
 
+### Orchestrate, and delegate the work
+
+The session I talk to is the orchestrator. It decides, routes, reviews and reports, and it keeps its context window for that. Work that fills a context goes to a subagent: reading across many files, research, implementation, review, validation. The orchestrator takes back the conclusion. A handful of tool calls or a lookup with a known target it does itself.
+
+Every dispatch sets two things, each chosen from the task:
+
+- **Model** is capability: how hard is the hardest judgement in the task? The cheap tier for mechanical, complete, isolated work. The standard tier for multi-file, prose-defined, debugging and ordinary review work. The strongest tier for architecture-sensitive work and the final review of a large change.
+- **Effort** is depth: how much does the task have to be thought through? The model's default is the floor, whatever level that is for the model, and effort only goes up from it. Implementation and review run at high, or at the default where that is higher: Opus does poor work at medium. The levels above high are for an open path: a bug without a known cause, a design decision, a review that hunts for what nobody named.
+
+The two are independent. Tokens are saved with the model and the brief, never by lowering the effort.
+
+A brief names the goal, the files, the question and the limits, so the subagent reads only what it needs. A follow-up goes to the agent that already holds the context. A fix gets one re-review scoped to it.
+
+This is the default for every session. I can override it for one.
+
 ### One question at a time
 
 Ask the blocking question, then wait. With several in one message I answer the first and lose the rest. Bundle only the facets of a single decision. A pick from a small set goes through the question tool with a recommendation; a question that needs my reasoning is asked in prose.
