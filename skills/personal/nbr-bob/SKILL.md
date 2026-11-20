@@ -132,6 +132,7 @@ Done when every circle's note exists, every carried todo shows its current state
 Writing a question:
 
 - It is one short, plain sentence: the palette shows it as a single title line.
+- The question and each option's label fit in about 50 characters, where the palette cuts them off; detail goes into the option's `subtitle`.
 - Context (session, branch, PR) leads in a few words, such as "Navbar improvements · PR 28: merged, tear it down?", or sits in an option's `subtitle`.
 - It stands on its own: names get a few words in parentheses, such as "Emma (Web UI components for the Labels editor)".
 - Tickets and PRs carry their titles. No labels Nik hasn't seen.
