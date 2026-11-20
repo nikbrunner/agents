@@ -59,6 +59,16 @@ each as a question with the AskUserQuestion tool, until every point is decided. 
 decides, and change nothing before that.
 ```
 
+### task
+
+A change Nik asked for.
+
+```text
+Start with findings: read how this works today and check every assumption yourself until nothing you could check
+stays open. Return the findings and a plan to whoever guides this session, and change nothing before the go. Then
+implement the plan and verify it with the repo's checks and tests.
+```
+
 ## Driver blocks
 
 ### Nik guides
