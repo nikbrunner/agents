@@ -129,6 +129,10 @@ export function planName(tier: unknown): string | undefined {
     .join(' ')
 }
 
+export function byNumericName(a: { name: string }, b: { name: string }): number {
+  return parseInt(a.name) - parseInt(b.name)
+}
+
 export type TreeRow = { depth: number; name: string; file?: GitFile }
 
 export function fileTree(files: GitFile[]): TreeRow[] {

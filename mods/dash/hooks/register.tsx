@@ -2,7 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register, RenderChildren, ResolveInput, SessionUsage } from 'claude-code'
 
 import type { Agent, Task, Usage } from '../types'
-import { bar, clip, describeCall, editDelta, duration, fileTree, heat, oneLine, parseGit, planName, prettyModel, until } from './lib'
+import { bar, byNumericName, clip, describeCall, editDelta, duration, fileTree, heat, oneLine, parseGit, planName, prettyModel, until } from './lib'
 
 const CACHE_TTL_MS = 60 * 60 * 1000
 const MODEL = 'haiku'
@@ -121,7 +121,7 @@ async function openInEditor($: EngineInterface, path: string) {
 async function refreshTasks($: EngineInterface) {
   const dir = `${configDir}/tasks/${await $.session.id()}`
   if (!(await $.fs.exists(dir))) return
-  const files = (await $.fs.list(dir)).filter(f => f.kind === 'file' && f.name.endsWith('.json'))
+  const files = (await $.fs.list(dir)).filter(f => f.kind === 'file' && f.name.endsWith('.json')).sort(byNumericName)
   const list: Task[] = []
   for (const f of files) {
     try {

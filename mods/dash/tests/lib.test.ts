@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { describeCall, editDelta, fileTree, oneLine, parseGit, planName, prettyModel } from '../hooks/lib'
+import { byNumericName, describeCall, editDelta, fileTree, oneLine, parseGit, planName, prettyModel } from '../hooks/lib'
 
 test('prettyModel names the model like the status line', async () => {
   expect(prettyModel('claude-opus-5-5[1m]')).toBe('Opus 5.5 (1M context)')
@@ -33,6 +33,11 @@ test('planName names the plan from the rate limit tier', async () => {
   expect(planName('default_claude_max_5x')).toBe('Max 5x')
   expect(planName('claude_pro')).toBe('Pro')
   expect(planName(null)).toBeUndefined()
+})
+
+test('byNumericName orders task files by id, not by name', async () => {
+  const listed = ['1.json', '10.json', '11.json', '2.json', '9.json'].map(name => ({ name }))
+  expect(listed.sort(byNumericName).map(f => f.name)).toEqual(['1.json', '2.json', '9.json', '10.json', '11.json'])
 })
 
 test('fileTree nests files under folders, merging folders with one child', async () => {
