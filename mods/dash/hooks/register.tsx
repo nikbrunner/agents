@@ -61,6 +61,8 @@ const LIMIT_LABEL: Record<string, string> = {
 let configDir = ''
 let home = ''
 let isGitQueued = false
+let gitWatch: string[] = []
+let gitStamp = ''
 let prompt = ''
 let prompts: string[] = []
 let recent: string[] = []
@@ -78,11 +80,14 @@ async function refreshGit($: EngineInterface) {
       'cd "$(git rev-parse --show-toplevel)" || exit 1; ' +
         'git --no-optional-locks status --porcelain=v2 --branch || exit 1; ' +
         'printf "# gitdir %s\\n" "$(git rev-parse --absolute-git-dir)"; ' +
+        'git rev-parse --path-format=absolute --git-path index --git-path HEAD --git-path logs/HEAD | sed "s/^/# watch /"; ' +
+        'u=$(git rev-parse --symbolic-full-name "@{upstream}" 2>/dev/null) && git rev-parse --path-format=absolute --git-path "logs/$u" | sed "s/^/# watch /"; ' +
         'git log -1 --format="# last %h%x09%cr%x09%s" 2>/dev/null; ' +
         'git --no-optional-locks diff --numstat HEAD 2>/dev/null | sed "s/^/# num /"',
     ],
     { cwd, timeoutMs: 3000 },
   )
+  gitWatch = run.stdout.split('\n').filter(l => l.startsWith('# watch ')).map(l => l.slice(8))
   const root = (await $.session.repo())?.root ?? cwd
   const repo = root.split('/').pop() ?? root
   await update($, git, () => (run.exitCode === 0 ? parseGit(repo, run.stdout) : null))
@@ -95,6 +100,14 @@ function queueGit($: EngineInterface) {
     isGitQueued = false
     void refreshGit($)
   })
+}
+
+// Git writes these files on a commit, staging, a branch switch, a push or a fetch, whoever runs it.
+async function pollGit($: EngineInterface) {
+  const stamp = (await Promise.all(gitWatch.map(p => $.fs.stat(p).then(s => s.mtimeMs, () => 0)))).join()
+  if (stamp === gitStamp) return
+  gitStamp = stamp
+  queueGit($)
 }
 
 // Ctrl-\ Ctrl-N reaches normal mode from any nvim mode, where a bare Esc before ':' can read as Alt-:.
@@ -271,7 +284,10 @@ export const register: Register = on => {
     void refreshTasks($)
     void refreshUsage($)
     void refreshStyle($)
-    $.clock.every(1000, () => void update($, tick, n => n + 1))
+    $.clock.every(1000, () => {
+      void update($, tick, n => n + 1)
+      void pollGit($)
+    })
     return next(e)
   })
 
