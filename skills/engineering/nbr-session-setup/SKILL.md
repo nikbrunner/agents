@@ -86,12 +86,12 @@ Find the pane in the session's Agents tab: the window whose `.label` is `Agents`
 
 3. Only when no window is labelled `Agents`: `rex window new -s "$session" Agents -c "$worktree" --keep-open --json -- <launch command>`, with the command as its arguments, and take the pane from `.block_ids[0]`. A command started by Rex runs in the login shell's environment, so it carries every variable itself.
 
-Start the agent by typing one line into the shell, so the user's shell functions and environment hold and the brief, read through command substitution, never passes shell quoting. Claude runs on the caller's config: when `CLAUDE_CONFIG_DIR` is set here, the line carries it and the variables that come with it.
+Start the agent by typing one line into the shell, so the user's shell functions and environment hold and the brief, read through command substitution, never passes shell quoting. Claude runs on the repo's account: the circle skill that claims the repo names its `CLAUDE_CONFIG_DIR`, and the line carries it whatever the caller runs on. A repo no circle claims runs on the default config.
 
 ```sh
-# caller has CLAUDE_CONFIG_DIR
-line="env CLAUDE_CONFIG_DIR='$CLAUDE_CONFIG_DIR' CLAUDE_CODE_NO_FLICKER=1 claude -n '$name' \"\$(cat '$brief')\""
-# caller runs on the default config
+# the repo's circle names a CLAUDE_CONFIG_DIR
+line="env CLAUDE_CONFIG_DIR='$config_dir' CLAUDE_CODE_NO_FLICKER=1 claude -n '$name' \"\$(cat '$brief')\""
+# no circle claims the repo
 line="claude -n '$name' \"\$(cat '$brief')\""
 # pi or codex
 line="$harness \"\$(cat '$brief')\""
