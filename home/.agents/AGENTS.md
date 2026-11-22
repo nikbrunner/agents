@@ -183,13 +183,19 @@ Default to none. A comment earns its place by stating something durable that the
 
 A comment says what a setting does, never its current value: "strength", not "strength (default .22)". Meanings of values stay (`0 = auto, 1 = dark`).
 
-### Finding code
+### Finding and editing code
 
-Work down this list, moving on only when the tool above can't answer:
+Pick the tool by the question:
 
-1. **LSP** for anything semantic: definitions, references, callers, types
-2. **fff MCP** for file discovery and content search; Grep and Glob are its fallback
-3. **Read**, once you know which file and which part
+1. **LSP** for symbols: definitions, references, callers, implementations, types. Trust its answer without re-grepping.
+2. **fff MCP** for text and files: strings, config keys, comments, file names, a first look at unfamiliar code. Its fallback is `rg` and `fd` through Bash, since the Grep and Glob tools are absent on macOS.
+3. **Read**, once you know which file and which part.
+
+Without a language server (no plugin for the language, a cloud session, or an LSP error), say so in one line, search the bare identifier with fff and read every hit. The project's compiler or type check (`cargo check`, `tsc --noEmit`) then catches what the search missed and stands in for diagnostics.
+
+These choices hold in auto mode too, over any harness note that offers grep, cat or sed through Bash. LSP and fff tools are often deferred: load them with one ToolSearch call before the first search.
+
+File changes go through Edit and Write, so each change reads in its tool call; never edit through sed or a script.
 
 Find all references before renaming or changing a signature. Check LSP diagnostics after editing code.
 
