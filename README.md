@@ -126,10 +126,8 @@ flowchart LR
   subgraph user["This repo"]
     bob["nbr-bob<br/>the day, reports, load, handing out"]
     report["nbr-report-to-bob<br/>any session reports in"]
-    dispatch["nbr-dispatch<br/>a task to another repo"]
+    dispatch["nbr-dispatch<br/>an agent in a session, and its teardown"]
     review["nbr-review-pr<br/>GitHub PRs"]
-    setup["nbr-session-setup<br/>worktree, session, agent"]
-    teardown["nbr-session-teardown<br/>servers, worktree, session"]
     commit["nbr-git-commit<br/>one commit"]
     buckets["nbr-git-commit-buckets<br/>a dirty tree"]
     rebuild["nbr-git-commit-rebuild<br/>a run of commits"]
@@ -143,15 +141,12 @@ flowchart LR
   end
   work["work skills<br/>private repo"]
   report --> bob
-  bob -- reviews --> setup
+  bob -- reviews, tasks, teardown --> dispatch
   bob -- names in the brief --> review
-  bob -- tasks --> dispatch
-  bob -- merged or day closed --> teardown
   bob --> nlog
   bob --> activity
   work -. extends .-> review
   work -. adds a circle .-> bob
-  dispatch --> setup
   review -- reads --> conventions
   rebuild --> buckets --> commit --> audit
   rsetup -- reads --> conventions
@@ -164,15 +159,15 @@ flowchart LR
 
 #### A day with Bob
 
-`nbr-bob` runs Bob, my digital assistant, which has access to my notes. It opens and closes the day in every circle's daily note, the private one in my Obsidian vault and one per work circle that a work skill adds. Other sessions send it their state with `nbr-report-to-bob`, and it files each report in the right note. It hands PR reviews out to sessions it sets up with `nbr-session-setup` and tasks through `nbr-dispatch`, watches how much runs at once, and at day close offers to tear down sessions whose work merged, which it does only on my yes.
+`nbr-bob` runs Bob, my digital assistant, which has access to my notes. It opens and closes the day in every circle's daily note, the private one in my Obsidian vault and one per work circle that a work skill adds. Other sessions send it their state with `nbr-report-to-bob`, and it files each report in the right note. It hands PR reviews and tasks out to sessions through `nbr-dispatch`, watches how much runs at once, and at day close offers to tear down sessions whose work merged, which it does only on my yes.
 
 #### A PR review
 
-Bob asks me whether a PR goes to review. On yes, it has `nbr-session-setup` build a worktree on the PR's branch with an install that runs no scripts, a Rex session with the Agents, Edit and Shells tabs, and a Claude agent whose brief names the circle's review skill. There `nbr-review-pr` judges the PR's shape, reads every changed file against `nbr-repo-conventions`, and leaves its report in the pane, with fixes and a comment draft on offer. The agent stays for follow-ups, and when I'm done it offers `nbr-session-teardown` on its own session. A work skill wraps `nbr-review-pr` for another host, replacing the steps that differ.
+Bob asks me whether a PR goes to review. On yes, it writes a brief that names the circle's review skill and hands it to `nbr-dispatch`. There [lager](https://github.com/nikbrunner/lager) creates a worktree on the PR's branch and a Rex session with the Agents, Edit and Shells tabs, and dispatch runs an install with no scripts and starts a Claude agent on the brief. There `nbr-review-pr` judges the PR's shape, reads every changed file against `nbr-repo-conventions`, and leaves its report in the pane, with fixes and a comment draft on offer. The agent stays for follow-ups, and when I'm done it offers to close its own session by `nbr-dispatch`. A work skill wraps `nbr-review-pr` for another host, replacing the steps that differ.
 
 #### A dispatch
 
-`nbr-dispatch` confirms the target repo with me, checks its state, writes the brief with the worker's boundary rules, and launches it through `nbr-session-setup`. The worker sends its handoff to the dispatching session when it finishes. A worker Bob dispatched also reports to Bob with `nbr-report-to-bob`, since Bob's brief asks for it, so the day's note gets the outcome.
+`nbr-dispatch` confirms the target repo with me, writes the brief with the worker's boundary rules, and launches it in a worktree and session lager creates. When I ask for a teardown, it asks the session's agents whether they are done and has lager remove the worktree and close the session. The worker sends its handoff to the dispatching session when it finishes. A worker Bob dispatched also reports to Bob with `nbr-report-to-bob`, since Bob's brief asks for it, so the day's note gets the outcome.
 
 #### The day's record
 
@@ -208,9 +203,7 @@ How I plan, commit, open PRs, set up repos and run coding agents.
 | `nbr-self-reflection`    | Turn a correction into a durable improvement                                        |
 | `nbr-slow-mode`          | Slow down for learning and human decisions                                          |
 | `nbr-record-clip`        | Record motion as a dark and light looping WebP, or a video with `cap`               |
-| `nbr-dispatch`           | Start a coding agent for another repo in a Rex session                              |
-| `nbr-session-setup`      | Set up a worktree, a Rex session, and optionally an agent                           |
-| `nbr-session-teardown`   | Tear a session down without losing unpushed or open work                            |
+| `nbr-dispatch`           | Start a coding agent in a Rex session, and close the session without losing work    |
 | `nbr-review-pr`          | Review a GitHub PR or a branch against the repo conventions                         |
 | `nbr-intercom`           | Talk directly to an agent session running in another repo                           |
 | `nbr-nvim-dev`           | Neovim and Lua development workflow                                                 |
@@ -225,7 +218,7 @@ Install these first:
 | [Plannotator](https://github.com/backnotprop/plannotator)           | see its README, it ships `plannotator-annotate`                      | `nbr-plan`                                                 |
 | `gh` or [`bkt`](https://github.com/avivsinai/bitbucket-cli)         | your package manager                                                 | `nbr-create-pr`                                            |
 
-`nbr-record-clip` needs ImageMagick, plus VHS, ffmpeg, Playwright or [Cap](https://cap.so) depending on what it records. `nbr-dispatch`, `nbr-session-setup` and `nbr-session-teardown` need [Rex](https://www.superlogical.com/rex). `nbr-review-pr` needs `gh`, `nbr-intercom` needs Claude Code, `nbr-nvim-dev` needs Neovim and ripgrep, and `nbr-bkt` needs `bkt` and `pass-cli`.
+`nbr-record-clip` needs ImageMagick, plus VHS, ffmpeg, Playwright or [Cap](https://cap.so) depending on what it records. `nbr-dispatch` needs [Rex](https://www.superlogical.com/rex) and [lager](https://github.com/nikbrunner/lager) with a `[session]` section. `nbr-review-pr` needs `gh`, `nbr-intercom` needs Claude Code, `nbr-nvim-dev` needs Neovim and ripgrep, and `nbr-bkt` needs `bkt` and `pass-cli`.
 
 ### Personal
 
@@ -233,7 +226,7 @@ Bob and the daily notes, tasks in Things 3, and speech from ElevenLabs.
 
 | Skill                  | What it does                                                  | Requires                                                                                                        |
 | ---------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `nbr-bob`              | Run Bob, my digital assistant, through the day across circles | Rex, `gh`, `nbr-activity`, `nbr-log`, `nbr-session-setup`                                                       |
+| `nbr-bob`              | Run Bob, my digital assistant, through the day across circles | Rex, lager, `gh`, `nbr-activity`, `nbr-log`, `nbr-dispatch`                                                     |
 | `nbr-report-to-bob`    | Send this session's state to Bob                              | Claude Code; Rex across accounts                                                                                |
 | `nbr-activity`         | Collect one day's commits and GitHub activity                 | macOS, git, jq, `gh`                                                                                            |
 | `nbr-log`              | Write the day's development work into the private note        | `nbr-activity`, an Obsidian vault                                                                               |

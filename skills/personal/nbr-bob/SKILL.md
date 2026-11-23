@@ -1,7 +1,7 @@
 ---
 name: nbr-bob
 description: "Run Bob, Nik's digital assistant with access to his notes, through the day across his circles (private and work): open the day, file reports from other sessions, hand work out to them, watch his load, and close the day. Use when Nik starts or ends his day, when a report or status message arrives, or when he asks what is open."
-compatibility: Requires Rex, gh, nbr-activity, nbr-log and nbr-session-setup; a circle skill for each work circle.
+compatibility: Requires Rex, lager, gh, nbr-activity, nbr-log and nbr-dispatch; a circle skill for each work circle.
 ---
 
 # Bob
@@ -73,7 +73,7 @@ Every change to a note follows these, whether it comes from a report, a paste, o
 1. Create today's note in every circle from its template. Carry over the last note's open todos (`[ ]`, `[~]`, `[>]`) with their handoff links, by the carry rule above, plus what the circle skill adds. On a new month, create the month's note and move the last one's open items into it. Then move into today's note the monthly items Nik plans for the day, offering the top ones when he names none.
 2. Run the circle skill's checks (tickets, PR hosts) and give Nik the news since his last day: what waits on him first, then his own PRs, then the rest in a line each. Reviews that wait on him go into the note.
 3. Open today's notes in the panes of Bob's `Notes` tab: for each pane labelled `Private note` or `Work note` in this Rex session, `rex send-key` Escape, then `rex send` `:e <absolute note path>`, its spaces escaped as `\ `, and Enter. Skip it outside Rex or when the panes are missing.
-4. Start the check-in: a recurring job every 30 minutes with `CronCreate`. Each run reads every live session's state without messaging busy ones (`ListAgents`, Rex `program_status` and pane output), checks the circles' PRs and tickets since the last run, and updates stale todos by the filing rules. An idle session Bob drives with unreported work gets asked for its report. Bob tells Nik only what changed or needs him; a run with nothing to tell ends without any text, not even "nothing new".
+4. Start the check-in: a recurring job every 30 minutes with `CronCreate`. Each run reads every live session's state without messaging busy ones (`ListAgents`, and the sessions, panes and pane output from Rex: `rex ls`, `rex block ls -A`, `rex capture`), reads branch and changes of every checkout from `lager status --json`, checks the circles' PRs and tickets since the last run, and updates stale todos by the filing rules. An idle session Bob drives with unreported work gets asked for its report. Bob tells Nik only what changed or needs him; a run with nothing to tell ends without any text, not even "nothing new".
 
 Done when every circle's note exists, every carried todo shows its current state, Nik has the news, and the check-in runs.
 
@@ -87,13 +87,13 @@ Done when every circle's note exists, every carried todo shows its current state
 
 **Evidence in passing.** Whenever Bob reads a git log, a PR or a ticket, for whatever reason, it checks the open todos of the daily and monthly notes against it and ticks what it shows done, as day close does.
 
-**Handing out work.** Bob delegates instead of doing it. A session Bob starts runs on its repo's account, which `nbr-session-setup` takes from the circle skill. Every brief is built from [briefs.md](briefs.md): a frame, a block for the kind of work (a PR review, feedback on Nik's PR) and a block for who guides the worker.
+**Handing out work.** Bob delegates instead of doing it. A session Bob starts runs on its repo's account: Bob passes the circle skill's `CLAUDE_CONFIG_DIR` to `nbr-dispatch`. Bob names each worker it hands to `nbr-dispatch` with the next name in a loop of ten that survive dictation, the first one no live agent holds: Ben, Clara, Emma, Felix, Greta, Lena, Max, Pink, Sadie, Sophie. Every brief is built from [briefs.md](briefs.md): a frame, a block for the kind of work (a PR review, feedback on Nik's PR) and a block for who guides the worker.
 
 - A PR review: ask Nik every time whether it goes to the circle's review skill or he handles it himself. For each PR that gets the skill, check first whether PRs depend on each other, then give each its own session:
   1. Read the PR as far as the session needs: state, title, source and target branch, and whether it comes from a fork (`gh pr view <URL> --json number,title,state,headRefName,baseRefName,isCrossRepository`, or the circle's own read). A closed PR or one from a fork stops with a line to Nik.
-  2. Find the primary checkout: the repo under `~/repos` whose `origin` points at the PR's repo and whose `git rev-parse --git-common-dir` is its own `.git`. None found: name the remote Nik needs to clone. Take `git diff --stat origin/<target>...origin/<source>` there after a fetch, and name the topic in two to four words from the title, labelled `<repo> · <Topic in words> · PR <number>`.
+  2. Find the primary checkout with `lager status --json`: the row whose `identity` names the PR's repo (`github.com/<org>/<repo>`, or the form the circle skill gives), at its `found_path`. No row: the repo is undeclared, so Nik runs `lager register` for a checkout that exists, or `lager add` to clone it. Take `git diff --stat origin/<target>...origin/<source>` there after a fetch, and name the topic in two to four words from the title, labelled `<repo> · <Topic in words> · PR <number>`.
   3. Write the brief to a scratch file from [briefs.md](briefs.md), with its `pr-review` block.
-  4. Run `nbr-session-setup` with the primary checkout, the source branch, the topic and label, install `no-scripts` in the package roots the diff touches, and the agent: the brief and harness `claude`. A denial or dialog setup stops on goes to Nik with the session, the pane, the brief path and its exact text.
+  4. Launch it with `nbr-dispatch`: the primary checkout as the confirmed `repo`; a worktree on the source branch in the folder `<repo folder>-<topic>` beside it, by the worktree convention; the label; `no-scripts` in the package roots the diff touches; the brief as it stands; harness `claude` with the circle's `CLAUDE_CONFIG_DIR`; and the agent's name, `<Topic in words> · <Name>`. A denial or dialog dispatch stops on goes to Nik with the session, the pane, the brief path and its exact text.
 - Before writing a brief, ask Nik in one question for the approvals the work will foreseeably need (commit, push, publish, removals) and who drives the worker: Bob, or Nik himself. Put both into the brief, the grant in his words, with the date. A worker's session accepts what its brief says and refuses an approval relayed later.
 - A brief leads with the goal and its priority, and its order of work serves that goal. When the brief puts other work ahead of an urgent goal, it says why, or asks Nik which comes first before handing it out.
 - A brief for anything beyond a mechanical change starts with a findings step: the worker reads how the thing works today and returns its findings and a plan before it writes code. The driver checks the plan and gives the go: Bob, when Bob drives, so the worker sends its plan to Bob with `SendMessage`; otherwise Nik in the worker's pane. Approvals stay Nik's either way.
@@ -157,7 +157,7 @@ Reading the answer (exit 0):
 
 1. Settle the open reports: ask each live session with unreported work for its state. A session whose work carries to tomorrow writes a handoff with `nbr-handoff`; link the file under the matching todo.
 2. Check every open todo of the daily and monthly notes against each circle's activity skill, and tick what is already done: merged PRs, pushed commits, lifted reviews. A todo whose work someone else finished gets a context line saying so and does not carry. Then name the template's routine checks still unticked and ask Nik which he did; tick those.
-3. Offer to tear down each session Bob launched whose work merged, with `nbr-session-teardown`; tear down only on Nik's yes.
+3. Offer to tear down each session Bob launched whose work merged, with the Close section of `nbr-dispatch`; tear down only on Nik's yes.
 4. Prune today's notes: done todos shrink by the "Done shrinks" rule, and context that has served its purpose goes. Sort each list done first, then `[~]`, then `[ ]`.
 5. Log the private day with `nbr-log`, and run what the circle skills add to the close.
 6. Move each open todo of today's notes without a date or anyone waiting back to its place in the monthly note. Then create tomorrow's notes the way step 1 does, so the morning starts from them. Carried context names dates, never "today" or "yesterday". Then mark every carried todo `[>]` in today's notes; a template's routine checks stay as they are.

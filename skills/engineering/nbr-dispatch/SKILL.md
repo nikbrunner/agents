@@ -1,132 +1,62 @@
 ---
 name: nbr-dispatch
-description: Start a fresh coding agent in a Rex session for another repository. Use when the user asks to dispatch, spawn, sidekick, fork, or hand off a task to Pi, Claude Code, Codex, or another coding harness.
-compatibility: Requires Rex.
+description: Start a coding agent in a repository's Rex session, or close that session once its work is done. Use when the user or a skill dispatches, spawns or hands off a task to Claude Code, Pi or Codex, or tears a session down.
+compatibility: Requires Rex and lager.
 ---
 
 # Dispatch
 
-Start a fresh coding-agent session in the target repository's Rex session. Invoke this skill explicitly as `/skill:nbr-dispatch`.
+Starts a coding agent in a repository's Rex session, or closes that session. Lager creates and removes worktrees and sessions; Rex finds sessions and panes. Runs inside Rex (`REX_SESSION` set); otherwise report blocked, and never do the task inline.
 
-When a session already runs in the target repository, ask the user whether to message it through `nbr-intercom` instead of starting a new one.
+## Inputs
 
-## Activation contract
+From the caller; a direct dispatch asks the user for what it needs.
 
-A user-supplied `<skill name="nbr-dispatch">...</skill>` definition followed by an affirmative task request activates this skill, even when the user does not repeat `/skill:nbr-dispatch`. Treat the supplied definition as routing instructions, not conversation context.
+- `repo`: the checkout, the `found_path` of its row in `lager status --json`, confirmed by the user. The row's `changes` is the pre-existing state.
+- `worktree`: none, or its folder and path, with a new branch and its base or an existing branch.
+- `install`: `normal`, `no-scripts` or `skip`, with the package roots.
+- `brief`: a file. `harness`: the agent CLI, by default the one running this session. `config_dir`, `label` and `name` when the caller has them.
 
-Once active:
+## Session
 
-- Check `REX_SESSION` before inspecting the target repository or Rex.
-- Perform only routing checks required by this skill. Do not inspect implementation files or edit the target repository directly.
-- If dispatch cannot run, report blocked. Never fall back to inline implementation.
-- Task approval authorizes dispatch, not bypassing dispatch.
-
-## Preconditions
-
-This skill runs inside Rex. Check before inspecting it or resolving a target:
-
-```bash
-test -n "${REX_SESSION:-}" || {
-  printf '%s\n' 'Dispatch must run inside Rex.' >&2
-  return 1 2>/dev/null || exit 1
-}
-```
-
-## Resolve and confirm the target
-
-Establish an exact Git checkout before creating a pane or starting an agent.
-
-- When the brief says “here”, “this repository”, or otherwise clearly names the current checkout, use the current Git root as the candidate.
-- When it refers to another project, infer a candidate from Git repositories under `repos_root`: the folder the user's agent instructions name for their checkouts, else `~/repos`. Include ordinary checkouts and linked worktrees, deduplicate their canonical Git roots, and use the brief and current session context to choose the best candidate.
-- A direct path in the brief is also a candidate.
-
-Use this inventory when another project needs to be inferred:
-
-```bash
-find "$repos_root" \( -type d -name .git -prune -print \) -o \( -type f -name .git -print \) |
-  while IFS= read -r git_entry; do
-    git -C "$(dirname "$git_entry")" rev-parse --show-toplevel
-  done | sort -u
-```
-
-Canonicalize the candidate before presenting it:
-
-```bash
-target_repo=$(git -C "$candidate" rev-parse --show-toplevel)
-target_repo=$(cd -- "$target_repo" && pwd -P)
-```
-
-Ask the user to confirm the resolved absolute target path in the current conversation. For example: “I resolved this to `/home/you/code/acme/project`. Dispatch there?” Do this even for the current checkout, unless a calling skill passes a target the user already confirmed. If no candidate is clear or several candidates tie, ask one focused question for the path. Do not open a repository picker and do not create a pane from an unconfirmed inference.
-
-## Name a worktree
-
-Only when the brief or the calling skill asks for a new worktree: name its topic and branch by the worktree convention in the user's global agent instructions, and confirm them with the user, unless the brief or calling skill already did. The worker never creates one; `nbr-session-setup` does, and a fresh worktree is clean, so skip the state check below. Tell the worker that its location is settled and is that worktree.
-
-## Check the target worktree
-
-After the user confirms the path, check its state before creating a session or pane:
-
-```bash
-git -C "$target_repo" status --short
-```
-
-When the output is empty, continue. When it is not, show the changed-file summary and ask the user to choose one action:
-
-- **Launch anyway**: start the worker and include the pre-existing status in its prompt. The worker must leave those changes alone unless the task explicitly requires them.
-- **Write a handoff**: return a copy-ready handoff containing the target, task, dirty-state summary, and suggested next step. Do not launch an agent.
-- **Create a tracker issue**: return the copy-ready handoff as the issue's draft, and name the ticket skill for the repo's tracker (`imfg-tickets` for Jira) or `gh issue create` for GitHub. Do not launch an agent.
-- **Stop**: make no change.
-
-## Resolve the harness
-
-Use an explicit `pi`, `claude`, or `codex` from the brief. Otherwise use the harness running the current session. If it cannot be identified, ask which of `pi`, `claude`, or `codex` to use. Do not open a harness picker.
+1. Find the live session in Rex: `rex ls --json` lists `.sessions[]` with `session_id` and `label`; a pane's `.foreground.cwd` from `rex block call -s "$session" -b <block> process` settles an unclear label. An agent already working there: offer `nbr-intercom` instead.
+2. None: create it with lager.
+   - The checkout as it stands: `lager session create "$repo" --json`.
+   - A new worktree: `git -C "$repo" fetch origin`, then `lager worktree add "$repo" "$folder" --path "$path" --create-session --json` with `--new-branch "$branch" --start "origin/$base"` or `--branch "$branch"`.
+   - A worktree that exists: `lager session create "$repo" "$folder" --json`, and `git -C "$path" pull --ff-only` when it is clean.
+   - Workaround until lager tracks remote branches: `git -C "$repo" branch --track "$branch" "origin/$branch"` before `--branch`.
+   - Workaround until lager takes a label: `rex session rename "$session" "$label"`.
+3. Install by the repo's `AGENTS.md` in each package root, else the checkout's root. `no-scripts` skips lifecycle scripts (`npm ci --ignore-scripts`), and code nobody has reviewed yet, such as a PR under review, always gets it.
 
 ## Launch
 
-Build a concise child prompt containing the confirmed repository, the task (a calling skill's brief goes in verbatim), relevant current-session context, dirty-state summary when applicable, and the instruction to implement, verify, and stop. Do not paste the raw conversation.
-
-Send these boundary instructions literally, alongside the task details:
+A caller's brief goes as it stands. A direct dispatch writes the task followed by:
 
 ```text
-You are the dispatched worker.
-Work directly in the selected repository and in this pane.
-Do not launch reviewers or other agents.
-Do not invoke Pi subagent tools, workflow orchestration, worktrees, or Rex commands.
-Do not inspect or switch to another repository.
-Ask before anything hard to undo or outward-facing, such as a push to the default branch. A yes from the user, typed here or relayed by the dispatching session, settles it.
-Follow directly applicable task skills in this pane; ignore unrelated skills.
-Pre-existing changes: <clean, or exact status summary>
-Commit: <only after the user approves; leave changes unstaged and hand over. Or "as you go", when the brief or calling skill says so, such as an approved plan or AFK work>
+You are the dispatched worker. Work only in this repository and pane; start no other agents, worktrees or Rex commands.
+Ask before anything hard to undo or outward-facing; a yes typed here or relayed by the dispatching session settles it.
+Pre-existing changes: <clean, or the status>. Commit: <only after approval, or as you go>.
+When done, reply only with: Repository, Task, Status, Changes, Verification, Remaining issues, Suggested next step.
+Report to <this session's name> with SendMessage: "On it" when you start, the handoff when done.
 ```
 
-When the result is judged by looking at it (UI, motion, a page), send `Do not invoke Pi subagent tools, workflow orchestration, worktrees, or Rex commands, except to start the dev server or Storybook in an idle pane of this session's Shells tab.` in place of the boundary line that names them, followed by `Hand over that server's live link; screenshots do not replace it.`
+The last line goes in only when both sides run Claude Code; this session's name is the first line of `ListAgents`.
 
-When the task updates a pull request, add `Before you hand over, bring the branch up to date with its target the way the repo does it, and resolve small conflicts so the PR merges clean. A rewrite that needs a force push, or a conflict where the two sides disagree on what the code should do, goes back as a question.`
+Take the first pane of the session's first tab whose foreground is a shell with an empty prompt (`rex block ls -s "$session" --json`, `rex block call … process`, `rex capture`); none: ask the user. Type one line into it:
 
-When the task builds or tests tooling for Rex itself, send the line `Do not invoke Pi subagent tools, workflow orchestration, or worktrees.` in place of the boundary line that names them, followed by `Run Rex commands only to test this task's changes, and close only sessions or panes you created.`
-
-The child may follow directly applicable task skills in this pane, but must not delegate this task to another agent or reviewer.
-
-Tell the child that the handoff below closes the dispatched task: its reply when that task is done contains only
-this copy-ready handoff. After that the user works with it directly, and it answers in plain conversation, writing
-a new handoff only when the user asks for one:
-
-```text
-Repository: <absolute path>
-Task: <what was requested>
-Status: <complete, blocked, or in progress>
-Changes: <files and behavior changed>
-Verification: <commands run and results>
-Remaining issues: <none or exact unresolved items>
-Suggested next step: <a recommendation or sensible options for continuing>
+```sh
+line="claude -n '$name' \"\$(cat '$brief')\""    # with config_dir: env CLAUDE_CONFIG_DIR='$config_dir' claude …; Pi or Codex: $harness "$(cat '$brief')"
+rex send -s "$session" -b "$block" "$line" && rex send-key -s "$session" -b "$block" Enter
 ```
 
-When both this session and the child run Claude Code, the child reports back through cross-session messages. Take this session's name from the first line of `ListAgents` and add to the child prompt:
+Check with `rex capture -s "$session" -b "$block" | tail -25`: a denial or dialog goes back to the user word for word. Return the session, pane and name, and leave the worker alone.
 
-```text
-Report back to the dispatching session <name> with SendMessage: one line when you start ("On it: <task>"), and the handoff when you finish.
+## Close
+
+Ask each other agent in the session through `nbr-intercom` whether it is done and what is still open; anything open, or no answer, stops the close. Stop what still runs in its panes (`ctrl+c`, and `docker compose down` where Compose ran). Then, last, since it ends the session it runs in:
+
+```sh
+lager worktree remove "$path" --yes --close-session    # the checkout as it stands: lager session close "$repo"
 ```
 
-Write the child prompt to a scratch file with the Write tool, so it never passes shell quoting. Then run `nbr-session-setup` with the confirmed repository, the worktree topic and branch when one was named, install `normal` for a new worktree, the worktree's label (or the repository's folder name for a main checkout), and the agent: the prompt file and the harness; setup names the agent. Setup stops on a denial or dialog; report what it returns as blocked. When it stops after creating a worktree, name that worktree so the user can remove it.
-
-Do not add `--wait`, wait for child completion, read child output, summarize its work, or close its pane. Return a short launch receipt with the confirmed repository, Rex session, pane, agent label or name, and that the child will leave its handoff in its pane. When the child's messages arrive, pass each one to the user in a line or two.
+Workaround until lager can let ignored files go: when it refuses over ignored files alone (`node_modules`), rerun with `--force`; any other loss stops the close. The branch stays.

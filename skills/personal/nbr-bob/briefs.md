@@ -43,8 +43,8 @@ dependency: pull a merged one whose checkout is clean on the target branch and o
 worktree of that repo on the needed ref beside its primary checkout, named <repo>-<topic>. Then offer to rerun
 that service, naming what it replaces (a running container, a port), and give the steps to try the PR against
 it. Once Nik is done with it, offer to stop the service, restore what it replaced and remove that worktree.
-Once Nik is done with the review, offer to tear this session down. On yes, run nbr-session-teardown on this
-session; it ends the session, so it runs last.
+Once Nik is done with the review, offer to tear this session down. On yes, close it with the Close section of
+nbr-dispatch; it ends this session, so it runs last.
 ```
 
 ### review-follow-up
