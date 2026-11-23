@@ -154,6 +154,8 @@ Use the skills I request and those relevant to the current step, especially for 
 
 A skill's **Sources of Truth** section links official docs. Verify against them before implementing a pattern from the skill: skills capture preferences, docs capture current API reality. TanStack docs are searched with the global `tanstack` CLI.
 
+Engineering skills stay neutral, like pure functions: inputs in, steps out. Names, conventions and accounts come from the caller or from a personal skill such as `nbr-bob`.
+
 When a skill turns out to have a gap, stale content, a missing cross-reference, or a preference of mine it doesn't capture, propose the change and let me decide.
 
 A preference or correction of mine goes into the skill that owns its topic, or into this file. Memory is the last resort, for what no skill or instruction file covers; a memory I never see changes nothing for the next project.
