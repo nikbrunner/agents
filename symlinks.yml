@@ -1,6 +1,6 @@
 common:
   # claude-work is an isolated CLAUDE_CONFIG_DIR for a second Anthropic
-  # account (see ccw() in dots' .zshrc), sharing the same
+  # account (see cc() in dots' .zshrc), sharing the same
   # AGENTS.md/agents/settings/skills as the primary ~/.claude. Its hooks
   # dir (~/.claude-work/hooks) is a manual home->home symlink to
   # ~/.claude/hooks, not managed here — ~/.claude/hooks/enforce is itself

@@ -29,7 +29,7 @@ A plain answer or status check, with nothing agreed and nobody holding a follow-
 
 Tell the user in one line which Rex session and pane you used.
 
-Outside Rex, or when no Rex pane matches: run `ListAgents`, which shows session names, not working directories. Match the repo by the name's prefix (`iter-nvim-be` runs in iter.nvim). When several names match, ask the user which one. `ListAgents` only shows sessions under the same Claude config dir, so a session started with another `CLAUDE_CONFIG_DIR` (such as `ccw`) is missing there.
+Outside Rex, or when no Rex pane matches: run `ListAgents`, which shows session names, not working directories. Match the repo by the name's prefix (`iter-nvim-be` runs in iter.nvim). When several names match, ask the user which one. `ListAgents` only shows sessions under the same Claude config dir, so a session started with another `CLAUDE_CONFIG_DIR` (such as `cc work`) is missing there.
 
 When none of these lists a session there, the message has no receiver. Tell the user.
 
