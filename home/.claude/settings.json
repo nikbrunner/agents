@@ -79,7 +79,7 @@
     "deny": [],
     "ask": []
   },
-  "model": "fable",
+  "model": "opus",
   "disabledMcpjsonServers": [
     "chrome-devtools"
   ],
