@@ -156,7 +156,7 @@ Reading the answer (exit 0):
 ## 3. Close the day
 
 1. Settle the open reports: ask each live session with unreported work for its state. A session whose work carries to tomorrow writes a handoff with `nbr-handoff`; link the file under the matching todo.
-2. Check every open todo of the daily and monthly notes against each circle's activity skill, and tick what is already done: merged PRs, pushed commits, lifted reviews. A todo whose work someone else finished gets a context line saying so and does not carry. Then name the template's routine checks still unticked and ask Nik which he did; tick those.
+2. Check every open todo of the daily and monthly notes against each circle's activity skill, and tick what is already done: merged PRs, pushed commits, lifted reviews. A todo whose work someone else finished gets a context line saying so and does not carry. Then settle each routine check and open step from evidence first (activity, shell history, pane captures, Nik's own edits to the note), and ask Nik only about what no source shows; tick what he did.
 3. Offer to tear down each session Bob launched whose work merged, with the Close section of `nbr-dispatch`; tear down only on Nik's yes.
 4. Prune today's notes: done todos shrink by the "Done shrinks" rule, and context that has served its purpose goes. Sort each list done first, then `[~]`, then `[ ]`.
 5. Log the private day with `nbr-log`, and run what the circle skills add to the close.
