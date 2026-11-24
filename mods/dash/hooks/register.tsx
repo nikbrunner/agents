@@ -70,6 +70,7 @@ let lastSummaryAt = 0
 let isSummarizing = false
 let isThreading = false
 let isReseating = false
+let paneName = ''
 
 async function refreshGit($: EngineInterface) {
   const cwd = await $.session.cwd()
@@ -179,15 +180,28 @@ async function refreshTitle($: EngineInterface) {
     'sh',
     '-c',
     'f=$(ls "$1"/projects/*/"$2".jsonl 2>/dev/null | head -1); [ -n "$f" ] || exit 0; ' +
-      't=$(grep -o \'"customTitle":"[^"]*"\' "$f" | tail -1); ' +
-      '[ -n "$t" ] || t=$(grep -o \'"aiTitle":"[^"]*"\' "$f" | tail -1); ' +
-      'printf %s "$t" | sed \'s/.*":"//; s/"$//\'',
+      't=$(grep -o \'"customTitle":"[^"]*"\' "$f" | tail -1); k=custom; ' +
+      '[ -n "$t" ] || { t=$(grep -o \'"aiTitle":"[^"]*"\' "$f" | tail -1); k=ai; }; ' +
+      'printf "%s\\t" "$k"; printf %s "$t" | sed \'s/.*":"//; s/"$//\'',
     'sh',
     configDir,
     await $.session.id(),
   ])
-  const found = run.stdout.trim()
-  if (found) await update($, title, () => found)
+  const [kind, raw = ''] = run.stdout.split('\t')
+  const found = raw.trim()
+  if (!found) return
+  await update($, title, () => found)
+  if (kind === 'custom') void namePane($, found)
+}
+
+async function namePane($: EngineInterface, name: string) {
+  if (name === paneName) return
+  const session = await $.env.get('REX_SESSION')
+  const block = await $.env.get('REX_BLOCK')
+  if (!session || !block) return
+  paneName = name
+  const run = await $.process.run(['rex', 'block', 'rename', '-s', session, block, name], { timeoutMs: 5000 }).catch(() => null)
+  if (run?.exitCode !== 0) paneName = ''
 }
 
 async function refreshWork($: EngineInterface) {
@@ -301,6 +315,7 @@ export const register: Register = on => {
       void summarizeThread($)
     }
     queueGit($)
+    if (!paneName) void refreshTitle($)
     void refreshUsage($)
     void refreshWork($)
     void $.session.model().then(m => update($, agent, a => ({ ...a, model: prettyModel(m) })))
@@ -374,8 +389,10 @@ export const register: Register = on => {
   on('command.run', { command: 'rename' }, async ($, e, next) => {
     const result = await next(e)
     const name = e.args.trim()
-    if (name !== '') await update($, title, () => name)
-    else void refreshTitle($)
+    if (name !== '') {
+      await update($, title, () => name)
+      void namePane($, name)
+    } else void refreshTitle($)
     return result
   })
 

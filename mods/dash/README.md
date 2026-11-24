@@ -12,6 +12,8 @@ Its **Review** and **Audit** buttons run `/ponytail-review` and `/ponytail-audit
 
 Pressing a changed file opens it in the `Editor` block of the current Rex session: in its nvim when one runs there, else as `nvim <file>` in its shell. The Edit tab then takes the focus.
 
+In Rex, a named session (`claude -n` or `/rename`) gives its pane that name, so Rex's session switcher lists the pane by it. An unnamed session leaves the pane's label as it is.
+
 ## Settings
 
 | Variable     | Does                                                                                              |
