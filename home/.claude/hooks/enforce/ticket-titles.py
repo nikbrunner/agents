@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Stop hook: block a reply that names a Jira ticket by its bare key.
+"""Stop hook: block a reply that names a Jira ticket or a PR/issue number bare.
 
-A key counts as titled when a space and a title follow it ("CP-244 Sign-in page",
-"CP-244 (sign-in page)") or when it sits in a link whose text carries the title.
+A Jira key or a `#123` number counts as titled when a space and a title follow it
+("CP-244 Sign-in page", "web-ui #32 (corner radius)") or when it sits in a link whose
+text carries the title. A number also counts as titled when a conventional-commit
+title follows it ("lazyjira #43 chore(main): release 0.15.1").
 Code spans, code blocks and URLs are not checked.
 """
 import json
@@ -11,7 +13,9 @@ import sys
 
 PROJECTS = ("WEBSDK", "CP", "LABELS", "LS", "AS")
 KEY = re.compile(r"(?<![\w/.\[-])(" + "|".join(PROJECTS) + r")-\d+(?![\w-])")
+NUMBER = re.compile(r"(?<![\w/.\[&#-])#\d+(?![\w-])")
 TITLED = re.compile(r"(?:\s+[A-Z`\[(\"“]|,\s*[\"“]|:\s+[A-Z])")
+COMMIT_TITLED = re.compile(r"\s+[a-z]+(?:\([^)\n]*\))?!?:\s")
 
 
 def last_reply(transcript_path):
@@ -48,6 +52,10 @@ def bare_keys(text):
     for match in KEY.finditer(text):
         if not TITLED.match(text, match.end()):
             found.append(match.group(0))
+    for match in NUMBER.finditer(text):
+        end = match.end()
+        if not (TITLED.match(text, end) or COMMIT_TITLED.match(text, end)):
+            found.append(match.group(0))
     return sorted(set(found))
 
 
@@ -62,8 +70,9 @@ def main():
     if keys:
         print(json.dumps({
             "decision": "block",
-            "reason": "Bare ticket key in the reply: " + ", ".join(keys)
-            + ". Give each ticket its title, e.g. \"CP-244 Sign-in page\", and send the reply again.",
+            "reason": "Bare ticket key or PR/issue number in the reply: " + ", ".join(keys)
+            + ". Give each its title, e.g. \"CP-244 Sign-in page\" or \"web-ui #32 Components follow"
+            " the global corner radius\", and send the reply again.",
         }))
 
 
