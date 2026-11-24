@@ -1,12 +1,12 @@
 ---
 name: nbr-apple-music
-description: Curate, clean up and organize Nik's Apple Music through the apple-music MCP. Use when asked to build or refine a playlist, retire stale playlists or tracks, or sort playlists into folders.
+description: Curate, clean up and organize Nik's Apple Music through the apple-music MCP. Use when asked to build or refine a playlist, import a mix or audio file such as a YouTube set, retire stale playlists or tracks, or sort playlists into folders.
 compatibility: macOS with Music.app, and the apple-music MCP at --level api.
 ---
 
 # Apple Music
 
-Every write goes through the `apple-music` MCP, apart from cover art and playlist descriptions, which it has no tool for. Its tool descriptions cover parameters; this skill covers the order of work and what they leave out.
+Every write goes through the `apple-music` MCP, apart from cover art, playlist descriptions and local file imports, which it has no tool for. Its tool descriptions cover parameters; this skill covers the order of work and what they leave out.
 
 ## Curate a playlist
 
@@ -66,6 +66,34 @@ Done when Nik sees the cover in Music. Both commands can return errors and `coun
 
 Set the description with `set description of p to "..."` and read it back.
 
+## Import a mix
+
+For a DJ set or mix from YouTube or another site yt-dlp supports, landing in a playlist and in iCloud so it plays on every device.
+
+1. **Download** to `~/Music/Mixes/`:
+
+   ```sh
+   yt-dlp --no-playlist -x --audio-format m4a --audio-quality 192K --embed-thumbnail --embed-metadata --no-embed-chapters --convert-thumbnails jpg -o "$HOME/Music/Mixes/%(title)s.%(ext)s" --print after_move:filepath --no-simulate "URL"
+   ```
+
+   `--embed-metadata` writes the video's chapters as a data track, and a file with a chapter track ends in iCloud status `error`; `--no-embed-chapters` keeps it out. Without `--audio-quality 192K` the AAC comes out near 300 kbps, nearly doubling the size over a source YouTube streams at about 130 to 160 kbps.
+
+2. **Fit the iCloud limits**: under 200 MB and under 2 hours, or the track stays `ineligible`. Split a longer file at the chapter start closest to an even cut (`yt-dlp --print '%(chapters)j' URL`), or into equal parts when there are none:
+
+   ```sh
+   ffmpeg -ss START -i IN -t LEN -map 0:a -map 0:v -c copy -map_metadata 0 -map_chapters -1 -disposition:v:0 attached_pic -metadata title="TITLE (Part N)" -metadata track="N/M" OUT
+   ```
+
+3. **Import** into the playlist through Music.app:
+
+   ```sh
+   osascript -e 'tell application "Music" to add POSIX file "/path/file.m4a" to (first user playlist whose name is "NAME")'
+   ```
+
+   The import can land a track in the library and leave it out of the playlist, so read the playlist back and add a missing track with `duplicate (first track of library playlist 1 whose database ID is ID) to (first user playlist whose name is "NAME")`. Music.app copies the file into its media folder, so move the download to the Trash once the track is uploaded. It skips a file whose title matches a track already in the library; to replace that track's audio, overwrite the file at its `location` and `refresh` the track. Deleting a track through AppleScript leaves its file in the media folder, so trash that too.
+
+4. **Verify.** Done when `cloud status` of each imported track reads `uploaded`; it takes a few minutes, so poll it in the background. `error` gets one retry with File → Library → Update Cloud Library, after checking the file with `ffprobe` for a stream beyond audio and cover art.
+
 ## Clean up
 
 `delete` and library `remove` are irreversible, run without a confirmation step, and sync to every device through iCloud. Each one runs from a list Nik approved in this conversation, naming the exact playlist or track.
@@ -83,7 +111,7 @@ Set the description with `set description of p to "..."` and read it back.
 
 3. **Propose.** A table with one row per candidate: the item, the evidence, and the action. Pick the mildest action that does the job: remove from playlist, then delete the playlist, then remove from library. Wait for Nik's approval of the table.
 4. **Back up.** Save the play-history output for the whole library to `~/Music/applemusic-backups/library-YYYYMMDD.tsv` as the baseline. `library(action="snapshot")` times out on this library. For each playlist about to be deleted or thinned, run `playlist(action="tracks", playlist="NAME", limit=0, format="none", export="csv")`. The exports land in `~/.cache/applemusic-mcp`, where a cache clear wipes them, and they are the only undo for a delete. Copy them to `~/Music/applemusic-backups/` first.
-5. **Apply** in the approved order, naming title and artist on every track removal. A partial title match that hits several tracks must end in Nik choosing one.
+5. **Apply** in the approved order, naming title and artist on every track removal. A partial title match that hits several tracks must end in Nik choosing one. `remove` matches title substrings and runs for real even with `dry_run=True`, so when the title sits inside another track's (`Mix #11` inside `Mix #11 (Part 1)`), delete by `database ID` through Music.app instead.
 6. **Verify.** Run the script again and diff columns 1, 2 and 6 against the baseline, since plays and dates drift. Done when that diff and `config(action="audit-log")` match the approved table exactly. Report any difference.
 
 ## Organize
