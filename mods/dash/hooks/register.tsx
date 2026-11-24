@@ -273,7 +273,7 @@ async function summarizeThread($: EngineInterface) {
       system:
         'You say what a coding conversation is working on right now: the thread its latest prompts share, not only the last step. ' +
         'Repeat the current line word for word unless the work has clearly moved on. ' +
-        'Reply with one line of at most 8 words, sentence case, no quotes, no trailing period.',
+        'Reply with one line of at most 5 words, sentence case, no quotes, no trailing period.',
       prompt: [
         `Current line: ${(await read($, thread)) || '(none)'}`,
         `Developer prompts, oldest first:\n${prompts.map(p => `- ${p.slice(0, 300)}`).join('\n')}`,
