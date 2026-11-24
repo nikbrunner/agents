@@ -300,6 +300,11 @@
         "ledger": true,
         "sendNames": true
       }
+    },
+    "cc-plugin-agents-md@builtin": {
+      "options": {
+        "instructionFiles": "claude-md-and-agents-md"
+      }
     }
   },
   "autoUpdatesChannel": "latest",
