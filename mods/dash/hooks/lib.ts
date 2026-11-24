@@ -113,6 +113,11 @@ export function oneLine(text: string): string {
   return (text.split('\n').find(l => l.trim() !== '') ?? '').trim().replace(/[.。]$/, '')
 }
 
+export function splitName(name: string): { topic: string; persona: string } | undefined {
+  const at = name.lastIndexOf(' · ')
+  return at > 0 ? { topic: name.slice(0, at), persona: name.slice(at + 3) } : undefined
+}
+
 export function clip(text: string, width: number, fromStart = false): string {
   if (text.length <= width) return text
   if (width <= 0) return ''

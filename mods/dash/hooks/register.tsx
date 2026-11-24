@@ -2,7 +2,7 @@ import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register, RenderChildren, ResolveInput, SessionUsage } from 'claude-code'
 
 import type { Agent, Task, Usage } from '../types'
-import { bar, byNumericName, clip, describeCall, editDelta, duration, fileTree, heat, oneLine, parseGit, planName, prettyModel, until } from './lib'
+import { bar, byNumericName, clip, describeCall, editDelta, duration, fileTree, heat, oneLine, parseGit, planName, prettyModel, splitName, until } from './lib'
 
 const CACHE_TTL_MS = 60 * 60 * 1000
 const MODEL = 'haiku'
@@ -71,6 +71,9 @@ let isSummarizing = false
 let isThreading = false
 let isReseating = false
 let paneName = ''
+let customTitle = ''
+let isTopicNamed = false
+let titleRun: Promise<void> | null = null
 
 async function refreshGit($: EngineInterface) {
   const cwd = await $.session.cwd()
@@ -175,7 +178,12 @@ async function loadAgent($: EngineInterface) {
   }))
 }
 
-async function refreshTitle($: EngineInterface) {
+function refreshTitle($: EngineInterface) {
+  titleRun ??= readTitle($).finally(() => (titleRun = null))
+  return titleRun
+}
+
+async function readTitle($: EngineInterface) {
   const run = await $.process.run([
     'sh',
     '-c',
@@ -191,7 +199,23 @@ async function refreshTitle($: EngineInterface) {
   const found = raw.trim()
   if (!found) return
   await update($, title, () => found)
-  if (kind === 'custom') void namePane($, found)
+  if (kind !== 'custom' || found === customTitle) return
+  customTitle = found
+  const topic = splitName(found)?.topic
+  if (topic)
+    await update($, thread, t => {
+      isTopicNamed = !t
+      return t || topic
+    })
+  await syncPane($)
+}
+
+// A "<topic> · <persona>" name keeps its persona while the topic follows the thread line; any other name stays as given.
+async function syncPane($: EngineInterface) {
+  const split = splitName(customTitle)
+  const topic = await read($, thread)
+  const label = split ? `${topic || split.topic} · ${split.persona}` : customTitle || topic
+  if (label) await namePane($, label)
 }
 
 async function namePane($: EngineInterface, name: string) {
@@ -248,14 +272,17 @@ async function summarizeThread($: EngineInterface) {
       maxTokens: 30,
       system:
         'You say what a coding conversation is working on right now: the thread its latest prompts share, not only the last step. ' +
-        'Keep the current line unless the work has clearly moved on. ' +
+        'Repeat the current line word for word unless the work has clearly moved on. ' +
         'Reply with one line of at most 8 words, sentence case, no quotes, no trailing period.',
       prompt: [
         `Current line: ${(await read($, thread)) || '(none)'}`,
         `Developer prompts, oldest first:\n${prompts.map(p => `- ${p.slice(0, 300)}`).join('\n')}`,
       ].join('\n\n'),
     })
-    if (r.isAnswered) await update($, thread, () => oneLine(r.text))
+    if (r.isAnswered) {
+      await update($, thread, () => oneLine(r.text))
+      await syncPane($)
+    }
   } finally {
     isThreading = false
   }
@@ -312,10 +339,19 @@ export const register: Register = on => {
     if (e.text.trim() !== '' && !e.text.startsWith('/')) {
       prompts = [...prompts, e.text].slice(-5)
       void update($, now, () => 'Reading the request')
-      void summarizeThread($)
+      void (async () => {
+        if (!customTitle) await refreshTitle($)
+        // The transcript, and the name in it, is written just after the session's first prompt.
+        if (!customTitle && prompts.length === 1) {
+          await new Promise<void>(done => $.clock.after(1500, done))
+          await refreshTitle($)
+        }
+        // The name the session was given already says what its first prompt is about.
+        if (isTopicNamed) isTopicNamed = false
+        else await summarizeThread($)
+      })()
     }
     queueGit($)
-    if (!paneName) void refreshTitle($)
     void refreshUsage($)
     void refreshWork($)
     void $.session.model().then(m => update($, agent, a => ({ ...a, model: prettyModel(m) })))
@@ -391,7 +427,13 @@ export const register: Register = on => {
     const name = e.args.trim()
     if (name !== '') {
       await update($, title, () => name)
-      void namePane($, name)
+      customTitle = name
+      const topic = splitName(name)?.topic
+      if (topic) {
+        await update($, thread, () => topic)
+        isTopicNamed = true
+      }
+      void syncPane($)
     } else void refreshTitle($)
     return result
   })
