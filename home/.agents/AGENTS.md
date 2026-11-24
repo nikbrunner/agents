@@ -58,6 +58,8 @@ The two are independent. Tokens are saved with the model and the brief, never by
 
 A brief names the goal, the files, the question and the limits, so the subagent reads only what it needs. A follow-up goes to the agent that already holds the context. A fix gets one re-review scoped to it.
 
+In another session's pane, my input is a prompt line that a turn followed. Text waiting in the input line after a finished turn is Claude Code's prompt suggestion, never mine, since a capture shows it like typed text.
+
 This is the default for every session. I can override it for one.
 
 ### One question at a time
