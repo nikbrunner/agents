@@ -1,7 +1,7 @@
 ---
 name: nbr-intercom
-description: Intercom between agent sessions running in different repos, through Rex panes or Claude Code cross-session messages (ListAgents, SendMessage). Use when the user says "intercom" or asks to check with, ask, or get status from another session, and when the current work needs an answer from another repo, touches work going on there, or turns up an issue that belongs there.
-compatibility: Requires the rex CLI or Claude Code cross-session messaging (ListAgents and SendMessage).
+description: Intercom between agent sessions running in different repos, through Claude Code cross-session messages (ListAgents, SendMessage), with Rex panes to find peers and reach the ones ListAgents misses. Use when the user says "intercom" or asks to check with, ask, or get status from another session, and when the current work needs an answer from another repo, touches work going on there, or turns up an issue that belongs there.
+compatibility: Requires Claude Code cross-session messaging (ListAgents and SendMessage); the rex CLI to find panes and reach Pi, Codex or sessions under another Claude config dir.
 ---
 
 # Intercom
@@ -19,19 +19,17 @@ A plain answer or status check, with nothing agreed and nobody holding a follow-
 
 ## Find the peer
 
-**In Rex (`REX_SESSION` is set), use Rex first.** It sees every session regardless of Claude config dir.
+Run `ListAgents`. It shows the Claude sessions under the same Claude config dir by name, prefixed by repo: `labels-web-66` runs in labels-web, `iter-nvim-be` in iter.nvim. A listed peer is reached with `SendMessage`. When several names match, ask the user which one.
+
+In Rex (`REX_SESSION` is set), Rex shows which session and pane runs which repo, across every config dir and harness:
 
 1. `rex ls` lists sessions by label (a repo name, or a PR title like `PR 20 · Labels configuration`).
 2. `rex block ls -s <session>` lists its panes; an agent pane carries its current topic and the session's persona (`Brush wheel keys · Clara`), or `Agent I`, `Agent II`, … before its first prompt.
-3. Confirm the pane with `rex capture -s <session> -b <block> | tail -25`: the status line names the repo and the Claude session (`[Bob]`, `[pr-20-labels-config]`).
-4. Send the message as a bracketed paste, so its newlines stay in the input instead of submitting it, then submit it: `rex send -s <session> -b <block> $'\e[200~'"$message"$'\e[201~'` and `rex send-key -s <session> -b <block> Enter`. Check with `rex capture` that it shows after a `❯` prompt.
-5. The reply does not arrive as a new message. When you need it, wait in the turn with an until-loop on `rex capture` for the pane's next `· done HH:MM` line (Bash `timeout` up to 240000), then read the reply from the capture.
+3. `rex capture -s <session> -b <block> | tail -25` shows the pane's state; a Claude status line names the repo and the Claude session (`[Bob]`, `[pr-20-labels-config]`).
 
-Tell the user in one line which Rex session and pane you used.
+Use Rex to settle which `ListAgents` name belongs to which repo, to read a peer's state when that saves a question, and to find a peer `ListAgents` misses: a session under another `CLAUDE_CONFIG_DIR` (such as `cc work`), or a Pi or Codex agent.
 
-Outside Rex, or when no Rex pane matches: run `ListAgents`, which shows session names, not working directories. Match the repo by the name's prefix (`iter-nvim-be` runs in iter.nvim). When several names match, ask the user which one. `ListAgents` only shows sessions under the same Claude config dir, so a session started with another `CLAUDE_CONFIG_DIR` (such as `cc work`) is missing there.
-
-When none of these lists a session there, the message has no receiver. Tell the user.
+When neither lists a session in that repo, the message has no receiver. Tell the user.
 
 ## Write the message
 
@@ -45,7 +43,16 @@ The peer answers in whatever shape it is given, so the message carries the conve
 
 A request to change something in the peer's repo is a proposal. The peer decides with its own human whether to act.
 
-Then end the turn (in Rex, wait in the turn as above when the reply matters). The reply arrives as a new message. A peer running in another permission mode holds the message until its human approves it, and a delivery notice says so.
+## Send
+
+**A peer in `ListAgents`**: send with `SendMessage`, then end the turn. The reply arrives as a new message. A peer running in another permission mode holds the message until its human approves it, and a delivery notice says so.
+
+**A peer only Rex finds**: paste the message into its prompt.
+
+1. Send it as a bracketed paste, so its newlines stay in the input instead of submitting it, then submit it: `rex send -s <session> -b <block> $'\e[200~'"$message"$'\e[201~'` and `rex send-key -s <session> -b <block> Enter`. Check with `rex capture` that it shows after a `❯` prompt.
+2. The reply stays in the peer's pane. When you need it, wait in the turn with an until-loop on `rex capture` for the pane's next `· done HH:MM` line (Bash `timeout` up to 240000), then read the reply from the capture.
+
+Tell the user in one line which Rex session and pane you used.
 
 ## Answer
 

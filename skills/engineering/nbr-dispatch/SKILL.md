@@ -40,7 +40,7 @@ When done, reply only with: Repository, Task, Status, Changes, Verification, Rem
 Report to <this session's name> with SendMessage: "On it" when you start, the handoff when done.
 ```
 
-The last line goes in only when both sides run Claude Code; this session's name is the first line of `ListAgents`.
+The last line goes in only when both sides run Claude Code under the same config dir; this session's name is the first line of `ListAgents`.
 
 Take the first pane of the session's first tab whose foreground is a shell with an empty prompt (`rex block ls -s "$session" --json`, `rex block call … process`, `rex capture`); none: ask the user. Type one line into it:
 
