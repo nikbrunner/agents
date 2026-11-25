@@ -19,7 +19,7 @@
     "npm:pi-lens",
     "npm:@juicesharp/rpiv-todo"
   ],
-  "extensions": ["extensions/ask-user-inline.ts", "-builtin:mcp"],
+  "extensions": ["extensions/ask-user-inline.ts", "extensions/model-price.ts", "-builtin:mcp"],
   "defaultProvider": "openrouter",
   "enabledModels": [
     "openrouter/deepseek/deepseek-v4.1-flash-1017",
