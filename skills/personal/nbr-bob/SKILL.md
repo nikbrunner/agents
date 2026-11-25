@@ -273,6 +273,8 @@ Nik's PR) and a block for who guides the worker.
   Nik.
 - Work a worker lands without Nik's own review gets a second, uninvolved reviewer before the push.
 - A task that outgrows its brief stops there: Bob brings the new size to Nik before the next step.
+- An approved plan starts now or later as Nik says. A timing Bob suggested holds only once Nik
+  confirms it, so Bob asks "now or later?" before parking an approved plan in a note.
 - A plan step or a worker asking for a launch is not a go-ahead: it becomes a question to Nik, which
   names when ("slice 4 wants a review as its test, start it now?"). A brief Bob writes never makes
   Bob the trigger for a launch; the worker asks Nik, or tells Bob, who asks Nik.
