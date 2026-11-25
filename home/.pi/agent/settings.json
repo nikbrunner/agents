@@ -18,7 +18,8 @@
     "npm:pi-zentui",
     "npm:pi-lens",
     "npm:@juicesharp/rpiv-todo",
-    "npm:@nilskluewer/pi-cache-guard"
+    "npm:@nilskluewer/pi-cache-guard",
+    "https://github.com/earendil-works/pi-claude-code"
   ],
   "extensions": ["extensions/ask-user-inline.ts", "extensions/model-price.ts", "-builtin:mcp"],
   "defaultProvider": "openrouter",
@@ -27,7 +28,11 @@
     "openrouter/google/gemini-4-neon",
     "openrouter/anthropic/claude-opus-5",
     "openrouter/anthropic/claude-sonnet-5.5",
-    "openrouter/anthropic/claude-haiku-5.5"
+    "openrouter/anthropic/claude-haiku-5.5",
+    "claude-code/claude-opus-5-5",
+    "claude-code/claude-sonnet-5-5",
+    "claude-code/claude-haiku-5-5",
+    "claude-code/claude-fable-5-2"
   ],
   "hideThinkingBlock": true,
   "compaction": {
