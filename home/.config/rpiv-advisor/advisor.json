@@ -1,4 +1,4 @@
 {
-  "modelKey": "openai-codex/gpt-6-astra",
+  "modelKey": "openrouter/anthropic/claude-opus-5.5",
   "effort": "high"
 }

@@ -359,7 +359,7 @@ My full settings are in [`home/.claude/settings.json`](home/.claude/settings.jso
 
 ```json
 {
-  "model": "opus[1m]",
+  "model": "sonnet",
   "editorMode": "vim",
   "tui": "fullscreen",
   "voice": { "enabled": true, "mode": "hold" },
@@ -373,7 +373,7 @@ My full settings are in [`home/.claude/settings.json`](home/.claude/settings.jso
 }
 ```
 
-- `model`: Opus with the 1M-token context window.
+- `model`: Sonnet.
 - `editorMode`: Vim keys in the prompt.
 - `tui`: the fullscreen interface.
 - `voice`: dictation while a key is held.

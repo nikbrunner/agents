@@ -21,16 +21,13 @@
     "npm:@juicesharp/rpiv-todo"
   ],
   "extensions": ["extensions/ask-user-inline.ts", "-builtin:mcp"],
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-6-luna",
+  "defaultProvider": "openrouter",
   "enabledModels": [
-    "openai-codex/gpt-5.3-codex-spark",
-    "openrouter/z-ai/glm-5.3-flash",
-    "openrouter/deepseek/deepseek-v4-flash-0731",
-    "openrouter/openrouter/auto",
-    "openai-codex/gpt-6-astra",
-    "openai-codex/gpt-6-sol",
-    "openai-codex/gpt-6-luna"
+    "openrouter/deepseek/deepseek-v4.1-flash-1017",
+    "openrouter/google/gemini-4-neon",
+    "openrouter/anthropic/claude-opus-5",
+    "openrouter/anthropic/claude-sonnet-5.5",
+    "openrouter/anthropic/claude-haiku-5.5"
   ],
   "hideThinkingBlock": true,
   "compaction": {

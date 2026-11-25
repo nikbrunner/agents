@@ -79,7 +79,7 @@
     "deny": [],
     "ask": []
   },
-  "model": "opus",
+  "model": "sonnet",
   "disabledMcpjsonServers": ["chrome-devtools"],
   "hooks": {
     "Notification": [],
