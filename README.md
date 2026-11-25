@@ -138,6 +138,9 @@ flowchart LR
     activity["nbr-activity<br/>one day's activity"]
     nlog["nbr-log<br/>private daily note"]
     things["nbr-changelog-things"]
+    voice["nbr-voice<br/>replies and drafts"]
+    plan["nbr-plan"]
+    pr["nbr-create-pr"]
   end
   work["work skills<br/>private repo"]
   report --> bob
@@ -153,9 +156,16 @@ flowchart LR
   raudit -- runs against --> conventions
   nlog --> activity
   things --> activity
+  bob --> voice
+  plan --> voice
+  pr --> voice
   classDef private stroke-dasharray: 5 5
   class work private
 ```
+
+#### Voice
+
+`nbr-voice` holds how agents talk to me and how prose in my name reads, with a rewrite pass that `nbr-plan`, `nbr-create-pr` and Bob run on their drafts. In Claude Code three hooks in [`home/.claude/hooks/enforce`](home/.claude/hooks/enforce) keep it in force: `voice-context.sh` puts the skill in context at session start and after compaction, `voice-reminder.sh` adds a short reminder to every prompt, and `voice-words.py` sends a reply back when it uses a word from the skill's forbidden list.
 
 #### A day with Bob
 
@@ -222,10 +232,11 @@ Install these first:
 
 ### Personal
 
-Bob and the daily notes, tasks in Things 3, and speech from ElevenLabs.
+How agents write for me, Bob and the daily notes, tasks in Things 3, and speech from ElevenLabs.
 
 | Skill                  | What it does                                                  | Requires                                                                                                        |
 | ---------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `nbr-voice`            | How agents talk to me and write in my name                    | jq and Python 3 for its Claude Code hooks                                                                       |
 | `nbr-bob`              | Run Bob, my digital assistant, through the day across circles | Rex, lager, `gh`, `nbr-activity`, `nbr-log`, `nbr-dispatch`                                                     |
 | `nbr-report-to-bob`    | Send this session's state to Bob                              | Claude Code; Rex across accounts                                                                                |
 | `nbr-activity`         | Collect one day's commits and GitHub activity                 | macOS, git, jq, `gh`                                                                                            |
