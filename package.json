@@ -1,0 +1,15 @@
+{
+  "name": "agents",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "format": "vp fmt",
+    "verify:format": "vp fmt --check"
+  },
+  "devDependencies": {
+    "vite-plus": "^1.4.0"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
