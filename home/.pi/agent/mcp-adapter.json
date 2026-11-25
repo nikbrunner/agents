@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "atlassian-rovo-mcp": {
+      "directTools": true
+    }
+  },
+  "imports": ["claude-code", "claude-desktop"]
+}
