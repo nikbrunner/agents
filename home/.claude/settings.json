@@ -356,6 +356,7 @@
   "theme": "custom:black-atom",
   "editorMode": "vim",
   "idleCompaction": false,
+  "switchModelsOnFlag": false,
   "agentPushNotifEnabled": true,
   "autoMode": {
     "environment": [
