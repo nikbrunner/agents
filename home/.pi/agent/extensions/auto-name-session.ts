@@ -8,8 +8,8 @@ import {
 } from "./lib/auto-name-session";
 
 const AUTO_NAME_MODEL = {
-	provider: "openai-codex",
-	id: "gpt-5.6-luna",
+	provider: "openrouter",
+	id: "deepseek/deepseek-v4.1-flash-1017",
 } as const;
 
 const SYSTEM_PROMPT = `You create searchable session titles for coding and technical work.

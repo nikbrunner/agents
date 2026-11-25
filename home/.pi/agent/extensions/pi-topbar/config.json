@@ -23,7 +23,7 @@
       "maxLines": 6,
       "summary": {
         "enabled": true,
-        "model": "openai-codex/gpt-5.6-luna",
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
         "minIntervalMs": 10000,
         "maxTokens": 80
       }
