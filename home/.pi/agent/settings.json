@@ -20,10 +20,7 @@
     "npm:pi-lens",
     "npm:@juicesharp/rpiv-todo"
   ],
-  "extensions": [
-    "extensions/ask-user-inline.ts",
-    "-builtin:mcp"
-  ],
+  "extensions": ["extensions/ask-user-inline.ts", "-builtin:mcp"],
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-6-luna",
   "enabledModels": [

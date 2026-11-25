@@ -2,7 +2,8 @@
 
 ## TanStack Start Integration
 
-The pattern: share `formOptions` between client and server, validate on server via `createServerValidate`, merge server state back into client form.
+The pattern: share `formOptions` between client and server, validate on server via
+`createServerValidate`, merge server state back into client form.
 
 ### 1. Shared Form Options
 
@@ -21,10 +22,7 @@ export const formOpts = formOptions({
 ### 2. Server Validation + Handler
 
 ```typescript
-import {
-  createServerValidate,
-  ServerValidateError,
-} from "@tanstack/react-form-start";
+import { createServerValidate, ServerValidateError } from "@tanstack/react-form-start";
 
 const serverValidate = createServerValidate({
   ...formOpts,
@@ -55,20 +53,15 @@ export const handleForm = createServerFn({ method: "POST" })
 ```typescript
 import { getFormData } from "@tanstack/react-form-start";
 
-export const getFormDataFromServer = createServerFn({ method: "GET" }).handler(
-  async () => getFormData(),
+export const getFormDataFromServer = createServerFn({ method: "GET" }).handler(async () =>
+  getFormData(),
 );
 ```
 
 ### 4. Client Component with Merged State
 
 ```tsx
-import {
-  mergeForm,
-  useForm,
-  useStore,
-  useTransform,
-} from "@tanstack/react-form-start";
+import { mergeForm, useForm, useStore, useTransform } from "@tanstack/react-form-start";
 
 export const Route = createFileRoute("/")({
   component: Home,

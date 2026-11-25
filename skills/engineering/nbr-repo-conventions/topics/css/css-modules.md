@@ -34,9 +34,7 @@ interface Props {
 }
 
 export function Button({ variant = "primary", children }: Props) {
-  return (
-    <button className={cx(styles.root, styles[variant])}>{children}</button>
-  );
+  return <button className={cx(styles.root, styles[variant])}>{children}</button>;
 }
 ```
 

@@ -1,6 +1,8 @@
 ---
 name: nbr-changelog-things
-description: Use when the user asks to log today’s development work, commits, GitHub activity, or a changelog as completed Things items.
+description:
+  Use when the user asks to log today’s development work, commits, GitHub activity, or a changelog
+  as completed Things items.
 compatibility: Requires Things 3 on macOS, the things CLI, and nbr-activity.
 user-invocable: true
 ---
@@ -11,25 +13,31 @@ Record collected development activity as completed Things todos.
 
 ## Collect activity
 
-1. Set the target date from `$ARGUMENTS` when it is `YYYY-MM-DD`; otherwise use the local calendar date.
+1. Set the target date from `$ARGUMENTS` when it is `YYYY-MM-DD`; otherwise use the local calendar
+   date.
 2. Run `nbr-activity` for the target date with `--json`.
-3. Read the records unchanged: `git` records carry `slug`, `subject` and, for GitHub repos, the commit `url`; `github` records carry `kind` (`pr` or `issue`), `slug`, `number`, `title` and `url`. Error records are reportable data. Keep the local commits when GitHub fails.
+3. Read the records unchanged: `git` records carry `slug`, `subject` and, for GitHub repos, the
+   commit `url`; `github` records carry `kind` (`pr` or `issue`), `slug`, `number`, `title` and
+   `url`. Error records are reportable data. Keep the local commits when GitHub fails.
 
 ## Create completed todos
 
-Create one todo for every pull request, issue, and substantive commit. Open GitHub state is source metadata, not the completion state of the Things record.
+Create one todo for every pull request, issue, and substantive commit. Open GitHub state is source
+metadata, not the completion state of the Things record.
 
-Skip routine backups, formatting-only commits, WIP/index snapshots, and ignore-only `PLAN.md` housekeeping. Judge the subject, not the conventional-commit type.
+Skip routine backups, formatting-only commits, WIP/index snapshots, and ignore-only `PLAN.md`
+housekeeping. Judge the subject, not the conventional-commit type.
 
 Use these values for each item:
 
-| Item | Title | Source URL |
-| --- | --- | --- |
-| Commit | `[owner/repository] subject` | Commit URL |
-| Pull request | `[owner/repository] PR #NUMBER: title` | Pull request URL |
-| Issue | `[owner/repository] Issue #NUMBER: title` | Issue URL |
+| Item         | Title                                     | Source URL       |
+| ------------ | ----------------------------------------- | ---------------- |
+| Commit       | `[owner/repository] subject`              | Commit URL       |
+| Pull request | `[owner/repository] PR #NUMBER: title`    | Pull request URL |
+| Issue        | `[owner/repository] Issue #NUMBER: title` | Issue URL        |
 
-Use the source URL as the deduplication key. Keep the task title human-readable and put only the source URL in the notes. Before adding a todo, search all Things states for the exact URL:
+Use the source URL as the deduplication key. Keep the task title human-readable and put only the
+source URL in the notes. Before adding a todo, search all Things states for the exact URL:
 
 ```bash
 things search "$URL" --status any --format json
@@ -51,11 +59,14 @@ Verify every add by searching for its URL, capture the returned UUID, then read 
 things show --id "$UUID" --json
 ```
 
-The search result must contain exactly the expected URL as the notes, and the shown todo must be completed and scheduled for the target date. Stop and report any item that cannot be verified. Do not create another one to retry.
+The search result must contain exactly the expected URL as the notes, and the shown todo must be
+completed and scheduled for the target date. Stop and report any item that cannot be verified. Do
+not create another one to retry.
 
 ## Report
 
-State the target date and counts for created, existing, skipped-noise, and failed items. List collector errors verbatim. Do not read or edit a daily note.
+State the target date and counts for created, existing, skipped-noise, and failed items. List
+collector errors verbatim. Do not read or edit a daily note.
 
 ## Arguments
 

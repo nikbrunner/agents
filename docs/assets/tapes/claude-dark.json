@@ -4,13 +4,7 @@
     "cache-tax@claude-code-mods": false
   },
   "permissions": {
-    "allow": [
-      "Agent",
-      "Read",
-      "Glob",
-      "Grep",
-      "Bash"
-    ],
+    "allow": ["Agent", "Read", "Glob", "Grep", "Bash"],
     "defaultMode": "default"
   }
 }

@@ -1,6 +1,7 @@
 # Audit report
 
-Use exactly these H2 headings. Every Broken, Missing, Deviation, and Unverified entry carries all four fields.
+Use exactly these H2 headings. Every Broken, Missing, Deviation, and Unverified entry carries all
+four fields.
 
 ## Scope
 
@@ -24,20 +25,21 @@ One block per topic, in checklist order:
 - **Present** · <rule> · `path:line`
 ```
 
-| Class      | Meaning                                                             | Severity                        |
-| ---------- | ------------------------------------------------------------------- | ------------------------------- |
-| Broken     | The convention is followed but does not work: unwired, unmounted, or failing at runtime | high |
-| Missing    | A convention expects it and the project has nothing there           | high                            |
-| Deviation  | It works, and differs from what a convention says                   | high; lower only with a stated reason, named in the entry |
-| Present    | The rule is met                                                     | none; one line with evidence    |
-| Unverified | It could not be checked; the next action names the check            | as the unknown risks; never folded into another class |
+| Class      | Meaning                                                                                 | Severity                                                  |
+| ---------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Broken     | The convention is followed but does not work: unwired, unmounted, or failing at runtime | high                                                      |
+| Missing    | A convention expects it and the project has nothing there                               | high                                                      |
+| Deviation  | It works, and differs from what a convention says                                       | high; lower only with a stated reason, named in the entry |
+| Present    | The rule is met                                                                         | none; one line with evidence                              |
+| Unverified | It could not be checked; the next action names the check                                | as the unknown risks; never folded into another class     |
 
-Broken, Missing, and Deviation are high by default: the project adopted these conventions, so a gap is not a preference.
+Broken, Missing, and Deviation are high by default: the project adopted these conventions, so a gap
+is not a preference.
 
 ## Suggestions
 
-Real improvements no checklist rule asks for. Never high severity, never mixed into Findings, never a reason to hold up the
-work.
+Real improvements no checklist rule asks for. Never high severity, never mixed into Findings, never
+a reason to hold up the work.
 
 ## Reviewer notes
 

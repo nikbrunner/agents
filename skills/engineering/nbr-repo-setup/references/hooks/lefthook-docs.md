@@ -1,25 +1,40 @@
 # Lefthook documentation map
 
-Use this map to choose a page, then fetch its Markdown from the official repository. Read only the pages needed for the task. This is a navigation aid, not a copy of the documentation.
+Use this map to choose a page, then fetch its Markdown from the official repository. Read only the
+pages needed for the task. This is a navigation aid, not a copy of the documentation.
 
-Paths checked against the upstream tree on 2026-09-06. The topic descriptions draw on the configuration index and representative pages for installation, usage, jobs, file selection, examples, and AI hooks. Recheck paths when using another version or when a page is missing.
+Paths checked against the upstream tree on 2026-09-06. The topic descriptions draw on the
+configuration index and representative pages for installation, usage, jobs, file selection,
+examples, and AI hooks. Recheck paths when using another version or when a page is missing.
 
 ## Find and read a page
 
-1. Check the installed CLI version and relevant command help. Prefer documentation at its matching release tag when available. `master` describes upstream development and may include features absent from the installed binary.
+1. Check the installed CLI version and relevant command help. Prefer documentation at its matching
+   release tag when available. `master` describes upstream development and may include features
+   absent from the installed binary.
 2. Select a topic below. All paths are relative to `docs/` and case-sensitive.
-3. Fetch `https://raw.githubusercontent.com/evilmartians/lefthook/<ref>/docs/<path>`, replacing `<ref>` with the verified tag or `master`. Preserve the exact repository path rather than deriving it from the website route.
-4. Resolve relative Markdown links against the source file's directory, keeping the same ref. Ignore site frontmatter and presentation directives when extracting technical content.
-5. If the map does not cover the task, fetch the current tree before guessing filenames. If a request fails, report the failure; do not present remembered behavior as verified.
+3. Fetch `https://raw.githubusercontent.com/evilmartians/lefthook/<ref>/docs/<path>`, replacing
+   `<ref>` with the verified tag or `master`. Preserve the exact repository path rather than
+   deriving it from the website route.
+4. Resolve relative Markdown links against the source file's directory, keeping the same ref. Ignore
+   site frontmatter and presentation directives when extracting technical content.
+5. If the map does not cover the task, fetch the current tree before guessing filenames. If a
+   request fails, report the failure; do not present remembered behavior as verified.
 
-Example: [configuration/run.md as raw Markdown](https://raw.githubusercontent.com/evilmartians/lefthook/master/docs/configuration/run.md).
+Example:
+[configuration/run.md as raw Markdown](https://raw.githubusercontent.com/evilmartians/lefthook/master/docs/configuration/run.md).
 
 ## Discover the structure
 
 - [Browse the docs directory](https://github.com/evilmartians/lefthook/tree/master/docs).
-- [Fetch the recursive repository tree](https://api.github.com/repos/evilmartians/lefthook/git/trees/master?recursive=1). Select entries with `type: blob` and paths starting with `docs/` and ending in `.md`. Check `truncated` before treating the list as complete; if true, traverse the docs subtree separately.
-- For a release, replace `master` in the tree request with the verified tag. Retain the returned commit SHA if subsequent requests need a consistent snapshot.
-- [Configuration index as Markdown](https://raw.githubusercontent.com/evilmartians/lefthook/master/docs/configuration/README.md) lists many options and their relationships. Use the tree for completeness; an index can omit a newer page.
+- [Fetch the recursive repository tree](https://api.github.com/repos/evilmartians/lefthook/git/trees/master?recursive=1).
+  Select entries with `type: blob` and paths starting with `docs/` and ending in `.md`. Check
+  `truncated` before treating the list as complete; if true, traverse the docs subtree separately.
+- For a release, replace `master` in the tree request with the verified tag. Retain the returned
+  commit SHA if subsequent requests need a consistent snapshot.
+- [Configuration index as Markdown](https://raw.githubusercontent.com/evilmartians/lefthook/master/docs/configuration/README.md)
+  lists many options and their relationships. Use the tree for completeness; an index can omit a
+  newer page.
 
 ## Topic map
 
@@ -44,6 +59,10 @@ Example: [configuration/run.md as raw Markdown](https://raw.githubusercontent.co
 
 ## Reading boundaries
 
-Use CLI help for supported commands and flags, the selected-version Markdown for configuration behavior, and project policy for what to configure. Examples illustrate mechanisms; their autofix, concurrency, and stage choices are not defaults for the project.
+Use CLI help for supported commands and flags, the selected-version Markdown for configuration
+behavior, and project policy for what to configure. Examples illustrate mechanisms; their autofix,
+concurrency, and stage choices are not defaults for the project.
 
-For AI hooks, read the provider-specific installation behavior. The current documentation distinguishes providers that preserve user-authored settings from Copilot's Lefthook-owned file, which is rewritten on installation and removed on uninstall.
+For AI hooks, read the provider-specific installation behavior. The current documentation
+distinguishes providers that preserve user-authored settings from Copilot's Lefthook-owned file,
+which is rewritten on installation and removed on uninstall.

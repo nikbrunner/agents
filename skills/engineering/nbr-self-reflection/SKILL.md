@@ -1,17 +1,24 @@
 ---
 name: nbr-self-reflection
-description: Use when the user asks to reflect on the conversation or on a correction ("reflect on this", "self-reflect", "what went wrong here", "learn from this"), or wants friction turned into a durable improvement to a skill, AGENTS.md or automation.
+description:
+  Use when the user asks to reflect on the conversation or on a correction ("reflect on this",
+  "self-reflect", "what went wrong here", "learn from this"), or wants friction turned into a
+  durable improvement to a skill, AGENTS.md or automation.
 argument-hint: "[what went wrong or what to inspect]"
-compatibility: Requires access to the current conversation and shell access for public skill discovery with npx skills find.
+compatibility:
+  Requires access to the current conversation and shell access for public skill discovery with npx
+  skills find.
 ---
 
 # Self-Improvement
 
-Turn friction in the current conversation into the smallest reusable improvement. A valid retrospective may conclude that nothing should change.
+Turn friction in the current conversation into the smallest reusable improvement. A valid
+retrospective may conclude that nothing should change.
 
 ## Input
 
-Treat the skill's argument as the focus. Without an argument, inspect the latest correction or friction point. Read the conversation before asking the user to restate anything.
+Treat the skill's argument as the focus. Without an argument, inspect the latest correction or
+friction point. Read the conversation before asking the user to restate anything.
 
 Use concrete evidence from:
 
@@ -38,21 +45,23 @@ Classify the cause as one or more of:
 - **Missing capability:** no current skill or instruction covers a reusable pattern.
 - **Tooling:** a mechanical check or better tool could prevent the failure.
 
-Do not assume a skill needs editing merely because one was involved. If its guidance already covers the case, distinguish an isolated compliance miss from wording that repeatedly fails under pressure.
+Do not assume a skill needs editing merely because one was involved. If its guidance already covers
+the case, distinguish an isolated compliance miss from wording that repeatedly fails under pressure.
 
 ## Choose the Durable Home
 
 Select one:
 
-| Destination | Use when |
-|---|---|
-| Existing skill | Its trigger or guidance is incomplete or misleading |
-| New skill | A reusable workflow requires steps or contextual judgment |
-| `AGENTS.md` | A short instruction should apply to nearly every task |
-| Automation | The failure is mechanically detectable |
-| No change | The incident is isolated, already covered, or too specific to generalize |
+| Destination    | Use when                                                                 |
+| -------------- | ------------------------------------------------------------------------ |
+| Existing skill | Its trigger or guidance is incomplete or misleading                      |
+| New skill      | A reusable workflow requires steps or contextual judgment                |
+| `AGENTS.md`    | A short instruction should apply to nearly every task                    |
+| Automation     | The failure is mechanically detectable                                   |
+| No change      | The incident is isolated, already covered, or too specific to generalize |
 
-Prefer the smallest destination that prevents recurrence. Do not turn one incident into a broad rule without evidence that it generalizes.
+Prefer the smallest destination that prevents recurrence. Do not turn one incident into a broad rule
+without evidence that it generalizes.
 
 ## Check for Existing Skills
 
@@ -60,7 +69,8 @@ Before proposing a new skill:
 
 1. Inspect the available local skill names and descriptions, then read plausible matches.
 2. Search the public archive with `npx skills find` using 2-3 terms taken from the incident.
-3. Inspect close public matches with `npx skills use <owner/repo@skill>` before recommending adoption or adaptation.
+3. Inspect close public matches with `npx skills use <owner/repo@skill>` before recommending
+   adoption or adaptation.
 4. Prefer updating, adapting, or installing a close match over creating a duplicate.
 
 Skip public discovery when the destination is clearly not a new skill.
@@ -71,18 +81,22 @@ Use this structure:
 
 ```markdown
 ## Diagnosis
+
 - Expected:
 - Actual:
 - Evidence:
 - Root cause:
 
 ## Recommendation
+
 - Destination:
 - Reason:
 - Existing options: <!-- include only when skill discovery was needed -->
 - Proposal: <!-- exact replacement/addition, or a small new-skill outline -->
 ```
 
-Omit `Proposal` when no durable change is justified. Keep the diagnosis concise and the proposal exact enough to review as a diff.
+Omit `Proposal` when no durable change is justified. Keep the diagnosis concise and the proposal
+exact enough to review as a diff.
 
-End with one approval question. Do not edit skills, instructions, or automation until the user approves the proposal.
+End with one approval question. Do not edit skills, instructions, or automation until the user
+approves the proposal.

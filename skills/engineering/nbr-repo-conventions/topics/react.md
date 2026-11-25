@@ -1,7 +1,7 @@
 # React
 
-Components split into roles: dumb components and layouts own the look, containers and routes own the data. Read the
-subtopic that matches the task.
+Components split into roles: dumb components and layouts own the look, containers and routes own the
+data. Read the subtopic that matches the task.
 
 | Subtopic                                              | Read when                                                           |
 | ----------------------------------------------------- | ------------------------------------------------------------------- |

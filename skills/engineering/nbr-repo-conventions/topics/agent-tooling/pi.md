@@ -39,8 +39,8 @@ pi update                        # update all non-pinned packages
 
 ## Extensions (Enforcement)
 
-Extensions are TypeScript files auto-discovered from `~/.pi/agent/extensions/`.
-They replace Claude Code hooks — no shell scripts needed.
+Extensions are TypeScript files auto-discovered from `~/.pi/agent/extensions/`. They replace Claude
+Code hooks — no shell scripts needed.
 
 Key events for enforcement:
 

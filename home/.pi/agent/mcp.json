@@ -10,8 +10,5 @@
       "directTools": true
     }
   },
-  "imports": [
-    "claude-code",
-    "claude-desktop"
-  ]
+  "imports": ["claude-code", "claude-desktop"]
 }

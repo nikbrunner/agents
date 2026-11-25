@@ -16,8 +16,8 @@ const { values } = parseArgs({
     scheme: { type: "string", default: "light" },
     fps: { type: "string", default: "50" },
     scale: { type: "string", default: "1" },
-    quality: { type: "string", default: "lossless" }
-  }
+    quality: { type: "string", default: "lossless" },
+  },
 });
 if (!values.url || !values.out || !values.steps) {
   console.error("Need --url, --out <file.webp>, and --steps <file.json>.");
@@ -28,7 +28,9 @@ let chromium;
 try {
   ({ chromium } = createRequire(join(process.cwd(), "package.json"))("playwright"));
 } catch {
-  console.error("playwright does not resolve from this directory. Run from a project that has it, or `npm i -D playwright`.");
+  console.error(
+    "playwright does not resolve from this directory. Run from a project that has it, or `npm i -D playwright`.",
+  );
   process.exit(1);
 }
 
@@ -44,13 +46,13 @@ try {
   const page = await browser.newPage({
     viewport: { width, height },
     deviceScaleFactor: Number(values.scale),
-    colorScheme: values.scheme
+    colorScheme: values.scheme,
   });
-  await page.route(`${origin}/__record-clip.html`, route =>
+  await page.route(`${origin}/__record-clip.html`, (route) =>
     route.fulfill({
       contentType: "text/html",
-      body: `<!doctype html><style>html,body{margin:0;height:100%;background:${backdrop};overflow:hidden}iframe{display:block;margin:0 auto;border:0;height:100%;width:${width}px}</style><iframe id="f" src="${values.url}"></iframe>`
-    })
+      body: `<!doctype html><style>html,body{margin:0;height:100%;background:${backdrop};overflow:hidden}iframe{display:block;margin:0 auto;border:0;height:100%;width:${width}px}</style><iframe id="f" src="${values.url}"></iframe>`,
+    }),
   );
   await page.goto(`${origin}/__record-clip.html`);
   const frame = await (await page.$("#f")).contentFrame();
@@ -61,7 +63,12 @@ try {
   let clip;
   if (values.clip) {
     const box = await frame.locator(values.clip).first().boundingBox();
-    clip = { x: Math.max(0, box.x - 24), y: Math.max(0, box.y - 24), width: box.width + 48, height: box.height + 48 };
+    clip = {
+      x: Math.max(0, box.x - 24),
+      y: Math.max(0, box.y - 24),
+      width: box.width + 48,
+      height: box.height + 48,
+    };
   }
 
   let t = 0;
@@ -84,16 +91,36 @@ try {
     if (step.wait) await advance(step.wait);
     if (step.resize) {
       const [from, to, ms] = step.resize;
-      await advance(ms, p => page.evaluate(w => (document.getElementById("f").style.width = `${w}px`), from + (to - from) * ease(p)));
+      await advance(ms, (p) =>
+        page.evaluate(
+          (w) => (document.getElementById("f").style.width = `${w}px`),
+          from + (to - from) * ease(p),
+        ),
+      );
     }
     if (step.click) await frame.locator(step.click).first().click();
     if (step.press) await page.keyboard.press(step.press);
   }
 
-  const encode = values.quality === "lossless" ? ["-define", "webp:lossless=true"] : ["-quality", values.quality];
-  execFileSync("magick", ["-delay", `1x${values.fps}`, "-loop", "0", join(work, "f*.png"), ...encode, "-define", "webp:method=4", values.out]);
+  const encode =
+    values.quality === "lossless"
+      ? ["-define", "webp:lossless=true"]
+      : ["-quality", values.quality];
+  execFileSync("magick", [
+    "-delay",
+    `1x${values.fps}`,
+    "-loop",
+    "0",
+    join(work, "f*.png"),
+    ...encode,
+    "-define",
+    "webp:method=4",
+    values.out,
+  ]);
   const kb = Math.round(statSync(values.out).size / 1024);
-  console.log(`${values.out}: ${count} frames at ${values.fps} fps, ${(t / 1000).toFixed(2)}s, ${kb} KB`);
+  console.log(
+    `${values.out}: ${count} frames at ${values.fps} fps, ${(t / 1000).toFixed(2)}s, ${kb} KB`,
+  );
 } finally {
   await browser.close();
   rmSync(work, { recursive: true, force: true });

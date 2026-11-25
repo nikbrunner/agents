@@ -80,9 +80,7 @@
     "ask": []
   },
   "model": "opus",
-  "disabledMcpjsonServers": [
-    "chrome-devtools"
-  ],
+  "disabledMcpjsonServers": ["chrome-devtools"],
   "hooks": {
     "Notification": [],
     "PreToolUse": [

@@ -37,8 +37,10 @@ export function UserCard({ name, avatarUrl, role, onEdit }: Props) {
 ```
 
 - Receives only props (data + callbacks)
-  - Simple prop data types to help React compare values isntead of reference equality of objects and arrays
-  - If it is still needed to handover complex data, keep in mind that reference equality is handled (`React.memo` or `React.useMemo`, without the React Compiler)
+  - Simple prop data types to help React compare values isntead of reference equality of objects and
+    arrays
+  - If it is still needed to handover complex data, keep in mind that reference equality is handled
+    (`React.memo` or `React.useMemo`, without the React Compiler)
 - All styling is here
 - No app dependencies, no store access, no fetching
 - Rarely has own state -- when it does, it's pure UI state (hover, open/closed)
@@ -211,16 +213,19 @@ export function DashboardContainer() {
 
 ## Broad vs Deep Split
 
-**Prefer Broad Split** -- one Container (or Route) fans out to many Dumb Components directly, rather than passing props through a single proxy component (Deep Split).
+**Prefer Broad Split** -- one Container (or Route) fans out to many Dumb Components directly, rather
+than passing props through a single proxy component (Deep Split).
 
 When you notice components forwarding props they don't use, that's a signal to either:
 
 - Introduce a Container/Partial closer to where the data is needed
-- In route-based apps, let the route itself handle orchestration (see "Routes as Containers" in `react/composition.md`)
+- In route-based apps, let the route itself handle orchestration (see "Routes as Containers" in
+  `react/composition.md`)
 
 ## Render-Prop Context
 
-A context provider where `children` is a function receiving the context value. Cleanly scopes context consumption and avoids the need for a separate consumer component.
+A context provider where `children` is a function receiving the context value. Cleanly scopes
+context consumption and avoids the need for a separate consumer component.
 
 ```tsx
 interface FilterProviderProps {
@@ -243,11 +248,7 @@ export const FilterContextProvider = ({
     setMobileFiltersOpen,
   };
 
-  return (
-    <FilterContext.Provider value={value}>
-      {children(value)}
-    </FilterContext.Provider>
-  );
+  return <FilterContext.Provider value={value}>{children(value)}</FilterContext.Provider>;
 };
 
 // Usage in a route/container:
@@ -270,22 +271,28 @@ export const FilterContextProvider = ({
 
 React rules from react.dev that hold for every role. Each names the React version it needs.
 
-- **Render is pure (any version).** Never mutate props, state, context, or a value created before render. Mutating an
-  object the same render just created is fine.
-- **No component defined inside another (any version).** A nested definition gets a new identity each render, so React
-  remounts it and its state resets. Define it at module level and pass data as props.
-- **No `ref.current` during render (any version).** Read and write refs in effects and handlers. The one exception is a
-  lazy init (`if (ref.current === null) ref.current = new Thing()`). A value that shapes the output belongs in state.
-- **`ref` is a prop (React 19+).** Accept `ref` like any other prop; don't wrap new components in `forwardRef`.
-- **`useId` for accessibility ids (React 18+).** Use it for `htmlFor`, `aria-describedby`, and similar. Never use it for
-  list keys, and never hardcode its output in tests or selectors: the format changes between versions.
-- **Error boundaries around UI units (any version).** Wrap a page section or widget, not every component. A boundary
-  does not catch errors from event handlers or async code; handle those where they happen.
-- **With the React Compiler on, no manual memoization by default.** The compiler memoizes components and values, so
-  `useMemo`, `useCallback`, and `React.memo` are only for a measured case. Without the compiler, the reference-equality
-  note under Dumb Component applies.
+- **Render is pure (any version).** Never mutate props, state, context, or a value created before
+  render. Mutating an object the same render just created is fine.
+- **No component defined inside another (any version).** A nested definition gets a new identity
+  each render, so React remounts it and its state resets. Define it at module level and pass data as
+  props.
+- **No `ref.current` during render (any version).** Read and write refs in effects and handlers. The
+  one exception is a lazy init (`if (ref.current === null) ref.current = new Thing()`). A value that
+  shapes the output belongs in state.
+- **`ref` is a prop (React 19+).** Accept `ref` like any other prop; don't wrap new components in
+  `forwardRef`.
+- **`useId` for accessibility ids (React 18+).** Use it for `htmlFor`, `aria-describedby`, and
+  similar. Never use it for list keys, and never hardcode its output in tests or selectors: the
+  format changes between versions.
+- **Error boundaries around UI units (any version).** Wrap a page section or widget, not every
+  component. A boundary does not catch errors from event handlers or async code; handle those where
+  they happen.
+- **With the React Compiler on, no manual memoization by default.** The compiler memoizes components
+  and values, so `useMemo`, `useCallback`, and `React.memo` are only for a measured case. Without
+  the compiler, the reference-equality note under Dumb Component applies.
 
-Sources: https://react.dev/learn/keeping-components-pure, https://react.dev/learn/preserving-and-resetting-state,
+Sources: https://react.dev/learn/keeping-components-pure,
+https://react.dev/learn/preserving-and-resetting-state,
 https://react.dev/learn/referencing-values-with-refs, https://react.dev/reference/react/useId,
 https://react.dev/reference/react/Component, https://react.dev/learn/react-compiler
 
@@ -295,4 +302,5 @@ https://react.dev/reference/react/Component, https://react.dev/learn/react-compi
 - Container with CSS classes beyond minor layout utilities
 - Dumb Component that calls `useQuery` or accesses a store
 - Hardcoded strings in a component when i18n exists
-- Prop drilling through 3+ levels (introduce a Container or Partial or consider a higher level state or context)
+- Prop drilling through 3+ levels (introduce a Container or Partial or consider a higher level state
+  or context)

@@ -31,15 +31,16 @@ Hooks are bash scripts registered in `settings.json`. They run at specific lifec
 | `PreToolUse`       | Block dangerous or malformed tool calls          |
 | `PostToolUse`      | Warn after writes (e.g., TypeScript `any` check) |
 
-Register hooks under `hooks.<Event>[].hooks[]` in `settings.json`, with a `matcher` for tool events. The `update-config`
-skill and the Claude Code hooks docs have the current schema.
+Register hooks under `hooks.<Event>[].hooks[]` in `settings.json`, with a `matcher` for tool events.
+The `update-config` skill and the Claude Code hooks docs have the current schema.
 
 Hook scripts must be executable (`chmod +x`). Exit 0 = allow, exit 2 = block.
 
 ## Plugins
 
-Plugins (LSP servers, skill bundles) are enabled in `settings.json` and have no Pi equivalent. Prefer a `skills.sh`
-package (`npx skills add <repo>`) when the same skills exist there, so both agents get them.
+Plugins (LSP servers, skill bundles) are enabled in `settings.json` and have no Pi equivalent.
+Prefer a `skills.sh` package (`npx skills add <repo>`) when the same skills exist there, so both
+agents get them.
 
 ## Skills
 

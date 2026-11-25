@@ -44,7 +44,8 @@ Client state often shrinks to almost nothing.
 
 ## React Context as Scoped State
 
-Context providers are natural state boundaries. When the provider unmounts, state resets automatically -- no cleanup logic needed.
+Context providers are natural state boundaries. When the provider unmounts, state resets
+automatically -- no cleanup logic needed.
 
 ```tsx
 // Multi-step form wizard -- state resets when leaving the wizard

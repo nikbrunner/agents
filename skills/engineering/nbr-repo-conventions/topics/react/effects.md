@@ -1,6 +1,7 @@
 # Effects
 
-When an effect is the right tool, how to write the ones that stay, and how to audit a codebase for the rest.
+When an effect is the right tool, how to write the ones that stay, and how to audit a codebase for
+the rest.
 
 ## Named Effects
 
@@ -32,26 +33,32 @@ useEffect(
 
 ### Why
 
-- **Scannable** -- effect names reveal a component's side-effect story without reading implementations
+- **Scannable** -- effect names reveal a component's side-effect story without reading
+  implementations
 - **Better stack traces** -- named functions show up in error monitoring instead of `(anonymous)`
-- **Design smell detector** -- if the name contains "and" or you can't name it cleanly, the effect does too much and should be split
+- **Design smell detector** -- if the name contains "and" or you can't name it cleanly, the effect
+  does too much and should be split
 - **Named cleanups** -- setup/teardown symmetry makes intent explicit
 
 ### Rules
 
 - Name the effect after **what it does**, not what triggers it
-- Name cleanup functions after the **inverse action** (connect/disconnect, subscribe/unsubscribe, start/stop)
-- If you struggle to name it, question whether it should be an effect at all (see [You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect))
+- Name cleanup functions after the **inverse action** (connect/disconnect, subscribe/unsubscribe,
+  start/stop)
+- If you struggle to name it, question whether it should be an effect at all (see
+  [You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect))
 
 ## Dependencies
 
-- **No objects or functions as dependencies (any version).** They are new each render, so the effect re-runs every time.
-  Create them inside the effect, move them outside the component, or depend on the primitive they read. When none of
-  those fit, memoize the value with `useMemo` (without the React Compiler).
-- **Hidden `<Activity>` cleans up effects (React 19.2+).** A hidden subtree unmounts its effects and re-runs them when shown.
-  Don't rely on an effect running while its UI is hidden.
+- **No objects or functions as dependencies (any version).** They are new each render, so the effect
+  re-runs every time. Create them inside the effect, move them outside the component, or depend on
+  the primitive they read. When none of those fit, memoize the value with `useMemo` (without the
+  React Compiler).
+- **Hidden `<Activity>` cleans up effects (React 19.2+).** A hidden subtree unmounts its effects and
+  re-runs them when shown. Don't rely on an effect running while its UI is hidden.
 
-Sources: https://react.dev/learn/removing-effect-dependencies, https://react.dev/reference/react/Activity
+Sources: https://react.dev/learn/removing-effect-dependencies,
+https://react.dev/reference/react/Activity
 
 ## Anti-Patterns
 
@@ -61,7 +68,8 @@ The catalog for scanning React codebases. Each entry names a misuse and what rep
 
 State computed from other state/props, updated via useEffect.
 
-**Detect:** `useEffect` body calls a setter, value is a pure function of state/props already available during render.
+**Detect:** `useEffect` body calls a setter, value is a pure function of state/props already
+available during render.
 
 **Fix:** Compute inline. `const fullName = firstName + " " + lastName;`
 
@@ -81,7 +89,8 @@ useEffect resets state when an identity prop (userId, itemId) changes.
 
 useEffect partially updates state when props change.
 
-**Fix:** Derive during render instead. `const selection = items.find(i => i.id === selectedId) ?? null;`
+**Fix:** Derive during render instead.
+`const selection = items.find(i => i.id === selectedId) ?? null;`
 
 ### 5. Event Logic in Effect
 
@@ -139,12 +148,13 @@ Data fetching in useEffect without handling stale responses.
 
 ### 14. Non-Reactive Value Re-Runs the Effect
 
-The effect reads a value only to use it when something happens (a callback prop, a setting, the latest state in a timer
-tick), so listing it as a dependency reconnects or restarts the effect for no reason. Usually shows up as a suppressed
-`exhaustive-deps` warning, a ref mirroring the latest value, or a parent forced into `useCallback`.
+The effect reads a value only to use it when something happens (a callback prop, a setting, the
+latest state in a timer tick), so listing it as a dependency reconnects or restarts the effect for
+no reason. Usually shows up as a suppressed `exhaustive-deps` warning, a ref mirroring the latest
+value, or a parent forced into `useCallback`.
 
-**Fix (React 19.2+):** Move that logic into a `useEffectEvent`. It always sees the latest values and stays out of the
-dependency array.
+**Fix (React 19.2+):** Move that logic into a `useEffectEvent`. It always sees the latest values and
+stays out of the dependency array.
 
 ```tsx
 const onConnected = useEffectEvent(function notifyConnected() {
@@ -165,8 +175,9 @@ useEffect(
 );
 ```
 
-Call an Effect Event only from inside an effect, never during render, from a click handler, or as a prop. Never use it
-to drop a value that should re-run the effect. Reference: https://react.dev/reference/react/useEffectEvent
+Call an Effect Event only from inside an effect, never during render, from a click handler, or as a
+prop. Never use it to drop a value that should re-run the effect. Reference:
+https://react.dev/reference/react/useEffectEvent
 
 ### Legitimate useEffect Usages (Do NOT flag)
 
@@ -178,11 +189,14 @@ to drop a value that should re-run the effect. Reference: https://react.dev/refe
 
 ## useEffect Audit
 
-Scan a React codebase for unnecessary or misused `useEffect` calls. Reference: https://react.dev/learn/you-might-not-need-an-effect
+Scan a React codebase for unnecessary or misused `useEffect` calls. Reference:
+https://react.dev/learn/you-might-not-need-an-effect
 
 ### Workflow
 
 1. **Find all useEffect usages.** Grep for `useEffect` across the target path or repo.
-2. **Read each file** containing useEffect. Classify each call against the anti-pattern catalog above. Skip legitimate uses (ref-scoped events, animations, WS, analytics on display, focus management).
+2. **Read each file** containing useEffect. Classify each call against the anti-pattern catalog
+   above. Skip legitimate uses (ref-scoped events, animations, WS, analytics on display, focus
+   management).
 3. **For each finding**, record: file path, anti-pattern matched, problematic code, suggested fix.
 4. **Report** grouped by anti-pattern with a summary of counts.

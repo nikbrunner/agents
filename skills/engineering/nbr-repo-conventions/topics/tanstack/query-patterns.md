@@ -2,7 +2,9 @@
 
 ## Orchestration / Topic Hooks
 
-Hooks that compose multiple queries into a domain API (e.g. `useUserProfile` calling `useUser` + `usePermissions`) live in the same topic folder as the query hooks they orchestrate — not in `hooks/`.
+Hooks that compose multiple queries into a domain API (e.g. `useUserProfile` calling `useUser` +
+`usePermissions`) live in the same topic folder as the query hooks they orchestrate — not in
+`hooks/`.
 
 ```
 api/
@@ -13,13 +15,17 @@ api/
 │   └── use-user-profile.ts   # composes the above, derives canEdit etc.
 ```
 
-If consumed by only one container, co-locate it there instead. See the `react` topic co-location rules.
+If consumed by only one container, co-locate it there instead. See the `react` topic co-location
+rules.
 
 ---
 
 ## Complexity 1: One File Per Endpoint
 
-Best for small API surfaces. Co-locates queries and mutations per topic, with `queryKey` and `queryFn` inside the hook. Once a route loader prefetches a query, its key and fn move into a `queryOptions` factory (Complexity 2), since the loader's `queryClient.query` needs them outside React.
+Best for small API surfaces. Co-locates queries and mutations per topic, with `queryKey` and
+`queryFn` inside the hook. Once a route loader prefetches a query, its key and fn move into a
+`queryOptions` factory (Complexity 2), since the loader's `queryClient.query` needs them outside
+React.
 
 ```
 api/
@@ -30,17 +36,15 @@ api/
 
 ### Full Example: `useBrands`
 
-Single query + derived memoized values + multiple mutations. Returns `{ query, ...derived, ...mutations }`.
+Single query + derived memoized values + multiple mutations. Returns
+`{ query, ...derived, ...mutations }`.
 
 ```tsx
 // api/use-brands.ts
 const TOPIC = "brands" as const;
 const queryKey = (keys: string[] = []) => [TOPIC, ...keys] as const;
 
-type UseBrandsOptions = Omit<
-  Partial<UseQueryOptions<Brand[]>>,
-  "queryKey" | "queryFn"
->;
+type UseBrandsOptions = Omit<Partial<UseQueryOptions<Brand[]>>, "queryKey" | "queryFn">;
 
 export const useBrands = (options: UseBrandsOptions = {}) => {
   const query = useQuery({
@@ -102,7 +106,8 @@ api/
 ├── use-settings.lib.spec.ts # Tests for pure logic
 ```
 
-**Pattern: Namespaced mutation collection** -- when a topic has many mutations, export them as a structured object:
+**Pattern: Namespaced mutation collection** -- when a topic has many mutations, export them as a
+structured object:
 
 ```tsx
 // use-settings.ts
@@ -112,8 +117,7 @@ const useSetCustomization = (options = {}) => {
   return useMutation({
     ...options,
     mutationKey: queryKey(["customization"]),
-    mutationFn: (customization) =>
-      storeSetting(["customization"], customization),
+    mutationFn: (customization) => storeSetting(["customization"], customization),
   });
 };
 
@@ -145,9 +149,7 @@ export const useSetSettings = {
 
 ```tsx
 // use-settings.lib.ts -- pure functions, no hooks
-const assortmentPriceSettings = (
-  settings: Settings,
-): AssortmentPriceSettings => {
+const assortmentPriceSettings = (settings: Settings): AssortmentPriceSettings => {
   const hasAutomatic = settings.assortment.type === AssortmentType.Automatic;
   return hasAutomatic ? settings.assortment.priceSettings : fallbackSettings;
 };
@@ -167,8 +169,8 @@ return {
 
 ### Automatic Invalidation via MutationCache
 
-Use the first entry in mutation keys (the topic) to auto-invalidate related queries.
-Configure this globally in the QueryClient via `MutationCache`.
+Use the first entry in mutation keys (the topic) to auto-invalidate related queries. Configure this
+globally in the QueryClient via `MutationCache`.
 
 Based on: https://tkdodo.eu/blog/automatic-query-invalidation-after-mutations
 
@@ -194,13 +196,16 @@ const queryClient = new QueryClient({
 });
 ```
 
-Any mutation with a key like `["products", "update"]` automatically invalidates all `["products", ...]` queries on success. Opt out per-mutation with `meta: { autoInvalidate: false }`.
+Any mutation with a key like `["products", "update"]` automatically invalidates all
+`["products", ...]` queries on success. Opt out per-mutation with `meta: { autoInvalidate: false }`.
 
 ### Render Optimization: Don't Spread, Do Memoize
 
 Two rules for custom query hooks:
 
-**1. Don't spread the query object.** Rest-destructuring (`...rest`) breaks React Query's tracked property optimization (Proxy-based, on by default since v4). It also creates a new object reference every render.
+**1. Don't spread the query object.** Rest-destructuring (`...rest`) breaks React Query's tracked
+property optimization (Proxy-based, on by default since v4). It also creates a new object reference
+every render.
 
 ```tsx
 // Bad -- breaks tracked properties, new object every render
@@ -212,7 +217,9 @@ const query = useQuery(/* ... */);
 return { query, derivedValue: query.data?.something };
 ```
 
-**2. Memoize derived values.** Structural sharing keeps `query.data` referentially stable when data hasn't changed. But `.filter()`, `.map()`, etc. always create new arrays — breaking the reference chain. `useMemo` preserves it:
+**2. Memoize derived values.** Structural sharing keeps `query.data` referentially stable when data
+hasn't changed. But `.filter()`, `.map()`, etc. always create new arrays — breaking the reference
+chain. `useMemo` preserves it:
 
 ```tsx
 const all = query.data ?? [];
@@ -224,7 +231,8 @@ const active = all.filter((b) => b.active);
 const active = useMemo(() => all.filter((b) => b.active), [all]);
 ```
 
-The chain: structural sharing → stable `query.data` → stable dep → `useMemo` returns cached derived value.
+The chain: structural sharing → stable `query.data` → stable dep → `useMemo` returns cached derived
+value.
 
 See: https://tanstack.com/query/latest/docs/framework/react/guides/render-optimizations
 
@@ -232,8 +240,8 @@ See: https://tanstack.com/query/latest/docs/framework/react/guides/render-optimi
 
 For medium API surfaces. Separate files per query/mutation with shared key definitions.
 
-Default root is `src/api/` (technical separation — see the `react` topic
-the `react` topic, `react/folder-structure.md`), not nested under a `features/` domain folder.
+Default root is `src/api/` (technical separation — see the `react` topic the `react` topic,
+`react/folder-structure.md`), not nested under a `features/` domain folder.
 
 ```
 api/
@@ -251,12 +259,11 @@ api/
 
 ### Entity file: the reusable layer
 
-Within a topic folder, `queryOptions()`/`mutationOptions()` factories are the
-thing that actually gets reused — a route `loader` calls
-`queryClient.query({ ...factory(), staleTime: "static" })` directly, a component calls
-`useQuery(factory())`/`useMutation(factory())` through a thin hook. Pull that
-factory layer into its own file, named after the **entity it covers** (not
-generically `api.ts`, and not one file per hook):
+Within a topic folder, `queryOptions()`/`mutationOptions()` factories are the thing that actually
+gets reused — a route `loader` calls `queryClient.query({ ...factory(), staleTime: "static" })`
+directly, a component calls `useQuery(factory())`/`useMutation(factory())` through a thin hook. Pull
+that factory layer into its own file, named after the **entity it covers** (not generically
+`api.ts`, and not one file per hook):
 
 ```
 api/licenses/
@@ -268,28 +275,27 @@ api/licenses/
 └── use-assign-user-license.ts   # useMutation(usersQueries.assignLicense())
 ```
 
-A topic folder is one file per **entity**, not one file per topic and not
-one file per hook:
+A topic folder is one file per **entity**, not one file per topic and not one file per hook:
 
-- If every query/mutation in a topic concerns one entity, one file
-  (`licenses.ts`) covers the whole topic.
-- If a topic spans multiple entities (e.g. licenses scoped to users vs.
-  licenses scoped to organizations), split into one file per entity
-  (`users.ts`, `organizations.ts`) — still inside the topic folder.
-- Hooks stay thin siblings that import the factory and wrap it in
-  `useQuery`/`useMutation`. Don't inline the raw fetch call or the
-  `queryOptions` factory into the hook file — that breaks loader prefetch,
-  since a loader can't call a hook.
+- If every query/mutation in a topic concerns one entity, one file (`licenses.ts`) covers the whole
+  topic.
+- If a topic spans multiple entities (e.g. licenses scoped to users vs. licenses scoped to
+  organizations), split into one file per entity (`users.ts`, `organizations.ts`) — still inside the
+  topic folder.
+- Hooks stay thin siblings that import the factory and wrap it in `useQuery`/`useMutation`. Don't
+  inline the raw fetch call or the `queryOptions` factory into the hook file — that breaks loader
+  prefetch, since a loader can't call a hook.
 
-Raw fetch functions themselves are _not_ a reuse boundary in practice —
-audit shows they're called from exactly one factory each. Don't default to
-a shared `api.ts`/`queries.ts` file "in case" a fetch function gets reused;
-add that split only if a raw fetch function actually gets a second
+Raw fetch functions themselves are _not_ a reuse boundary in practice — audit shows they're called
+from exactly one factory each. Don't default to a shared `api.ts`/`queries.ts` file "in case" a
+fetch function gets reused; add that split only if a raw fetch function actually gets a second
 independent caller.
 
 ## Complexity 3: API Folder with Query Option Factories
 
-For large API surfaces or GraphQL. Instead of `useQuery` hooks, export **query option factories** — plain functions that return query options. Consumers (route loaders, components) call `useSuspenseQuery(factory())` or `queryClient.query({ ...factory(), staleTime: "static" })`.
+For large API surfaces or GraphQL. Instead of `useQuery` hooks, export **query option factories** —
+plain functions that return query options. Consumers (route loaders, components) call
+`useSuspenseQuery(factory())` or `queryClient.query({ ...factory(), staleTime: "static" })`.
 
 ```
 api/
@@ -345,7 +351,8 @@ export const keys = createApiKeys("products", {
 
 ### Query Option Factories
 
-Return `queryOptions()` objects instead of wrapping in hooks — decouples from React, usable in loaders:
+Return `queryOptions()` objects instead of wrapping in hooks — decouples from React, usable in
+loaders:
 
 ```tsx
 // api/products/queryFns.ts
@@ -389,9 +396,7 @@ function RouteComponent() {
   const { api } = Route.useRouteContext();
 
   // Suspense query — guaranteed data, no loading states
-  const { data } = useSuspenseQuery(
-    api.products.getBySlug({ variables: { slug: params.slug } }),
-  );
+  const { data } = useSuspenseQuery(api.products.getBySlug({ variables: { slug: params.slug } }));
 
   return <ProductDetail product={data} />;
 }

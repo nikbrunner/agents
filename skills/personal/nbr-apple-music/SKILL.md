@@ -1,53 +1,100 @@
 ---
 name: nbr-apple-music
-description: Curate, clean up and organize Nik's Apple Music through the apple-music MCP. Use when asked to build or refine a playlist, import a mix or audio file such as a YouTube set, retire stale playlists or tracks, or sort playlists into folders.
+description:
+  Curate, clean up and organize Nik's Apple Music through the apple-music MCP. Use when asked to
+  build or refine a playlist, import a mix or audio file such as a YouTube set, retire stale
+  playlists or tracks, or sort playlists into folders.
 compatibility: macOS with Music.app, and the apple-music MCP at --level api.
 ---
 
 # Apple Music
 
-Every write goes through the `apple-music` MCP, apart from cover art, playlist descriptions and local file imports, which it has no tool for. Its tool descriptions cover parameters; this skill covers the order of work and what they leave out.
+Every write goes through the `apple-music` MCP, apart from cover art, playlist descriptions and
+local file imports, which it has no tool for. Its tool descriptions cover parameters; this skill
+covers the order of work and what they leave out.
 
 ## Curate a playlist
 
-1. **Learn.** Read [taste.md](taste.md), then run `sh ~/.claude/skills/nbr-apple-music/library-profile.sh` for the library as it stands now. Play counts only cover what Music.app has recorded, so weigh a lane's track count alongside its plays.
-2. **Brief.** Pin down mood, occasion, length, hard exclusions and whether the tempo should stay steady, asking only what taste.md leaves open. Read recent taste from `discover(action="heavy_rotation")`, `library(action="recently_played")` and any playlist Nik names, and look in `playlist(action="folders")` for a playlist already on the topic.
-3. **Propose.** Pick a shape from [Playlist shapes](#playlist-shapes) and show the tracklist in listening order, each as title and artist. Revise until Nik approves it. Build a label or discography brief from evidence: album `copyright` in `https://itunes.apple.com/search?entity=album&country=de&limit=200&term=ARTIST` names the label, and `https://itunes.apple.com/lookup?entity=song&country=de&limit=200&id=ALBUM_IDS` returns catalog ids, albums and runtimes.
-4. **Resolve.** Run `catalog(action="resolve")` on the approved list, 25 tracks per call, unless the ids came from that lookup. Show Nik any match that differs from the proposal, and keep each track's catalog id and album.
-5. **Pin.** `library(action="add", track=["id", ...])` puts the exact editions in the library. A track taken from another playlist can be missing from the library, so pin those too. Continue once the play-history script below shows every title and album pair, usually within a minute.
-6. **Write.** Create the playlist, retrying the first add if it reports the playlist is not found yet. Adds append, so send them in listening order, always with `auto_add=False` so a miss fails visibly.
-   - A track that collides gets its own call with top-level `track`, `artist` and `album`. It collides when the play-history output holds the same artist with that title on another album or inside a longer title, as `Circles (Mixed)` does for `Circles`.
-   - Add `allow_duplicates=True` to that call when the playlist already holds a longer title containing this one. The duplicate check matches substrings, so `Pk` is skipped once `Pk_Amb` is in.
-   - Runs of other tracks go as one JSON array of `{"name", "artist"}` objects. An `album` key inside an object is ignored.
-   - `auto_add=True` takes the top catalog hit, which can be a remix or another track from the same EP, and adds that wrong track to the library. `dry_run` uses a stricter matcher than the write, so a clean preview cannot rule this out. `playlist(action="add")` refuses catalog ids without a developer token.
-7. **Verify.** Done when `playlist(action="tracks")` shows every approved track, in order, with the approved album and runtime. The add response alone proves nothing. That read comes from the cloud and lags after a large remove, so when it disagrees with the play-history script, trust the script. Report each one that failed to land.
-8. **Update taste.** Once the playlist is done, propose a diff to taste.md covering what this session showed: rules Nik stated, tracks he called right, and swaps he asked for. Write it only after he approves.
+1. **Learn.** Read [taste.md](taste.md), then run
+   `sh ~/.claude/skills/nbr-apple-music/library-profile.sh` for the library as it stands now. Play
+   counts only cover what Music.app has recorded, so weigh a lane's track count alongside its plays.
+2. **Brief.** Pin down mood, occasion, length, hard exclusions and whether the tempo should stay
+   steady, asking only what taste.md leaves open. Read recent taste from
+   `discover(action="heavy_rotation")`, `library(action="recently_played")` and any playlist Nik
+   names, and look in `playlist(action="folders")` for a playlist already on the topic.
+3. **Propose.** Pick a shape from [Playlist shapes](#playlist-shapes) and show the tracklist in
+   listening order, each as title and artist. Revise until Nik approves it. Build a label or
+   discography brief from evidence: album `copyright` in
+   `https://itunes.apple.com/search?entity=album&country=de&limit=200&term=ARTIST` names the label,
+   and `https://itunes.apple.com/lookup?entity=song&country=de&limit=200&id=ALBUM_IDS` returns
+   catalog ids, albums and runtimes.
+4. **Resolve.** Run `catalog(action="resolve")` on the approved list, 25 tracks per call, unless the
+   ids came from that lookup. Show Nik any match that differs from the proposal, and keep each
+   track's catalog id and album.
+5. **Pin.** `library(action="add", track=["id", ...])` puts the exact editions in the library. A
+   track taken from another playlist can be missing from the library, so pin those too. Continue
+   once the play-history script below shows every title and album pair, usually within a minute.
+6. **Write.** Create the playlist, retrying the first add if it reports the playlist is not found
+   yet. Adds append, so send them in listening order, always with `auto_add=False` so a miss fails
+   visibly.
+   - A track that collides gets its own call with top-level `track`, `artist` and `album`. It
+     collides when the play-history output holds the same artist with that title on another album or
+     inside a longer title, as `Circles (Mixed)` does for `Circles`.
+   - Add `allow_duplicates=True` to that call when the playlist already holds a longer title
+     containing this one. The duplicate check matches substrings, so `Pk` is skipped once `Pk_Amb`
+     is in.
+   - Runs of other tracks go as one JSON array of `{"name", "artist"}` objects. An `album` key
+     inside an object is ignored.
+   - `auto_add=True` takes the top catalog hit, which can be a remix or another track from the same
+     EP, and adds that wrong track to the library. `dry_run` uses a stricter matcher than the write,
+     so a clean preview cannot rule this out. `playlist(action="add")` refuses catalog ids without a
+     developer token.
+7. **Verify.** Done when `playlist(action="tracks")` shows every approved track, in order, with the
+   approved album and runtime. The add response alone proves nothing. That read comes from the cloud
+   and lags after a large remove, so when it disagrees with the play-history script, trust the
+   script. Report each one that failed to land.
+8. **Update taste.** Once the playlist is done, propose a diff to taste.md covering what this
+   session showed: rules Nik stated, tracks he called right, and swaps he asked for. Write it only
+   after he approves.
 
-To change one track, use `add` with `replace`: the old track goes only after the new one has persisted, and the new one lands at the end. To keep a position, remove everything from that slot on and re-add it in order. Re-sequencing a whole playlist means removing every track from it and re-adding them in the new order.
+To change one track, use `add` with `replace`: the old track goes only after the new one has
+persisted, and the new one lands at the end. To keep a position, remove everything from that slot on
+and re-add it in order. Re-sequencing a whole playlist means removing every track from it and
+re-adding them in the new order.
 
 ### Playlist shapes
 
 **Chronological**, for an era, artist or label. The order tells the history.
 
 - Scope it from the catalog lookup in step 3, so the list covers what exists.
-- Select by quota per release, so every release is represented: 1 track from a single, 2 from an EP, 4 from an album. Give compilations a higher quota.
+- Select by quota per release, so every release is represented: 1 track from a single, 2 from an EP,
+  4 from an album. Give compilations a higher quota.
 - Leave out skits under 3 minutes, a cappellas, and the same title and artist on a second release.
-- Order by the album's release date, then track number. Track-level dates can carry the original year of a reissue.
+- Order by the album's release date, then track number. Track-level dates can carry the original
+  year of a reissue.
 
 **DJ set**, for a long programmed listen. The order follows energy.
 
-- Music.app holds no tempo or key data for streamed tracks, so sequence from knowledge of the records and tell Nik the set is programmed rather than beatmatched.
-- Ask how the intro should feel, offering the arcs in taste.md. The default arc is Intro, Rising, Groove, Build, Peak, Dark hours, Close, with Peak as the longest phase at about a quarter of the runtime. A Close mirrors the Intro, ideally with related material.
-- Keep the same artist from playing back to back, apart from deliberate runs in the Intro and Close. Spread versions of one tune across phases.
+- Music.app holds no tempo or key data for streamed tracks, so sequence from knowledge of the
+  records and tell Nik the set is programmed rather than beatmatched.
+- Ask how the intro should feel, offering the arcs in taste.md. The default arc is Intro, Rising,
+  Groove, Build, Peak, Dark hours, Close, with Peak as the longest phase at about a quarter of the
+  runtime. A Close mirrors the Intro, ideally with related material.
+- Keep the same artist from playing back to back, apart from deliberate runs in the Intro and Close.
+  Spread versions of one tune across phases.
 - Add a track when a phase lacks material or a transition needs a bridge, and report what was added.
 
-**Tempo** applies to any shape, and only when the brief asks for a steady speed. Most playlists keep a variable tempo. Music.app holds no BPM for streamed tracks, so look it up on the web, with Volumo track pages as the best source and Beatport, Tunebat or songbpm as fallbacks. For a long candidate list, hand the lookup to a subagent. Report a track with no BPM found as unknown, never as a guess.
+**Tempo** applies to any shape, and only when the brief asks for a steady speed. Most playlists keep
+a variable tempo. Music.app holds no BPM for streamed tracks, so look it up on the web, with Volumo
+track pages as the best source and Beatport, Tunebat or songbpm as fallbacks. For a long candidate
+list, hand the lookup to a subagent. Report a track with no BPM found as unknown, never as a guess.
 
 Re-sequencing can make a playlist's description untrue, so update it along with the order.
 
 ### Cover art and description
 
-Make covers with `nbr-images`, always with `aspect_ratio` `"1:1"`: on `"auto"` a 4K finish can come back portrait. Apply a square JPEG of about 3000 pixels through Music.app:
+Make covers with `nbr-images`, always with `aspect_ratio` `"1:1"`: on `"auto"` a 4K finish can come
+back portrait. Apply a square JPEG of about 3000 pixels through Music.app:
 
 ```applescript
 set imgData to read (POSIX file "/path/cover.jpg") as «class JPEG»
@@ -62,13 +109,15 @@ tell application "Music"
 end tell
 ```
 
-Done when Nik sees the cover in Music. Both commands can return errors and `count of artworks` can stay 0 even when the cover lands, so neither says whether it worked.
+Done when Nik sees the cover in Music. Both commands can return errors and `count of artworks` can
+stay 0 even when the cover lands, so neither says whether it worked.
 
 Set the description with `set description of p to "..."` and read it back.
 
 ## Import a mix
 
-For a DJ set or mix from YouTube or another site yt-dlp supports, landing in a playlist and in iCloud so it plays on every device.
+For a DJ set or mix from YouTube or another site yt-dlp supports, landing in a playlist and in
+iCloud so it plays on every device.
 
 1. **Download** to `~/Music/Mixes/`:
 
@@ -76,9 +125,14 @@ For a DJ set or mix from YouTube or another site yt-dlp supports, landing in a p
    yt-dlp --no-playlist -x --audio-format m4a --audio-quality 192K --embed-thumbnail --embed-metadata --no-embed-chapters --convert-thumbnails jpg -o "$HOME/Music/Mixes/%(title)s.%(ext)s" --print after_move:filepath --no-simulate "URL"
    ```
 
-   `--embed-metadata` writes the video's chapters as a data track, and a file with a chapter track ends in iCloud status `error`; `--no-embed-chapters` keeps it out. Without `--audio-quality 192K` the AAC comes out near 300 kbps, nearly doubling the size over a source YouTube streams at about 130 to 160 kbps.
+   `--embed-metadata` writes the video's chapters as a data track, and a file with a chapter track
+   ends in iCloud status `error`; `--no-embed-chapters` keeps it out. Without `--audio-quality 192K`
+   the AAC comes out near 300 kbps, nearly doubling the size over a source YouTube streams at about
+   130 to 160 kbps.
 
-2. **Fit the iCloud limits**: under 200 MB and under 2 hours, or the track stays `ineligible`. Split a longer file at the chapter start closest to an even cut (`yt-dlp --print '%(chapters)j' URL`), or into equal parts when there are none:
+2. **Fit the iCloud limits**: under 200 MB and under 2 hours, or the track stays `ineligible`. Split
+   a longer file at the chapter start closest to an even cut (`yt-dlp --print '%(chapters)j' URL`),
+   or into equal parts when there are none:
 
    ```sh
    ffmpeg -ss START -i IN -t LEN -map 0:a -map 0:v -c copy -map_metadata 0 -map_chapters -1 -disposition:v:0 attached_pic -metadata title="TITLE (Part N)" -metadata track="N/M" OUT
@@ -90,15 +144,28 @@ For a DJ set or mix from YouTube or another site yt-dlp supports, landing in a p
    osascript -e 'tell application "Music" to add POSIX file "/path/file.m4a" to (first user playlist whose name is "NAME")'
    ```
 
-   The import can land a track in the library and leave it out of the playlist, so read the playlist back and add a missing track with `duplicate (first track of library playlist 1 whose database ID is ID) to (first user playlist whose name is "NAME")`. Music.app copies the file into its media folder, so move the download to the Trash once the track is uploaded. It skips a file whose title matches a track already in the library; to replace that track's audio, overwrite the file at its `location` and `refresh` the track. Deleting a track through AppleScript leaves its file in the media folder, so trash that too.
+   The import can land a track in the library and leave it out of the playlist, so read the playlist
+   back and add a missing track with
+   `duplicate (first track of library playlist 1 whose database ID is ID) to (first user playlist whose name is "NAME")`.
+   Music.app copies the file into its media folder, so move the download to the Trash once the track
+   is uploaded. It skips a file whose title matches a track already in the library; to replace that
+   track's audio, overwrite the file at its `location` and `refresh` the track. Deleting a track
+   through AppleScript leaves its file in the media folder, so trash that too.
 
-4. **Verify.** Done when `cloud status` of each imported track reads `uploaded`; it takes a few minutes, so poll it in the background. `error` gets one retry with File → Library → Update Cloud Library, after checking the file with `ffprobe` for a stream beyond audio and cover art.
+4. **Verify.** Done when `cloud status` of each imported track reads `uploaded`; it takes a few
+   minutes, so poll it in the background. `error` gets one retry with File → Library → Update Cloud
+   Library, after checking the file with `ffprobe` for a stream beyond audio and cover art.
 
 ## Clean up
 
-`delete` and library `remove` are irreversible, run without a confirmation step, and sync to every device through iCloud. Each one runs from a list Nik approved in this conversation, naming the exact playlist or track.
+`delete` and library `remove` are irreversible, run without a confirmation step, and sync to every
+device through iCloud. Each one runs from a list Nik approved in this conversation, naming the exact
+playlist or track.
 
-1. **Inventory.** `playlist(action="list", format="json", full=True, limit=0)` and `playlist(action="folders")`. Leave `smart: true` playlists alone: that covers rule-based playlists and system ones like Music and Favourite Songs. The field appears only with `full=True`.
+1. **Inventory.** `playlist(action="list", format="json", full=True, limit=0)` and
+   `playlist(action="folders")`. Leave `smart: true` playlists alone: that covers rule-based
+   playlists and system ones like Music and Favourite Songs. The field appears only with
+   `full=True`.
 2. **Gather evidence.** The MCP returns no play history per track, so read it from Music.app:
 
    ```sh
@@ -107,20 +174,40 @@ For a DJ set or mix from YouTube or another site yt-dlp supports, landing in a p
 
    Leave off the name for the whole library, which takes a few seconds.
 
-   One tab-separated row per track: title, artist, plays, last played, date added, album. This query stays read-only; writes belong to the MCP. `missing value` means no date is recorded, and it shows up in the date-added column too. Play counts only cover what Music.app has recorded, so a zero on a recently added track says little.
+   One tab-separated row per track: title, artist, plays, last played, date added, album. This query
+   stays read-only; writes belong to the MCP. `missing value` means no date is recorded, and it
+   shows up in the date-added column too. Play counts only cover what Music.app has recorded, so a
+   zero on a recently added track says little.
 
-3. **Propose.** A table with one row per candidate: the item, the evidence, and the action. Pick the mildest action that does the job: remove from playlist, then delete the playlist, then remove from library. Wait for Nik's approval of the table.
-4. **Back up.** Save the play-history output for the whole library to `~/Music/applemusic-backups/library-YYYYMMDD.tsv` as the baseline. `library(action="snapshot")` times out on this library. For each playlist about to be deleted or thinned, run `playlist(action="tracks", playlist="NAME", limit=0, format="none", export="csv")`. The exports land in `~/.cache/applemusic-mcp`, where a cache clear wipes them, and they are the only undo for a delete. Copy them to `~/Music/applemusic-backups/` first.
-5. **Apply** in the approved order, naming title and artist on every track removal. A partial title match that hits several tracks must end in Nik choosing one. `remove` matches title substrings and runs for real even with `dry_run=True`, so when the title sits inside another track's (`Mix #11` inside `Mix #11 (Part 1)`), delete by `database ID` through Music.app instead.
-6. **Verify.** Run the script again and diff columns 1, 2 and 6 against the baseline, since plays and dates drift. Done when that diff and `config(action="audit-log")` match the approved table exactly. Report any difference.
+3. **Propose.** A table with one row per candidate: the item, the evidence, and the action. Pick the
+   mildest action that does the job: remove from playlist, then delete the playlist, then remove
+   from library. Wait for Nik's approval of the table.
+4. **Back up.** Save the play-history output for the whole library to
+   `~/Music/applemusic-backups/library-YYYYMMDD.tsv` as the baseline. `library(action="snapshot")`
+   times out on this library. For each playlist about to be deleted or thinned, run
+   `playlist(action="tracks", playlist="NAME", limit=0, format="none", export="csv")`. The exports
+   land in `~/.cache/applemusic-mcp`, where a cache clear wipes them, and they are the only undo for
+   a delete. Copy them to `~/Music/applemusic-backups/` first.
+5. **Apply** in the approved order, naming title and artist on every track removal. A partial title
+   match that hits several tracks must end in Nik choosing one. `remove` matches title substrings
+   and runs for real even with `dry_run=True`, so when the title sits inside another track's
+   (`Mix #11` inside `Mix #11 (Part 1)`), delete by `database ID` through Music.app instead.
+6. **Verify.** Run the script again and diff columns 1, 2 and 6 against the baseline, since plays
+   and dates drift. Done when that diff and `config(action="audit-log")` match the approved table
+   exactly. Report any difference.
 
 ## Organize
 
-Folders live outside `playlist(action="list")`, so read `playlist(action="folders")` first. Propose the target tree, get approval, then create and move. Done when `folders` matches the approved tree.
+Folders live outside `playlist(action="list")`, so read `playlist(action="folders")` first. Propose
+the target tree, get approval, then create and move. Done when `folders` matches the approved tree.
 
 ## When results look wrong
 
-- **Empty results during bulk work can be a throttle.** The web-player token allows a few hundred requests an hour and a `429` can surface as an empty search. Treat empty as unknown and stop for about an hour, because retries extend the block. For large jobs, suggest `applemusic-mcp login --dev`.
+- **Empty results during bulk work can be a throttle.** The web-player token allows a few hundred
+  requests an hour and a `429` can surface as an empty search. Treat empty as unknown and stop for
+  about an hour, because retries extend the block. For large jobs, suggest
+  `applemusic-mcp login --dev`.
 - **Catalog actions start failing:** Nik re-runs `applemusic-mcp login`.
-- **"Silently reverted":** a Music.app bug on some playlists. Quit and reopen Music.app, then retry once.
+- **"Silently reverted":** a Music.app bug on some playlists. Quit and reopen Music.app, then retry
+  once.
 - **Tool needs a higher level:** say which feature needs it. The level is set in Nik's MCP config.

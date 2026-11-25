@@ -13,9 +13,7 @@
     "chrome-devtools": {
       "type": "stdio",
       "command": "chrome-devtools-mcp",
-      "args": [
-        "--isolated"
-      ],
+      "args": ["--isolated"],
       "env": {}
     },
     "claude-design": {
@@ -42,11 +40,7 @@
     "apple-music": {
       "type": "stdio",
       "command": "/Users/brunner/.local/bin/applemusic-mcp",
-      "args": [
-        "serve",
-        "--level",
-        "api"
-      ],
+      "args": ["serve", "--level", "api"],
       "env": {}
     },
     "FLUX": {

@@ -1,4 +1,4 @@
-import type { Git, GitFile } from '../types'
+import type { Git, GitFile } from "../types";
 
 export function parseGit(repo: string, out: string): Git {
   const g: Git = {
@@ -11,160 +11,168 @@ export function parseGit(repo: string, out: string): Git {
     deleted: 0,
     untracked: 0,
     files: [],
-  }
-  const numstat = new Map<string, [number, number]>()
+  };
+  const numstat = new Map<string, [number, number]>();
   const file = (xy: string, path: string): GitFile => {
-    const [x = '.', y = '.'] = xy
-    return { path, status: x !== '.' ? x : y, isStaged: x !== '.' }
-  }
-  for (const line of out.split('\n')) {
-    if (line.startsWith('# branch.head ')) {
-      const head = line.slice(14)
-      g.branch = head === '(detached)' ? undefined : head
-    } else if (line.startsWith('# branch.ab ')) {
-      const [a, b] = line.slice(12).split(' ')
-      g.ahead = Math.abs(Number(a))
-      g.behind = Math.abs(Number(b))
-    } else if (line.startsWith('# branch.upstream ')) {
-      g.upstream = line.slice(18)
-    } else if (line.startsWith('# last ')) {
-      const [hash = '', age = '', subject = ''] = line.slice(7).split('\t')
-      g.last = { hash, age, subject }
-    } else if (line.startsWith('# num ')) {
-      const [a, r, path] = line.slice(6).split('\t')
-      if (path && a !== '-') numstat.set(path, [Number(a), Number(r)])
-    } else if (line.startsWith('# gitdir ')) {
-      g.isWorktree = line.includes('/worktrees/')
-    } else if (line.startsWith('? ')) {
-      g.untracked++
-      g.files.push({ path: line.slice(2), status: '?', isStaged: false })
-    } else if (line.startsWith('1 ') || line.startsWith('2 ')) {
-      const parts = line.split(' ')
-      const xy = parts[1] ?? ''
-      const path = (line.startsWith('2 ') ? parts.slice(9) : parts.slice(8)).join(' ').split('\t')[0] ?? ''
-      g.files.push(file(xy, path))
-      if (xy.includes('D')) g.deleted++
-      else if (xy.startsWith('A')) g.added++
-      else g.modified++
+    const [x = ".", y = "."] = xy;
+    return { path, status: x !== "." ? x : y, isStaged: x !== "." };
+  };
+  for (const line of out.split("\n")) {
+    if (line.startsWith("# branch.head ")) {
+      const head = line.slice(14);
+      g.branch = head === "(detached)" ? undefined : head;
+    } else if (line.startsWith("# branch.ab ")) {
+      const [a, b] = line.slice(12).split(" ");
+      g.ahead = Math.abs(Number(a));
+      g.behind = Math.abs(Number(b));
+    } else if (line.startsWith("# branch.upstream ")) {
+      g.upstream = line.slice(18);
+    } else if (line.startsWith("# last ")) {
+      const [hash = "", age = "", subject = ""] = line.slice(7).split("\t");
+      g.last = { hash, age, subject };
+    } else if (line.startsWith("# num ")) {
+      const [a, r, path] = line.slice(6).split("\t");
+      if (path && a !== "-") numstat.set(path, [Number(a), Number(r)]);
+    } else if (line.startsWith("# gitdir ")) {
+      g.isWorktree = line.includes("/worktrees/");
+    } else if (line.startsWith("? ")) {
+      g.untracked++;
+      g.files.push({ path: line.slice(2), status: "?", isStaged: false });
+    } else if (line.startsWith("1 ") || line.startsWith("2 ")) {
+      const parts = line.split(" ");
+      const xy = parts[1] ?? "";
+      const path =
+        (line.startsWith("2 ") ? parts.slice(9) : parts.slice(8)).join(" ").split("\t")[0] ?? "";
+      g.files.push(file(xy, path));
+      if (xy.includes("D")) g.deleted++;
+      else if (xy.startsWith("A")) g.added++;
+      else g.modified++;
     }
   }
   for (const f of g.files) {
-    const n = numstat.get(f.path)
-    if (n) [f.added, f.removed] = n
+    const n = numstat.get(f.path);
+    if (n) [f.added, f.removed] = n;
   }
-  return g
+  return g;
 }
 
 export function prettyModel(id: string): string {
-  const m = id.match(/^claude-([a-z]+)-(\d+)-(\d+)/)
-  if (!m) return id
-  const name = `${m[1]![0]!.toUpperCase()}${m[1]!.slice(1)} ${m[2]}.${m[3]}`
-  return id.includes('[1m]') ? `${name} (1M context)` : name
+  const m = id.match(/^claude-([a-z]+)-(\d+)-(\d+)/);
+  if (!m) return id;
+  const name = `${m[1]![0]!.toUpperCase()}${m[1]!.slice(1)} ${m[2]}.${m[3]}`;
+  return id.includes("[1m]") ? `${name} (1M context)` : name;
 }
 
 export function bar(percent: number, width = 10): string {
-  const filled = Math.round((Math.min(100, Math.max(0, percent)) / 100) * width)
-  return '▰'.repeat(filled) + '▱'.repeat(width - filled)
+  const filled = Math.round((Math.min(100, Math.max(0, percent)) / 100) * width);
+  return "▰".repeat(filled) + "▱".repeat(width - filled);
 }
 
 export function heat(percent: number): string | undefined {
-  if (percent >= 85) return 'error'
-  if (percent >= 60) return 'warning'
-  return undefined
+  if (percent >= 85) return "error";
+  if (percent >= 60) return "warning";
+  return undefined;
 }
 
 export function duration(ms: number): string {
-  const s = Math.max(0, Math.floor(ms / 1000))
-  if (s < 60) return `${s}s`
-  if (s < 3600) return `${Math.floor(s / 60)}m${String(s % 60).padStart(2, '0')}`
-  return `${Math.floor(s / 3600)}h${String(Math.floor((s % 3600) / 60)).padStart(2, '0')}`
+  const s = Math.max(0, Math.floor(ms / 1000));
+  if (s < 60) return `${s}s`;
+  if (s < 3600) return `${Math.floor(s / 60)}m${String(s % 60).padStart(2, "0")}`;
+  return `${Math.floor(s / 3600)}h${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}`;
 }
 
 export function until(iso: string | number | undefined, now: number): string {
-  if (iso === undefined) return ''
-  const left = (typeof iso === 'number' ? iso : Date.parse(iso)) - now
-  if (!(left > 0)) return ''
-  if (left >= 86_400_000) return `↓${Math.floor(left / 86_400_000)}d`
-  return `↓${duration(left)}`
+  if (iso === undefined) return "";
+  const left = (typeof iso === "number" ? iso : Date.parse(iso)) - now;
+  if (!(left > 0)) return "";
+  if (left >= 86_400_000) return `↓${Math.floor(left / 86_400_000)}d`;
+  return `↓${duration(left)}`;
 }
 
-const countLines = (v: unknown) => (typeof v === 'string' && v !== '' ? v.split('\n').length : 0)
+const countLines = (v: unknown) => (typeof v === "string" && v !== "" ? v.split("\n").length : 0);
 
 export function editDelta(e: Record<string, unknown>): { added: number; removed: number } {
-  if (e.tool === 'Write') return { added: countLines(e.content), removed: 0 }
-  const edits = Array.isArray(e.edits) ? (e.edits as Record<string, unknown>[]) : [e]
-  let added = 0
-  let removed = 0
+  if (e.tool === "Write") return { added: countLines(e.content), removed: 0 };
+  const edits = Array.isArray(e.edits) ? (e.edits as Record<string, unknown>[]) : [e];
+  let added = 0;
+  let removed = 0;
   for (const one of edits) {
-    added += countLines(one.new_string)
-    removed += countLines(one.old_string)
+    added += countLines(one.new_string);
+    removed += countLines(one.old_string);
   }
-  return { added, removed }
+  return { added, removed };
 }
 
 export function describeCall(e: Record<string, unknown>): string {
   const arg =
-    [e.file_path, e.path, e.notebook_path].find(v => typeof v === 'string')?.toString().split('/').pop() ??
-    [e.description, e.pattern, e.query, e.subject, e.command, e.url, e.skill].find(v => typeof v === 'string')
-  return `${e.tool}${arg ? ` ${String(arg).split('\n')[0]}` : ''}`.slice(0, 80)
+    [e.file_path, e.path, e.notebook_path]
+      .find((v) => typeof v === "string")
+      ?.toString()
+      .split("/")
+      .pop() ??
+    [e.description, e.pattern, e.query, e.subject, e.command, e.url, e.skill].find(
+      (v) => typeof v === "string",
+    );
+  return `${e.tool}${arg ? ` ${String(arg).split("\n")[0]}` : ""}`.slice(0, 80);
 }
 
 export function oneLine(text: string): string {
-  return (text.split('\n').find(l => l.trim() !== '') ?? '').trim().replace(/[.。]$/, '')
+  return (text.split("\n").find((l) => l.trim() !== "") ?? "").trim().replace(/[.。]$/, "");
 }
 
 export function splitName(name: string): { topic: string; persona: string } | undefined {
-  const at = name.lastIndexOf(' · ')
-  return at > 0 ? { topic: name.slice(0, at), persona: name.slice(at + 3) } : undefined
+  const at = name.lastIndexOf(" · ");
+  return at > 0 ? { topic: name.slice(0, at), persona: name.slice(at + 3) } : undefined;
 }
 
 export function clip(text: string, width: number, fromStart = false): string {
-  if (text.length <= width) return text
-  if (width <= 0) return ''
-  return fromStart ? `…${text.slice(text.length - width + 1)}` : `${text.slice(0, width - 1)}…`
+  if (text.length <= width) return text;
+  if (width <= 0) return "";
+  return fromStart ? `…${text.slice(text.length - width + 1)}` : `${text.slice(0, width - 1)}…`;
 }
 
 export function planName(tier: unknown): string | undefined {
-  if (typeof tier !== 'string' || tier === '') return undefined
+  if (typeof tier !== "string" || tier === "") return undefined;
   return tier
-    .replace(/^default_/, '')
-    .replace(/^claude_/, '')
-    .split('_')
-    .map(w => w[0]!.toUpperCase() + w.slice(1))
-    .join(' ')
+    .replace(/^default_/, "")
+    .replace(/^claude_/, "")
+    .split("_")
+    .map((w) => w[0]!.toUpperCase() + w.slice(1))
+    .join(" ");
 }
 
 export function byNumericName(a: { name: string }, b: { name: string }): number {
-  return parseInt(a.name) - parseInt(b.name)
+  return parseInt(a.name) - parseInt(b.name);
 }
 
-export type TreeRow = { depth: number; name: string; file?: GitFile }
+export type TreeRow = { depth: number; name: string; file?: GitFile };
 
 export function fileTree(files: GitFile[]): TreeRow[] {
-  type Dir = { dirs: Map<string, Dir>; files: GitFile[] }
-  const root: Dir = { dirs: new Map(), files: [] }
+  type Dir = { dirs: Map<string, Dir>; files: GitFile[] };
+  const root: Dir = { dirs: new Map(), files: [] };
   for (const f of [...files].sort((a, b) => a.path.localeCompare(b.path))) {
-    let d = root
-    for (const part of f.path.split('/').slice(0, -1)) {
-      if (!d.dirs.has(part)) d.dirs.set(part, { dirs: new Map(), files: [] })
-      d = d.dirs.get(part)!
+    let d = root;
+    for (const part of f.path.split("/").slice(0, -1)) {
+      if (!d.dirs.has(part)) d.dirs.set(part, { dirs: new Map(), files: [] });
+      d = d.dirs.get(part)!;
     }
-    d.files.push(f)
+    d.files.push(f);
   }
-  const rows: TreeRow[] = []
+  const rows: TreeRow[] = [];
   const walk = (d: Dir, depth: number) => {
     for (let [name, child] of d.dirs) {
-      name += '/'
+      name += "/";
       while (child.files.length === 0 && child.dirs.size === 1) {
-        const [only, next] = [...child.dirs][0]!
-        name += `${only}/`
-        child = next
+        const [only, next] = [...child.dirs][0]!;
+        name += `${only}/`;
+        child = next;
       }
-      rows.push({ depth, name })
-      walk(child, depth + 1)
+      rows.push({ depth, name });
+      walk(child, depth + 1);
     }
-    for (const f of d.files) rows.push({ depth, name: f.path.slice(f.path.lastIndexOf('/') + 1), file: f })
-  }
-  walk(root, 0)
-  return rows
+    for (const f of d.files)
+      rows.push({ depth, name: f.path.slice(f.path.lastIndexOf("/") + 1), file: f });
+  };
+  walk(root, 0);
+  return rows;
 }

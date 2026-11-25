@@ -1,11 +1,15 @@
 # Generated Skill Template
 
-The template `nbr-repo-setup dependencies` fills to write `.agents/skills/repo-dep-upgrades/SKILL.md`. `{{placeholders}}` are replaced with detected/confirmed values.
+The template `nbr-repo-setup dependencies` fills to write
+`.agents/skills/repo-dep-upgrades/SKILL.md`. `{{placeholders}}` are replaced with detected/confirmed
+values.
 
 ````markdown
 ---
 name: repo-dep-upgrades
-description: Use when upgrading dependencies, reviewing Dependabot/Renovate PRs, or auditing outdated packages in this project.
+description:
+  Use when upgrading dependencies, reviewing Dependabot/Renovate PRs, or auditing outdated packages
+  in this project.
 metadata:
   argument-hint: "[package-name|all]"
 ---
@@ -16,7 +20,8 @@ Upgrade dependencies with changelog review, verification, and safe commits.
 
 ## Arguments
 
-The argument (`$ARGUMENTS` in Claude Code, or `/skill:repo-dep-upgrades` args in Pi) — optional package name(s) to upgrade. Empty to review all outdated deps.
+The argument (`$ARGUMENTS` in Claude Code, or `/skill:repo-dep-upgrades` args in Pi) — optional
+package name(s) to upgrade. Empty to review all outdated deps.
 
 ## Ecosystem
 
@@ -24,10 +29,10 @@ The argument (`$ARGUMENTS` in Claude Code, or `/skill:repo-dep-upgrades` args in
 - **Lock file:** {{lock_file}}
 - **Outdated command:** `{{outdated_command}}`
 - **Upgrade command:** `{{upgrade_command}}`
-- **Verification:** `{{verify_command}}`
-  {{#if extra_verify}}- **Extra verification:** `{{extra_verify}}`{{/if}}
-- **Commit prefix:** `{{commit_prefix}}`
-  {{#if dependabot}}- **Dependabot:** configured (check PRs with `gh pr list --author "app/dependabot"`){{/if}}
+- **Verification:** `{{verify_command}}` {{#if extra_verify}}- **Extra verification:**
+  `{{extra_verify}}`{{/if}}
+- **Commit prefix:** `{{commit_prefix}}` {{#if dependabot}}- **Dependabot:** configured (check PRs
+  with `gh pr list --author "app/dependabot"`){{/if}}
 
 ## Workflow
 
@@ -55,8 +60,8 @@ Research changelog, check usage in project (`grep` for imports), upgrade, verify
 {{verify_command}}
 ```
 
-Commit a green upgrade only after approval, staging the manifest, the lock file, and the code the upgrade required, as
-`{{commit_prefix}} upgrade {{package}} from X to Y`.
+Commit a green upgrade only after approval, staging the manifest, the lock file, and the code the
+upgrade required, as `{{commit_prefix}} upgrade {{package}} from X to Y`.
 
 ### 4. Summary
 
@@ -105,4 +110,6 @@ Upgraded list, deprecation warnings, new features, skipped deps.
 | `upgrade_command`  | `cargo update -p`                  |
 | `commit_prefix`    | `build(deps):`                     |
 
-`cargo update --dry-run --verbose` needs no extra install; `Unchanged ... (available: ...)` marks an upgrade outside the `Cargo.toml` range. `cargo update -p` stays inside that range, so a major upgrade raises the requirement in `Cargo.toml` first.
+`cargo update --dry-run --verbose` needs no extra install; `Unchanged ... (available: ...)` marks an
+upgrade outside the `Cargo.toml` range. `cargo update -p` stays inside that range, so a major
+upgrade raises the requirement in `Cargo.toml` first.

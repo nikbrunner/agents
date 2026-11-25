@@ -58,10 +58,11 @@ function UserContainer() {
 
 ## What a Custom Hook Is
 
-- **Hooks share logic, not state (any version).** Two components calling `useOnlineStatus()` each get their own state.
-  Share state by lifting it or through context.
-- **`use` prefix only for functions that call a hook.** A plain helper without hooks is a plain function.
-- **No lifecycle wrappers.** No `useMount`, `useEffectOnce`, or `useUpdateEffect`: they hide the dependency array from the
-  lint rule. Write the effect, or a hook named after what it synchronizes.
+- **Hooks share logic, not state (any version).** Two components calling `useOnlineStatus()` each
+  get their own state. Share state by lifting it or through context.
+- **`use` prefix only for functions that call a hook.** A plain helper without hooks is a plain
+  function.
+- **No lifecycle wrappers.** No `useMount`, `useEffectOnce`, or `useUpdateEffect`: they hide the
+  dependency array from the lint rule. Write the effect, or a hook named after what it synchronizes.
 
 Source: https://react.dev/learn/reusing-logic-with-custom-hooks

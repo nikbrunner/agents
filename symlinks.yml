@@ -14,13 +14,10 @@ common:
   home/.pi/agent/plannotator.json: ~/.pi/agent/plannotator.json
   home/.pi/agent/trust.json: ~/.pi/agent/trust.json
   home/.pi/agent/extensions: ~/.pi/agent/extensions
-  home/.agents/AGENTS.md:
-    [~/.claude/CLAUDE.md, ~/.claude-work/CLAUDE.md, ~/.pi/agent/AGENTS.md]
+  home/.agents/AGENTS.md: [~/.claude/CLAUDE.md, ~/.claude-work/CLAUDE.md, ~/.pi/agent/AGENTS.md]
   home/.agents/agents: [~/.claude/agents, ~/.claude-work/agents]
-  home/.claude/settings.json:
-    [~/.claude/settings.json, ~/.claude-work/settings.json]
-  home/.claude/keybindings.json:
-    [~/.claude/keybindings.json, ~/.claude-work/keybindings.json]
+  home/.claude/settings.json: [~/.claude/settings.json, ~/.claude-work/settings.json]
+  home/.claude/keybindings.json: [~/.claude/keybindings.json, ~/.claude-work/keybindings.json]
   home/.agents: ~/.agents
   home/repos/nikbrunner/AGENTS.md: ~/repos/nikbrunner/AGENTS.md
   "home/.claude/hooks/enforce/*": ~/.claude/hooks/enforce

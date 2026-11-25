@@ -19,17 +19,18 @@ The default tool per job in a TypeScript web project. A working choice in an exi
 | Dead code             | Knip                                                          |
 | Hooks                 | Vite+ hooks and `vp staged` (see [git](git.md))               |
 
-- Use the library that already owns a problem instead of rebuilding its layer: Form for form rules, Query for caching and
-  refetching, Router for URL state, Table for sorting and pagination.
-- Each TanStack library with a devtools package gets it, mounted only in development. A new TanStack dependency is checked
-  for one.
-- Look up tool behavior in its current docs, not from memory: the `tanstack` CLI for TanStack, the official docs otherwise.
+- Use the library that already owns a problem instead of rebuilding its layer: Form for form rules,
+  Query for caching and refetching, Router for URL state, Table for sorting and pagination.
+- Each TanStack library with a devtools package gets it, mounted only in development. A new TanStack
+  dependency is checked for one.
+- Look up tool behavior in its current docs, not from memory: the `tanstack` CLI for TanStack, the
+  official docs otherwise.
 
 ## TypeScript and lint
 
-- Strict TypeScript with bundler module resolution, `verbatimModuleSyntax`, unused-value checks, and the `#/` path alias.
-  Type-only imports use `import type`.
-- Oxlint bans `as` (`typescript/consistent-type-assertions` with `assertionStyle: "never"`) and non-null `!`
-  (`typescript/no-non-null-assertion`) outside tests, and requires the `#/` alias over parent-relative imports
-  (`no-restricted-imports` on `../*`). An assertion at an untyped third-party boundary gets one inline disable with the
-  reason beside it.
+- Strict TypeScript with bundler module resolution, `verbatimModuleSyntax`, unused-value checks, and
+  the `#/` path alias. Type-only imports use `import type`.
+- Oxlint bans `as` (`typescript/consistent-type-assertions` with `assertionStyle: "never"`) and
+  non-null `!` (`typescript/no-non-null-assertion`) outside tests, and requires the `#/` alias over
+  parent-relative imports (`no-restricted-imports` on `../*`). An assertion at an untyped
+  third-party boundary gets one inline disable with the reason beside it.

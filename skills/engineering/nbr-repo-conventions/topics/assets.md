@@ -1,9 +1,9 @@
 # Assets
 
-- Import application images from `src/assets/` so the bundler fingerprints them. Files that document metadata or a manifest
-  consume use public URLs, with a build step that serves them there.
-- Encode photographs as AVIF and WebP at 800 and 1600px wide. A source narrower than a width skips it, and `srcSet`
-  lists only the widths that exist:
+- Import application images from `src/assets/` so the bundler fingerprints them. Files that document
+  metadata or a manifest consume use public URLs, with a build step that serves them there.
+- Encode photographs as AVIF and WebP at 800 and 1600px wide. A source narrower than a width skips
+  it, and `srcSet` lists only the widths that exist:
 
   ```sh
   for w in 800 1600; do
@@ -12,8 +12,9 @@
   done
   ```
 
-- Render a photograph through `<picture>`: an AVIF `<source>`, then a WebP `<source>`, each with `srcSet` and `sizes`, then
-  an `<img>` fallback. The browser takes the first format it supports at the width that fits.
+- Render a photograph through `<picture>`: an AVIF `<source>`, then a WebP `<source>`, each with
+  `srcSet` and `sizes`, then an `<img>` fallback. The browser takes the first format it supports at
+  the width that fits.
 
   ```tsx
   <picture>
@@ -31,40 +32,43 @@
   </picture>
   ```
 
-- Every `<img>` in the app carries `width` and `height` in the source's aspect ratio, so the browser reserves its space before it loads.
-- An image below the fold gets `loading="lazy"` and `decoding="async"`. The one image that is the page's largest paint gets
-  `fetchpriority="high"` and loads eagerly.
+- Every `<img>` in the app carries `width` and `height` in the source's aspect ratio, so the browser
+  reserves its space before it loads.
+- An image below the fold gets `loading="lazy"` and `decoding="async"`. The one image that is the
+  page's largest paint gets `fetchpriority="high"` and loads eagerly.
 - Use PNG when the image needs alpha or exact pixels.
-- Motion in docs and release notes is an animated WebP recorded with the `nbr-record-clip` skill. Its tape or capture
-  script and fixtures live in `docs/assets/tapes/`, so every clip can be recorded again. A tape sets no theme or font:
-  `nbr-record-clip` applies TX-02 and Black Atom Default Dark and Light on every run.
-- In-app icons, logos, and line art are inline SVG components, so they inherit `currentColor` and follow the theme.
+- Motion in docs and release notes is an animated WebP recorded with the `nbr-record-clip` skill.
+  Its tape or capture script and fixtures live in `docs/assets/tapes/`, so every clip can be
+  recorded again. A tape sets no theme or font: `nbr-record-clip` applies TX-02 and Black Atom
+  Default Dark and Light on every run.
+- In-app icons, logos, and line art are inline SVG components, so they inherit `currentColor` and
+  follow the theme.
 
 ## Themed docs images
 
-Banners, screenshots, and clips in a README, the docs, and release notes come as a pair, `<name>-dark.<ext>` and
-`<name>-light.<ext>`, and follow the reader's color scheme. The light file is the fallback:
+Banners, screenshots, and clips in a README, the docs, and release notes come as a pair,
+`<name>-dark.<ext>` and `<name>-light.<ext>`, and follow the reader's color scheme. The light file
+is the fallback:
 
 ```html
 <picture>
-  <source
-    media="(prefers-color-scheme: dark)"
-    srcset="docs/assets/banner-dark.svg"
-  />
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/banner-dark.svg" />
   <img alt="<project>: <tagline>" src="docs/assets/banner-light.svg" />
 </picture>
 ```
 
-Both files show the same content in the project's dark and light theme. Change one, record or export the other in the same
-commit.
+Both files show the same content in the project's dark and light theme. Change one, record or export
+the other in the same commit.
 
-A project with a visible surface opens its README with a hero clip pair of its main view, stored under
-`docs/assets/readme/` and referenced by relative path, so it follows `main`. Release notes keep their own pinned copies
-under `docs/assets/changelog/`.
+A project with a visible surface opens its README with a hero clip pair of its main view, stored
+under `docs/assets/readme/` and referenced by relative path, so it follows `main`. Release notes
+keep their own pinned copies under `docs/assets/changelog/`.
 
 These rules apply to assets added or touched. Existing files keep their format.
 
 ## Sources of Truth
 
-- **MDN responsive images**: https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Responsive_images
-- **MDN `<img>`** (`loading`, `decoding`, `fetchpriority`): https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img
+- **MDN responsive images**:
+  https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Responsive_images
+- **MDN `<img>`** (`loading`, `decoding`, `fetchpriority`):
+  https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/img

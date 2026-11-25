@@ -12,10 +12,7 @@ interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
 }
 
-export async function apiClient(
-  endpoint: string,
-  options: RequestOptions = {},
-): Promise<unknown> {
+export async function apiClient(endpoint: string, options: RequestOptions = {}): Promise<unknown> {
   const { body, headers, ...rest } = options;
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -52,12 +49,11 @@ export async function apiClient(
 
 ## Multiple Backends
 
-If the app talks to more than one backend with different auth/origin rules
-(e.g. a session-cookie BFF plus a public, cross-origin service), don't force
-one wrapper to branch internally — write one wrapper per backend, each with
-its own base URL and auth strategy baked in. Topic files import whichever
-client matches that endpoint's backend; nothing outside the wrappers touches
-`fetch` directly.
+If the app talks to more than one backend with different auth/origin rules (e.g. a session-cookie
+BFF plus a public, cross-origin service), don't force one wrapper to branch internally — write one
+wrapper per backend, each with its own base URL and auth strategy baked in. Topic files import
+whichever client matches that endpoint's backend; nothing outside the wrappers touches `fetch`
+directly.
 
 ```
 lib/http/

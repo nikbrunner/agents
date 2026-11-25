@@ -1,7 +1,8 @@
 # Agent tooling
 
-How a repository tells coding agents what they need: one instruction file, project skills, and enforcement. Tool details
-live in [`agent-tooling/claude-code.md`](agent-tooling/claude-code.md) and [`agent-tooling/pi.md`](agent-tooling/pi.md).
+How a repository tells coding agents what they need: one instruction file, project skills, and
+enforcement. Tool details live in [`agent-tooling/claude-code.md`](agent-tooling/claude-code.md) and
+[`agent-tooling/pi.md`](agent-tooling/pi.md).
 
 ## Layout
 
@@ -12,20 +13,23 @@ live in [`agent-tooling/claude-code.md`](agent-tooling/claude-code.md) and [`age
 └── .claude/skills           # relative symlink → ../.agents/skills
 ```
 
-- `AGENTS.md` and `.agents/skills/` are agent-neutral and canonical. Agent-specific config lives only in that agent's own
-  directory: `.claude/settings.json`, `.pi/settings.json`, `.pi/extensions/`.
-- `.claude/skills` is a relative symlink, so it survives clones and worktrees. Pi discovers `.agents/skills/` on its own.
-- `AGENTS.md` is the only instruction file. Claude Code and Pi read it natively, so a repo needs no `CLAUDE.md`. Once a
-  `CLAUDE.md` is anywhere in the chain from the working directory up, Claude Code ignores `AGENTS.md` in every folder that
-  has no `CLAUDE.md`, including parent folders such as an org-level file.
-- Each skill's `name` matches its directory. Project skills carry the `repo-` prefix (`repo-commit`); personal global
-  skills carry `nbr-`.
+- `AGENTS.md` and `.agents/skills/` are agent-neutral and canonical. Agent-specific config lives
+  only in that agent's own directory: `.claude/settings.json`, `.pi/settings.json`,
+  `.pi/extensions/`.
+- `.claude/skills` is a relative symlink, so it survives clones and worktrees. Pi discovers
+  `.agents/skills/` on its own.
+- `AGENTS.md` is the only instruction file. Claude Code and Pi read it natively, so a repo needs no
+  `CLAUDE.md`. Once a `CLAUDE.md` is anywhere in the chain from the working directory up, Claude
+  Code ignores `AGENTS.md` in every folder that has no `CLAUDE.md`, including parent folders such as
+  an org-level file.
+- Each skill's `name` matches its directory. Project skills carry the `repo-` prefix
+  (`repo-commit`); personal global skills carry `nbr-`.
 
 ## AGENTS.md
 
-Lean: about 50 lines, holding only what an agent would get wrong without it. The decision test for every line: _would the
-agent make a costly mistake without this, or would it just need to read a file first?_ When reading a file is enough, the
-line goes.
+Lean: about 50 lines, holding only what an agent would get wrong without it. The decision test for
+every line: _would the agent make a costly mistake without this, or would it just need to read a
+file first?_ When reading a file is enough, the line goes.
 
 Discoverable from the repo, so it stays out:
 
@@ -35,8 +39,8 @@ Discoverable from the repo, so it stays out:
 - generated files a framework explains (route trees)
 - architecture already written up in `docs/`
 
-What stays: the project's identity and constraints, unwritten conventions, the reason behind a non-obvious choice, gotchas,
-and pointers to skills and docs with the condition for reading them.
+What stays: the project's identity and constraints, unwritten conventions, the reason behind a
+non-obvious choice, gotchas, and pointers to skills and docs with the condition for reading them.
 
 ## Where an instruction belongs
 
@@ -47,25 +51,28 @@ and pointers to skills and docs with the condition for reading them.
 | A deterministic rule ("never X", "always Y") a script can check | Enforcement: a Claude Code hook or a Pi extension |
 | Anything discoverable, duplicated, or stale                     | Nowhere                                           |
 
-A skill only the human should start sets `disable-model-invocation: true`, which keeps its description out of every session.
-Knowledge and workflow skills the agent should reach on its own keep a description that names their triggers.
+A skill only the human should start sets `disable-model-invocation: true`, which keeps its
+description out of every session. Knowledge and workflow skills the agent should reach on its own
+keep a description that names their triggers.
 
 ## Agent hooks
 
-- Read the host's current hook docs before adding or adapting a hook: [Claude Code](https://code.claude.com/docs/en/hooks),
+- Read the host's current hook docs before adding or adapting a hook:
+  [Claude Code](https://code.claude.com/docs/en/hooks),
   [Codex](https://learn.chatgpt.com/docs/hooks).
-- Read existing registrations first. When the project already covers an event, adapt that registration instead of stacking
-  a second hook on it.
-- Codex runs project hooks only after the project is trusted and each script is approved through `/hooks`. A changed hook
-  script needs that review again.
+- Read existing registrations first. When the project already covers an event, adapt that
+  registration instead of stacking a second hook on it.
+- Codex runs project hooks only after the project is trusted and each script is approved through
+  `/hooks`. A changed hook script needs that review again.
 
 ## Feedback loops
 
-An agent works best against fast, deterministic checks: a typecheck script, a lint, Git hooks with fast checks on
-pre-commit and the CI-parity pass on pre-push (the [`git`](git.md) topic).
+An agent works best against fast, deterministic checks: a typecheck script, a lint, Git hooks with
+fast checks on pre-commit and the CI-parity pass on pre-push (the [`git`](git.md) topic).
 
 ## Health
 
-A setup drifts like code. Signs to look for: `AGENTS.md` lines the decision test removes, skills naming removed files or
-APIs, two skills or a skill and `AGENTS.md` saying the same thing, enforcement for tools the repo no longer uses, and
-project areas with recurring agent mistakes and no skill.
+A setup drifts like code. Signs to look for: `AGENTS.md` lines the decision test removes, skills
+naming removed files or APIs, two skills or a skill and `AGENTS.md` saying the same thing,
+enforcement for tools the repo no longer uses, and project areas with recurring agent mistakes and
+no skill.

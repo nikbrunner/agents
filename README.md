@@ -1,9 +1,12 @@
 # agents
 
-My agent setup: skills for Claude Code, Pi, Codex and anything else that reads `SKILL.md`, Claude Code mods, and the config of the agents I run. The skills encode how I plan, commit, open PRs and set up repos, so they are opinionated by design. Take what fits.
+My agent setup: skills for Claude Code, Pi, Codex and anything else that reads `SKILL.md`, Claude
+Code mods, and the config of the agents I run. The skills encode how I plan, commit, open PRs and
+set up repos, so they are opinionated by design. Take what fits.
 
 > [!TIP]
-> Want to use parts of this with your own agent? Paste it [these instructions](#instructions-for-agents).
+> Want to use parts of this with your own agent? Paste it
+> [these instructions](#instructions-for-agents).
 
 ## Contents
 
@@ -62,9 +65,13 @@ install.sh, symlinks.yml and scripts/ are for Nik's machines, and they replace g
 ## Install the skills
 
 > [!NOTE]
-> Every skill here starts with `nbr-`. That prefix is a namespace: my skills sit together in the `/` menu, you can find them by typing `/nbr`, and names like `/commit` stay free for yours. I wish more third-party skills did this.
+> Every skill here starts with `nbr-`. That prefix is a namespace: my skills sit together in the `/`
+> menu, you can find them by typing `/nbr`, and names like `/commit` stay free for yours. I wish
+> more third-party skills did this.
 
-The skills sit in two folders. [`engineering`](skills/engineering) covers coding work and the tools it runs on. [`personal`](skills/personal) covers life outside the code. [Skills](#skills) lists what each one needs installed first.
+The skills sit in two folders. [`engineering`](skills/engineering) covers coding work and the tools
+it runs on. [`personal`](skills/personal) covers life outside the code. [Skills](#skills) lists what
+each one needs installed first.
 
 All of them:
 
@@ -97,15 +104,21 @@ git clone https://github.com/nikbrunner/agents ~/repos/nikbrunner/agents
 
 What it does:
 
-- Links the config in `home/` into `~`, as listed in [`symlinks.yml`](symlinks.yml). An existing file is moved aside as `<name>.backup.<timestamp>`; [`scripts/symlinks.sh`](scripts/symlinks.sh) does the linking and runs on its own too, and its `--dry-run` shows what would change. It is a copy of the linker in my dots repo, whose `dots link` runs this one after its own.
-- Links every skill folder in `skills/<group>/` into `~/.agents/skills`, removing links whose skill no longer exists and never replacing a real file or directory.
+- Links the config in `home/` into `~`, as listed in [`symlinks.yml`](symlinks.yml). An existing
+  file is moved aside as `<name>.backup.<timestamp>`; [`scripts/symlinks.sh`](scripts/symlinks.sh)
+  does the linking and runs on its own too, and its `--dry-run` shows what would change. It is a
+  copy of the linker in my dots repo, whose `dots link` runs this one after its own.
+- Links every skill folder in `skills/<group>/` into `~/.agents/skills`, removing links whose skill
+  no longer exists and never replacing a real file or directory.
 - Points `~/.claude/skills` and `~/.claude-work/skills` at `~/.agents/skills`.
 
 Run it again after adding or removing a skill or a `symlinks.yml` entry.
 
 ### Third-party skills
 
-The third-party skills I use, including the ones these skills depend on, are recorded in `skills-lock.json`. `install.sh` restores them into `.agents/skills/` (gitignored) and links them next to mine. Manage them from the repo root, then commit the lock:
+The third-party skills I use, including the ones these skills depend on, are recorded in
+`skills-lock.json`. `install.sh` restores them into `.agents/skills/` (gitignored) and links them
+next to mine. Manage them from the repo root, then commit the lock:
 
 ```sh
 npx skills add <source> --skill <name> -a codex   # -a codex installs into .agents/skills
@@ -119,7 +132,8 @@ Each skill names its own requirements in the `compatibility` field of its `SKILL
 
 ### How they work together
 
-Arrows are references written in the skill files. Solid boxes are skills in this repo. The dashed box is my work skills, which live in a private repo and build on these.
+Arrows are references written in the skill files. Solid boxes are skills in this repo. The dashed
+box is my work skills, which live in a private repo and build on these.
 
 ```mermaid
 flowchart LR
@@ -165,31 +179,57 @@ flowchart LR
 
 #### Voice
 
-`nbr-voice` holds how agents talk to me and how prose in my name reads, with a rewrite pass that `nbr-plan`, `nbr-create-pr` and Bob run on their drafts. In Claude Code three hooks in [`home/.claude/hooks/enforce`](home/.claude/hooks/enforce) keep it in force: `voice-context.sh` puts the skill in context at session start and after compaction, `voice-reminder.sh` adds a short reminder to every prompt, and `voice-words.py` sends a reply back when it uses a word from the skill's forbidden list.
+`nbr-voice` holds how agents talk to me and how prose in my name reads, with a rewrite pass that
+`nbr-plan`, `nbr-create-pr` and Bob run on their drafts. In Claude Code three hooks in
+[`home/.claude/hooks/enforce`](home/.claude/hooks/enforce) keep it in force: `voice-context.sh` puts
+the skill in context at session start and after compaction, `voice-reminder.sh` adds a short
+reminder to every prompt, and `voice-words.py` sends a reply back when it uses a word from the
+skill's forbidden list.
 
 #### A day with Bob
 
-`nbr-bob` runs Bob, my digital assistant, which has access to my notes. It opens and closes the day in every circle's daily note, the private one in my Obsidian vault and one per work circle that a work skill adds. Other sessions send it their state with `nbr-report-to-bob`, and it files each report in the right note. It hands PR reviews and tasks out to sessions through `nbr-dispatch`, watches how much runs at once, and at day close offers to tear down sessions whose work merged, which it does only on my yes.
+`nbr-bob` runs Bob, my digital assistant, which has access to my notes. It opens and closes the day
+in every circle's daily note, the private one in my Obsidian vault and one per work circle that a
+work skill adds. Other sessions send it their state with `nbr-report-to-bob`, and it files each
+report in the right note. It hands PR reviews and tasks out to sessions through `nbr-dispatch`,
+watches how much runs at once, and at day close offers to tear down sessions whose work merged,
+which it does only on my yes.
 
 #### A PR review
 
-Bob asks me whether a PR goes to review. On yes, it writes a brief that names the circle's review skill and hands it to `nbr-dispatch`. There [lager](https://github.com/nikbrunner/lager) creates a worktree on the PR's branch and a Rex session with the Agents, Edit and Shells tabs, and dispatch runs an install with no scripts and starts a Claude agent on the brief. There `nbr-review-pr` judges the PR's shape, reads every changed file against `nbr-repo-conventions`, and leaves its report in the pane, with fixes and a comment draft on offer. The agent stays for follow-ups, and when I'm done it offers to close its own session by `nbr-dispatch`. A work skill wraps `nbr-review-pr` for another host, replacing the steps that differ.
+Bob asks me whether a PR goes to review. On yes, it writes a brief that names the circle's review
+skill and hands it to `nbr-dispatch`. There [lager](https://github.com/nikbrunner/lager) creates a
+worktree on the PR's branch and a Rex session with the Agents, Edit and Shells tabs, and dispatch
+runs an install with no scripts and starts a Claude agent on the brief. There `nbr-review-pr` judges
+the PR's shape, reads every changed file against `nbr-repo-conventions`, and leaves its report in
+the pane, with fixes and a comment draft on offer. The agent stays for follow-ups, and when I'm done
+it offers to close its own session by `nbr-dispatch`. A work skill wraps `nbr-review-pr` for another
+host, replacing the steps that differ.
 
 #### A dispatch
 
-`nbr-dispatch` confirms the target repo with me, writes the brief with the worker's boundary rules, and launches it in a worktree and session lager creates. When I ask for a teardown, it asks the session's agents whether they are done and has lager remove the worktree and close the session. The worker sends its handoff to the dispatching session when it finishes. A worker Bob dispatched also reports to Bob with `nbr-report-to-bob`, since Bob's brief asks for it, so the day's note gets the outcome.
+`nbr-dispatch` confirms the target repo with me, writes the brief with the worker's boundary rules,
+and launches it in a worktree and session lager creates. When I ask for a teardown, it asks the
+session's agents whether they are done and has lager remove the worktree and close the session. The
+worker sends its handoff to the dispatching session when it finishes. A worker Bob dispatched also
+reports to Bob with `nbr-report-to-bob`, since Bob's brief asks for it, so the day's note gets the
+outcome.
 
 #### The day's record
 
-`nbr-activity` collects one day's commits and GitHub activity. `nbr-log` writes the private daily note from it, and `nbr-changelog-things` logs it as Things items.
+`nbr-activity` collects one day's commits and GitHub activity. `nbr-log` writes the private daily
+note from it, and `nbr-changelog-things` logs it as Things items.
 
 #### Commits
 
-`nbr-git-commit` makes one commit: review, gate, commit, with `nbr-audit-docs` as the docs check. `nbr-git-commit-buckets` sorts a dirty tree into several commits through it, and `nbr-git-commit-rebuild` turns a run of commits back into a dirty tree for buckets.
+`nbr-git-commit` makes one commit: review, gate, commit, with `nbr-audit-docs` as the docs check.
+`nbr-git-commit-buckets` sorts a dirty tree into several commits through it, and
+`nbr-git-commit-rebuild` turns a run of commits back into a dirty tree for buckets.
 
 #### Repo conventions
 
-`nbr-repo-conventions` holds the topics. `nbr-repo-setup` sets a repo up from them and `nbr-repo-audit` checks a repo against them without changing it.
+`nbr-repo-conventions` holds the topics. `nbr-repo-setup` sets a repo up from them and
+`nbr-repo-audit` checks a repo against them without changing it.
 
 ### Engineering
 
@@ -228,7 +268,11 @@ Install these first:
 | [Plannotator](https://github.com/backnotprop/plannotator)           | see its README, it ships `plannotator-annotate`                      | `nbr-plan`                                                 |
 | `gh` or [`bkt`](https://github.com/avivsinai/bitbucket-cli)         | your package manager                                                 | `nbr-create-pr`                                            |
 
-`nbr-record-clip` needs ImageMagick, plus VHS, ffmpeg, Playwright or [Cap](https://cap.so) depending on what it records. `nbr-dispatch` needs [Rex](https://www.superlogical.com/rex) and [lager](https://github.com/nikbrunner/lager) with a `[session]` section. `nbr-review-pr` needs `gh`, `nbr-intercom` needs Claude Code, `nbr-nvim-dev` needs Neovim and ripgrep, and `nbr-bkt` needs `bkt` and `pass-cli`.
+`nbr-record-clip` needs ImageMagick, plus VHS, ffmpeg, Playwright or [Cap](https://cap.so) depending
+on what it records. `nbr-dispatch` needs [Rex](https://www.superlogical.com/rex) and
+[lager](https://github.com/nikbrunner/lager) with a `[session]` section. `nbr-review-pr` needs `gh`,
+`nbr-intercom` needs Claude Code, `nbr-nvim-dev` needs Neovim and ripgrep, and `nbr-bkt` needs `bkt`
+and `pass-cli`.
 
 ### Personal
 
@@ -258,13 +302,17 @@ How agents write for me, Bob and the daily notes, tasks in Things 3, and speech 
   <img src="docs/assets/readme/dash-light.webp" alt="The dash above the prompt, with a row for play, while three subagents run">
 </picture>
 
-A session dashboard above the prompt: workspace, git, agent, tasks, limits, cost and what the conversation is working on. `/dash` hides and shows it. [Its README](mods/dash/README.md) has the settings and the cost.
+A session dashboard above the prompt: workspace, git, agent, tasks, limits, cost and what the
+conversation is working on. `/dash` hides and shows it. [Its README](mods/dash/README.md) has the
+settings and the cost.
 
-The dash shows a red badge next to the account when `DASH_BADGE` is set, with its value as the text. I set `DASH_BADGE=WORK` in the shell function that starts Claude Code with my work account.
+The dash shows a red badge next to the account when `DASH_BADGE` is set, with its value as the text.
+I set `DASH_BADGE=WORK` in the shell function that starts Claude Code with my work account.
 
 ### play
 
-`/play` reads the last reply aloud through ElevenLabs. It needs an ElevenLabs API key, `mpv` and `nc`; [its README](mods/play/README.md) has the setup.
+`/play` reads the last reply aloud through ElevenLabs. It needs an ElevenLabs API key, `mpv` and
+`nc`; [its README](mods/play/README.md) has the setup.
 
 ### Installing mods
 
@@ -283,9 +331,11 @@ claude plugin marketplace update nbr
 claude plugin update dash@nbr
 ```
 
-Restart Claude Code after installing or updating. Mods need a recent Claude Code, and I run them on 2.1.316. `/plugin` lists what loaded.
+Restart Claude Code after installing or updating. Mods need a recent Claude Code, and I run them on
+2.1.316. `/plugin` lists what loaded.
 
-To edit a mod and use it live, load it from a clone instead, as a colon-separated list in the `env` block of `~/.claude/settings.json`:
+To edit a mod and use it live, load it from a clone instead, as a colon-separated list in the `env`
+block of `~/.claude/settings.json`:
 
 ```json
 "CLAUDE_CODE_PLUGIN_DIRS": "~/repos/nikbrunner/agents/mods/dash:~/repos/nikbrunner/agents/mods/play",
@@ -294,7 +344,8 @@ To edit a mod and use it live, load it from a clone instead, as a colon-separate
 
 ### Third-party mods
 
-I also run [`cache-tax`](https://github.com/karanb192/cache-tax), which keeps the prompt cache warm during breaks and shows the estimated cost before a cold send:
+I also run [`cache-tax`](https://github.com/karanb192/cache-tax), which keeps the prompt cache warm
+during breaks and shows the estimated cost before a cold send:
 
 ```sh
 claude plugin marketplace add karanb192/claude-code-mods
@@ -325,11 +376,14 @@ My full settings are in [`home/.claude/settings.json`](home/.claude/settings.jso
 - `editorMode`: Vim keys in the prompt.
 - `tui`: the fullscreen interface.
 - `voice`: dictation while a key is held.
-- `promptCacheTtl`: keeps the prompt cache for an hour instead of five minutes, so a session picked up after a short break still reads from the cache.
+- `promptCacheTtl`: keeps the prompt cache for an hour instead of five minutes, so a session picked
+  up after a short break still reads from the cache.
 - `includeCoAuthoredBy`: no Claude co-author line in commits.
 - `CLAUDE_CODE_SUBAGENT_MODEL`: subagents run on Haiku.
-- `ENABLE_TOOL_SEARCH`: MCP tools load when a task needs them instead of filling the context up front.
-- `CLAUDE_CODE_ENABLE_TODO_TOOLS`: turns the task list tools back on for newer models, so Helm can show how far a session has got.
+- `ENABLE_TOOL_SEARCH`: MCP tools load when a task needs them instead of filling the context up
+  front.
+- `CLAUDE_CODE_ENABLE_TODO_TOOLS`: turns the task list tools back on for newer models, so Helm can
+  show how far a session has got.
 
 ### Status line
 
@@ -338,11 +392,17 @@ My full settings are in [`home/.claude/settings.json`](home/.claude/settings.jso
   <img src="docs/assets/readme/dash-light.webp" alt="Claude Code footer with Vim mode, and a progress bar for each running subagent">
 </picture>
 
-I've turned my status line off almost completely, because what it showed now lives in the dash. All that's left is Claude Code's own footer, with the Vim mode and the permission mode, and a tracker for running subagents.
+I've turned my status line off almost completely, because what it showed now lives in the dash. All
+that's left is Claude Code's own footer, with the Vim mode and the permission mode, and a tracker
+for running subagents.
 
-Turning it off takes no setting of its own. `settings.json` has no `statusLine` block, and without one Claude Code shows only its footer. To do the same, delete the block.
+Turning it off takes no setting of its own. `settings.json` has no `statusLine` block, and without
+one Claude Code shows only its footer. To do the same, delete the block.
 
-The subagent tracker is in [`statusline`](statusline): each running subagent gets a progress bar built from the `PROGRESS: n/m · step` lines it writes. Two hooks make subagents write them: `subagent-start.sh` asks for the lines when a subagent starts, and `post-tool-batch.sh` reminds it after 20 tool calls without one. They need `bash` and `jq`.
+The subagent tracker is in [`statusline`](statusline): each running subagent gets a progress bar
+built from the `PROGRESS: n/m · step` lines it writes. Two hooks make subagents write them:
+`subagent-start.sh` asks for the lines when a subagent starts, and `post-tool-batch.sh` reminds it
+after 20 tool calls without one. They need `bash` and `jq`.
 
 Clone the repo, then point the settings at the scripts in the clone:
 

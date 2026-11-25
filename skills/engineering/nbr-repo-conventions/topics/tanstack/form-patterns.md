@@ -2,7 +2,9 @@
 
 ## Core Principle: Headless, Type-Safe Form State
 
-TanStack Form manages form state with full TypeScript inference -- field names, values, and validation errors are all type-safe. It's headless (no UI opinions), uses render props for fields, and integrates with Standard Schema validators (Zod, Valibot, ArkType).
+TanStack Form manages form state with full TypeScript inference -- field names, values, and
+validation errors are all type-safe. It's headless (no UI opinions), uses render props for fields,
+and integrates with Standard Schema validators (Zod, Valibot, ArkType).
 
 ## Key Concepts
 
@@ -130,7 +132,8 @@ const store = useStore(form.store);
 </button>
 ```
 
-Use `type="button"` or `e.preventDefault()` -- native `type="reset"` causes unexpected behavior with `<select>` elements.
+Use `type="button"` or `e.preventDefault()` -- native `type="reset"` causes unexpected behavior with
+`<select>` elements.
 
 ## Field State Metadata
 
@@ -150,7 +153,8 @@ Use `type="button"` or `e.preventDefault()` -- native `type="reset"` causes unex
 | Next.js App Router | `@tanstack/react-form/nextjs` | `formOptions`, `createServerValidate`, `initialFormState`          |
 | Remix              | `@tanstack/react-form-remix`  | `formOptions`, `createServerValidate`, `initialFormState`          |
 
-Pattern: share `formOptions` between client/server, use `mergeForm` + `useTransform` to sync server validation state back to client form.
+Pattern: share `formOptions` between client/server, use `mergeForm` + `useTransform` to sync server
+validation state back to client form.
 
 ## Anti-Patterns
 
@@ -165,7 +169,8 @@ Pattern: share `formOptions` between client/server, use `mergeForm` + `useTransf
 ## Sources of Truth
 
 - **TanStack Form Docs**: https://tanstack.com/form/latest/docs/overview
-- **React Basic Concepts**: https://tanstack.com/form/latest/docs/framework/react/guides/basic-concepts
+- **React Basic Concepts**:
+  https://tanstack.com/form/latest/docs/framework/react/guides/basic-concepts
 - **Validation Guide**: https://tanstack.com/form/latest/docs/framework/react/guides/validation
 - **SSR Guide**: https://tanstack.com/form/latest/docs/framework/react/guides/ssr
 - **API Reference**: https://tanstack.com/form/latest/docs/reference/classes/FormApi

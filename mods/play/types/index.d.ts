@@ -1,7 +1,10 @@
-export type Playback = { phase: 'idle' | 'preparing' | 'generating' | 'playing' | 'paused'; chars: number }
+export type Playback = {
+  phase: "idle" | "preparing" | "generating" | "playing" | "paused";
+  chars: number;
+};
 
-declare module 'claude-code' {
+declare module "claude-code" {
   interface PluginState {
-    play: { playback: Playback }
+    play: { playback: Playback };
   }
 }

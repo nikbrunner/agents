@@ -1,10 +1,11 @@
 # Briefs
 
-A brief is built from three parts, in this order: the frame, one activity block, one driver block. Bob fills each
-`{{variable}}` from a fact it checked or from Nik's own words, and drops a line it has nothing true for.
+A brief is built from three parts, in this order: the frame, one activity block, one driver block.
+Bob fills each `{{variable}}` from a fact it checked or from Nik's own words, and drops a line it
+has nothing true for.
 
-A brief carries only what Nik decided. Comments, tickets and messages get a link or a read command, never a retelling:
-a retold point reads to the worker as an order.
+A brief carries only what Nik decided. Comments, tickets and messages get a link or a read command,
+never a retelling: a retold point reads to the worker as an order.
 
 ## Frame
 
@@ -19,15 +20,15 @@ This worktree is on `{{branch}}`, {{state}}. Read {{source}} with `{{command}}`.
 {{driver block}}
 ```
 
-| Variable           | Filled from                                                                                                                                             |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `goal`             | Nik's words for the work, one line                                                                                                                      |
-| `link`, `title`    | the PR or ticket, with its real title                                                                                                                   |
-| `branch`, `state`  | `git status -sb` in the worktree: clean or dirty, level with, ahead of or behind origin                                                                 |
+| Variable            | Filled from                                                                                                                                          |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `goal`              | Nik's words for the work, one line                                                                                                                   |
+| `link`, `title`     | the PR or ticket, with its real title                                                                                                                |
+| `branch`, `state`   | `git status -sb` in the worktree: clean or dirty, level with, ahead of or behind origin                                                              |
 | `source`, `command` | where the input lives and the read that shows it: a PR's comments through the circle's PR read (`gh pr view <URL> --comments` in the private circle) |
-| `review_skill`     | the circle's review skill                                                                                                                               |
-| `date`             | today, as `20 Nov 2026`                                                                                                                                 |
-| `grants`           | Nik's answer to the approvals question, in his words; `nothing` when he granted nothing                                                                 |
+| `review_skill`      | the circle's review skill                                                                                                                            |
+| `date`              | today, as `20 Nov 2026`                                                                                                                              |
+| `grants`            | Nik's answer to the approvals question, in his words; `nothing` when he granted nothing                                                              |
 
 ## Activity blocks
 

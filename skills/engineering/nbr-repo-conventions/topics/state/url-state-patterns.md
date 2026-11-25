@@ -34,7 +34,8 @@ function Products() {
 }
 ```
 
-No `useState`, no state manager. The URL is the source of truth. Copy the URL, share it, bookmark it -- the view reproduces.
+No `useState`, no state manager. The URL is the source of truth. Copy the URL, share it, bookmark
+it -- the view reproduces.
 
 ### Encapsulating in a Hook
 
@@ -58,20 +59,18 @@ export function useCategory() {
 }
 ```
 
-`strict: false` makes the hook usable from any route — it reads whatever search params exist without binding to a specific `Route`. Same pattern works for `useSort`, `usePage`, `useView`, etc.
+`strict: false` makes the hook usable from any route — it reads whatever search params exist without
+binding to a specific `Route`. Same pattern works for `useSort`, `usePage`, `useView`, etc.
 
 ## Advanced Case: Search Params + Storage Fallback
 
-URL state with localStorage persistence for user preferences. More complex because it handles SSR hydration and DOM side effects.
+URL state with localStorage persistence for user preferences. More complex because it handles SSR
+hydration and DOM side effects.
 
 ```tsx
 // use-color-mode.ts
 import { useHydrated, useRouter, useSearch } from "@tanstack/react-router";
-import {
-  colorModeSchema,
-  defaultColorMode,
-  type ColorMode,
-} from "@/types/style";
+import { colorModeSchema, defaultColorMode, type ColorMode } from "@/types/style";
 
 export function useColorMode() {
   const router = useRouter();
@@ -79,8 +78,7 @@ export function useColorMode() {
   const hydrated = useHydrated();
 
   // Priority: URL param > localStorage > default
-  const colorMode =
-    search.colorMode ?? getFromStorage(hydrated) ?? defaultColorMode;
+  const colorMode = search.colorMode ?? getFromStorage(hydrated) ?? defaultColorMode;
 
   useEffect(
     function applyColorModeAfterHydration() {
@@ -152,8 +150,8 @@ function Filters() {
 
 ## Browser State: useSyncExternalStore
 
-Not everything needs URL state. `useIsMobile` reads the browser, which is an external store, so it subscribes with
-`useSyncExternalStore` instead of mirroring it into `useState` from an effect:
+Not everything needs URL state. `useIsMobile` reads the browser, which is an external store, so it
+subscribes with `useSyncExternalStore` instead of mirroring it into `useState` from an effect:
 
 ```tsx
 const mobileQuery = `(max-width: ${MOBILE_BREAKPOINT - 1}px)`;

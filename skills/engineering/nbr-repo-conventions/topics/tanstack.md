@@ -1,10 +1,12 @@
 # TanStack Ecosystem
 
-Entry point for working with TanStack libraries. This topic introduces the CLI for doc lookup and contains patterns and preferences for Query and Form.
+Entry point for working with TanStack libraries. This topic introduces the CLI for doc lookup and
+contains patterns and preferences for Query and Form.
 
 ## TanStack CLI
 
-The `tanstack` CLI is installed globally and is the **primary way to verify TanStack docs** -- prefer it over general doc search for TanStack-specific lookups.
+The `tanstack` CLI is installed globally and is the **primary way to verify TanStack docs** --
+prefer it over general doc search for TanStack-specific lookups.
 
 ### Key Commands
 
@@ -18,7 +20,8 @@ The `tanstack` CLI is installed globally and is the **primary way to verify TanS
 ### Usage Notes
 
 - Always use `--json` for deterministic parsing
-- Use `--library <id>` to scope searches (e.g., `query`, `router`, `form`, `store`, `start`, `table`)
+- Use `--library <id>` to scope searches (e.g., `query`, `router`, `form`, `store`, `start`,
+  `table`)
 - Use `--framework react` when relevant
 - `doc` takes a library ID and a path (e.g., `tanstack doc query framework/react/guides/query-keys`)
 
@@ -38,13 +41,15 @@ This topic consolidates patterns for multiple TanStack libraries:
 
 ## Query: Core Principles
 
-TanStack Query is an async state manager, not a fetch library. It manages state whose source of truth lies outside the client -- data that can go stale, needs caching, and is shared across users.
+TanStack Query is an async state manager, not a fetch library. It manages state whose source of
+truth lies outside the client -- data that can go stale, needs caching, and is shared across users.
 
 For the full state categorization (server / URL / client), see the `state` topic.
 
 ### Query Organization
 
-Three complexity levels depending on API surface size. See `tanstack/query-patterns.md` for detailed examples.
+Three complexity levels depending on API surface size. See `tanstack/query-patterns.md` for detailed
+examples.
 
 1. **One file per endpoint** -- smallest projects, queries + mutations co-located
 2. **One folder per topic** -- medium projects, separate files per query/mutation
@@ -59,21 +64,27 @@ Three complexity levels depending on API surface size. See `tanstack/query-patte
 
 ### Data Boundary
 
-- The fetch wrapper returns `unknown`. The topic's Zod schema parses it inside `queryFn`/`mutationFn`, and `z.infer`
-  supplies the type (see the `validation` topic). A generic on `fetch` is not validation.
+- The fetch wrapper returns `unknown`. The topic's Zod schema parses it inside
+  `queryFn`/`mutationFn`, and `z.infer` supplies the type (see the `validation` topic). A generic on
+  `fetch` is not validation.
 - Failed requests become an `ApiError` with a machine-readable code; the UI maps the code to text.
-- Query factories are named `get*` (`getAll`, `getById`); mutation factories are bare verbs (`update`, `delete`). No topic
-  prefix, no `Options` suffix: `context.api.user.getDetails()` already carries the context.
-- The API object and the `QueryClient` live in router context. Loaders call `context.api.<topic>.<fn>()`, route components
-  read the same context with `Route.useRouteContext()`.
-- Loaders read the cache with `queryClient.query({ ...factory(), staleTime: "static" })`. `ensureQueryData` and
-  `fetchQuery` are deprecated; without `"static"` the factory's `staleTime` applies, so every loader run waits on the
-  network.
-- A mutation where a topic-wide refetch is wrong opts out with `meta: { autoInvalidate: false }` and invalidates exact keys.
+- Query factories are named `get*` (`getAll`, `getById`); mutation factories are bare verbs
+  (`update`, `delete`). No topic prefix, no `Options` suffix: `context.api.user.getDetails()`
+  already carries the context.
+- The API object and the `QueryClient` live in router context. Loaders call
+  `context.api.<topic>.<fn>()`, route components read the same context with
+  `Route.useRouteContext()`.
+- Loaders read the cache with `queryClient.query({ ...factory(), staleTime: "static" })`.
+  `ensureQueryData` and `fetchQuery` are deprecated; without `"static"` the factory's `staleTime`
+  applies, so every loader run waits on the network.
+- A mutation where a topic-wide refetch is wrong opts out with `meta: { autoInvalidate: false }` and
+  invalidates exact keys.
 
 ## Form: Core Principles
 
-TanStack Form manages form state with full TypeScript inference -- field names, values, and validation errors are all type-safe. It's headless (no UI opinions), uses render props for fields, and integrates with Standard Schema validators (Zod, Valibot, ArkType).
+TanStack Form manages form state with full TypeScript inference -- field names, values, and
+validation errors are all type-safe. It's headless (no UI opinions), uses render props for fields,
+and integrates with Standard Schema validators (Zod, Valibot, ArkType).
 
 See `tanstack/form-patterns.md` for detailed patterns and API reference.
 
@@ -81,22 +92,30 @@ See `tanstack/form-patterns.md` for detailed patterns and API reference.
 
 1. Identify which TanStack library is relevant to the task
 2. Check sub-documents for the preferences on Query or Form
-3. Use `tanstack search-docs` / `tanstack doc` to verify patterns against current docs before implementing
-4. For libraries without a dedicated sub-document (Router, Store, Start, Table, Virtual, etc.), rely on CLI docs alone
+3. Use `tanstack search-docs` / `tanstack doc` to verify patterns against current docs before
+   implementing
+4. For libraries without a dedicated sub-document (Router, Store, Start, Table, Virtual, etc.), rely
+   on CLI docs alone
 
 ## Sources of Truth
 
 - **TanStack Query Docs**: https://tanstack.com/query/latest/docs/framework/react/
-- **TKDodo's Practical React Query** (primary influence): https://tkdodo.eu/blog/practical-react-query
+- **TKDodo's Practical React Query** (primary influence):
+  https://tkdodo.eu/blog/practical-react-query
 - **TanStack Form Docs**: https://tanstack.com/form/latest/docs/overview
 - **TanStack Router Docs**: https://tanstack.com/router/latest/docs/framework/react/overview
 
 Key Query articles to consult per topic:
 
-- Render optimization → [Render Optimizations guide](https://tanstack.com/query/latest/docs/framework/react/guides/render-optimizations) + [TKDodo: Render Optimizations](https://tkdodo.eu/blog/react-query-render-optimizations)
-- Query keys → [Query Keys guide](https://tanstack.com/query/latest/docs/framework/react/guides/query-keys)
-- Invalidation → [TKDodo: Automatic Query Invalidation](https://tkdodo.eu/blog/automatic-query-invalidation-after-mutations)
-- Selectors → [TKDodo: Selectors Supercharged](https://tkdodo.eu/blog/react-query-selectors-supercharged)
+- Render optimization →
+  [Render Optimizations guide](https://tanstack.com/query/latest/docs/framework/react/guides/render-optimizations) +
+  [TKDodo: Render Optimizations](https://tkdodo.eu/blog/react-query-render-optimizations)
+- Query keys →
+  [Query Keys guide](https://tanstack.com/query/latest/docs/framework/react/guides/query-keys)
+- Invalidation →
+  [TKDodo: Automatic Query Invalidation](https://tkdodo.eu/blog/automatic-query-invalidation-after-mutations)
+- Selectors →
+  [TKDodo: Selectors Supercharged](https://tkdodo.eu/blog/react-query-selectors-supercharged)
 
 ## Cross-References
 

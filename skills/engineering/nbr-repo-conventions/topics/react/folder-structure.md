@@ -15,16 +15,24 @@ src/
 
 ### hooks/ vs api/
 
-- `hooks/` — UI utilities and shared event hooks: `useDebounce`, `useMediaQuery`, `useClickOutside`, `useKeyboardShortcut`. No server state, no TanStack Query.
-- `api/` — All TanStack Query hooks, including orchestration hooks that compose multiple queries (e.g. `useUserProfile`), plus the `queryOptions`/`mutationOptions` factories a route loader prefetches with. Organized by topic, one file per entity within a topic. See the `tanstack` topic for structure. Not nested under a `features/` domain folder — kept at the technical-separation root alongside `components/`, `hooks/`, etc.
+- `hooks/` — UI utilities and shared event hooks: `useDebounce`, `useMediaQuery`, `useClickOutside`,
+  `useKeyboardShortcut`. No server state, no TanStack Query.
+- `api/` — All TanStack Query hooks, including orchestration hooks that compose multiple queries
+  (e.g. `useUserProfile`), plus the `queryOptions`/`mutationOptions` factories a route loader
+  prefetches with. Organized by topic, one file per entity within a topic. See the `tanstack` topic
+  for structure. Not nested under a `features/` domain folder — kept at the technical-separation
+  root alongside `components/`, `hooks/`, etc.
 
 ## Multi-File Components
 
-A one-file component stays a file in its group. A component with parts, styles, or tests gets a folder.
+A one-file component stays a file in its group. A component with parts, styles, or tests gets a
+folder.
 
 ### Preferred: Named files + re-export index
 
-Each file in the folder is named after the component (or sub-component) with a semantic suffix. A thin `index.ts` re-exports the public API so imports stay clean. This avoids "editor tab hell" (6 tabs all reading `index.tsx`) while keeping short import paths.
+Each file in the folder is named after the component (or sub-component) with a semantic suffix. A
+thin `index.ts` re-exports the public API so imports stay clean. This avoids "editor tab hell" (6
+tabs all reading `index.tsx`) while keeping short import paths.
 
 ```
 components/
@@ -39,7 +47,8 @@ Why this over `index.tsx` as the component file:
 
 - Every open file has a **meaningful name** in editor tabs and file search
 - `index.ts` is a one-liner you never open — it exists only for clean imports
-- Semantic suffixes (`.module.css`, `.stories.tsx`, `.helpers.ts`, `.types.ts`) make purpose obvious at a glance
+- Semantic suffixes (`.module.css`, `.stories.tsx`, `.helpers.ts`, `.types.ts`) make purpose obvious
+  at a glance
 
 ### Alternative: Flat files (small projects)
 
@@ -53,7 +62,8 @@ components/
 
 ## Co-Located Sub-Components
 
-Components that inherently belong together live in the same folder. Sub-components use their own name, not the parent's:
+Components that inherently belong together live in the same folder. Sub-components use their own
+name, not the parent's:
 
 ```
 components/
@@ -91,12 +101,15 @@ hooks/
 ├── use-media-query.ts
 ```
 
-Note: Don't colocate hooks in route directories — file-based routers (TanStack Router, Next.js, Remix) will interpret non-route files as routes.
+Note: Don't colocate hooks in route directories — file-based routers (TanStack Router, Next.js,
+Remix) will interpret non-route files as routes.
 
 ## Naming Conventions
 
-- Folders and files are kebab-case: `button/button.tsx`, `button.module.css`, `button.stories.tsx`, `use-data-grid.ts`
-- Components are PascalCase named exports (`export function Button`); `index.ts` re-exports them by name
+- Folders and files are kebab-case: `button/button.tsx`, `button.module.css`, `button.stories.tsx`,
+  `use-data-grid.ts`
+- Components are PascalCase named exports (`export function Button`); `index.ts` re-exports them by
+  name
 - The folder name IS the component name, in kebab-case
 - A project with an established different scheme keeps it; be consistent within a project
 
@@ -109,5 +122,5 @@ import { Button } from "#/components/button";
 import { formatDate } from "./format-date";
 ```
 
-The alias is wired once, through `package.json`'s `imports` field and the matching TypeScript paths (see the `npm-project`
-topic).
+The alias is wired once, through `package.json`'s `imports` field and the matching TypeScript paths
+(see the `npm-project` topic).
