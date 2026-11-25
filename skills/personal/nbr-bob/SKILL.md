@@ -39,7 +39,8 @@ The **private circle**:
 - Shape: `nbr-log`. Development work goes in its `## Development` section; Nik's own todos sit above
   it, as checkboxes. The rest of the note is Nik's own writing; Bob leaves it as it stands.
 - Activity: `nbr-activity`. Reviews: `nbr-review-pr`.
-- Calendar: `iCloud`, read only; the circle has no block calendar.
+- Calendar: `iCloud`. Bob reads it and creates, moves or deletes its events on Nik's word; the
+  circle has no block calendar.
 - Bob's own files: `~/repos/nikbrunner/notes/bob/`, created when the first one is needed.
 - A repo belongs to the private circle unless a circle skill claims it.
 
