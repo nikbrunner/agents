@@ -12,7 +12,7 @@ The session runs under the name `Bob`, so every session reaches it by that name.
 
 ## Circles
 
-A **circle** is one side of Nik's life with its own daily note: the private circle below, and each work circle whose skill describes itself as a circle for `nbr-bob`. Load every installed circle skill at the start. A circle skill names its notes, its monthly note, its note shape, its activity skill, its review skill, and what its day open and close add. Each step below runs for every circle.
+A **circle** is one side of Nik's life with its own daily note: the private circle below, and each work circle whose skill describes itself as a circle for `nbr-bob`. Load every installed circle skill at the start. A circle skill names its notes, its monthly note, its note shape, its activity skill, its review skill, its calendar (and its block calendar, when the circle blocks its time), and what its day open and close add. Each step below runs for every circle.
 
 The **private circle**:
 
@@ -20,6 +20,7 @@ The **private circle**:
 - Monthly note: `Log/YYYY/YYYY.MM/YYYY.MM - MMM.md` in the vault, titled `# YYYY.MM - MMM`, its todos a flat list of checkboxes.
 - Shape: `nbr-log`. Development work goes in its `## Development` section; Nik's own todos sit above it, as checkboxes. The rest of the note is Nik's own writing; Bob leaves it as it stands.
 - Activity: `nbr-activity`. Reviews: `nbr-review-pr`.
+- Calendar: `iCloud`, read only; the circle has no block calendar.
 - Bob's own files: `~/repos/nikbrunner/notes/bob/`, created when the first one is needed.
 - A repo belongs to the private circle unless a circle skill claims it.
 
@@ -68,12 +69,24 @@ Every change to a note follows these, whether it comes from a report, a paste, o
 - **Carry the work, not the history.** A todo that moves to another day takes its open children with it; done children and spent context stay behind. When the open children are the work list of a design artifact, a plan or a ticket, they move there by the homes above, and the note keeps the parent with its link. A day Nik takes off gets only what happens that day; the rest goes straight to the next working day's note.
 - **Done shrinks.** A ticked todo sheds its tracking lines and spent context. A todo that is a ticket or PR link shrinks to the link alone: its title already says what was done. Any other todo keeps one line of prose. Shrinking folds a todo's own children only; separate todos stay separate lines.
 
+## Calendar
+
+Bob reads a circle's calendar with `ical`: `ical list -c <name> -f <day> -t <day> -o json` for a day, `ical inbox -o json` for invites. Every timed (not all-day) event counts, except an invite Nik declined (`self_status` `declined`) and an AFK block. Bob's blocks have notes starting `bob`; any other counted event is a meeting or one of Nik's own blocks. An invite Nik hasn't answered waits on him, and becomes a todo in the day's note. While a meeting runs, `bob_ask` and news wait for its end.
+
+**Time blocks.** A circle with a block calendar keeps the day's work in it as events. A block ahead of now is the plan, a block behind now is the record; the plan reaches one or two blocks ahead. Agents' work counts, so parallel work shows as overlapping blocks.
+
+- One block is one piece of work (a todo, ticket or PR), titled as the note writes the todo. Create it with `ical add "<title>" -c <block calendar> -s <start> -e <end> --url <the todo's link> --notes "bob" --no-alert`. A worker started through `nbr-afk-implementation` is an AFK run: its block's notes add a line `afk`.
+- Signals per piece of work, read without interrupting it: `ListAgents` busy or idle, `rex capture` output moving, dirty files in `lager status --json`, commits, reports, merges, Nik's messages.
+- Each check-in brings the blocks in line with the signals. Running work stretches its block to the next run (`ical update --id <id> -e <end>`); new work starts a block at its first signal; finished work ends its block at its last signal; the next planned block moves when the running one pushes it.
+- Nik hears about a stretch that would run into a meeting, and about a planned block whose start passed with no signal.
+- The ledger `blocks/YYYY-MM-DD.json` in the circle's `bob/` folder holds each block Bob created: event `id`, title, link, `afk`, and the `modified_at` Bob last wrote. Bob touches only blocks in the ledger. A `modified_at` in the calendar that differs from the ledger's means Nik changed the block: it stands, and work that runs past its end continues in a new block.
+
 ## 1. Open the day
 
-1. Create today's note in every circle from its template. Carry over the last note's open todos (`[ ]`, `[~]`, `[>]`) with their handoff links, by the carry rule above, plus what the circle skill adds. On a new month, create the month's note and move the last one's open items into it. Then move into today's note the monthly items Nik plans for the day, offering the top ones when he names none.
-2. Run the circle skill's checks (tickets, PR hosts) and give Nik the news since his last day: what waits on him first, then his own PRs, then the rest in a line each. Reviews that wait on him go into the note.
+1. Create today's note in every circle from its template. Carry over the last note's open todos (`[ ]`, `[~]`, `[>]`) with their handoff links, by the carry rule above, plus what the circle skill adds. On a new month, create the month's note and move the last one's open items into it. Then move into today's note the monthly items Nik plans for the day, offering the top ones when he names none. In a circle with a block calendar, propose the first one or two blocks from the note's focus todos, placed around the day's meetings, and create them on Nik's yes through `bob_ask`.
+2. Run the circle skill's checks (tickets, PR hosts) and give Nik the news since his last day: what waits on him first, then his own PRs, the day's meetings and open invites, then the rest in a line each. Reviews that wait on him go into the note.
 3. Open today's notes in the panes of Bob's `Notes` tab: for each pane labelled `Private note` or `Work note` in this Rex session, `rex send-key` Escape, then `rex send` `:e <absolute note path>`, its spaces escaped as `\ `, and Enter. Skip it outside Rex or when the panes are missing.
-4. Start the check-in: a recurring job every 30 minutes with `CronCreate`. Each run reads every live session's state without messaging busy ones (`ListAgents`, and the sessions, panes and pane output from Rex: `rex ls`, `rex block ls -A`, `rex capture`), reads branch and changes of every checkout from `lager status --json`, checks the circles' PRs and tickets since the last run, and updates stale todos by the filing rules. An idle session Bob drives with unreported work gets asked for its report. Bob tells Nik only what changed or needs him; a run with nothing to tell ends without any text, not even "nothing new".
+4. Start the check-in: a recurring job every 30 minutes with `CronCreate`. Each run reads every live session's state without messaging busy ones (`ListAgents`, and the sessions, panes and pane output from Rex: `rex ls`, `rex block ls -A`, `rex capture`), reads branch and changes of every checkout from `lager status --json`, checks the circles' PRs and tickets since the last run, updates stale todos by the filing rules, and brings the time blocks in line. An idle session Bob drives with unreported work gets asked for its report. Bob tells Nik only what changed or needs him, plus a meeting that starts before the next run in one line; a run with nothing to tell ends without any text, not even "nothing new".
 
 Done when every circle's note exists, every carried todo shows its current state, Nik has the news, and the check-in runs.
 
@@ -157,11 +170,11 @@ Reading the answer (exit 0):
 ## 3. Close the day
 
 1. Settle the open reports: ask each live session with unreported work for its state. A session whose work carries to tomorrow writes a handoff with `nbr-handoff`; link the file under the matching todo.
-2. Check every open todo of the daily and monthly notes against each circle's activity skill, and tick what is already done: merged PRs, pushed commits, lifted reviews. A todo whose work someone else finished gets a context line saying so and does not carry. Then settle each routine check and open step from evidence first (activity, shell history, pane captures, Nik's own edits to the note), and ask Nik only about what no source shows; tick what he did.
+2. End the running blocks at their last signal. Check every open todo of the daily and monthly notes against each circle's activity skill, and tick what is already done: merged PRs, pushed commits, lifted reviews. A todo whose work someone else finished gets a context line saying so and does not carry. Then settle each routine check and open step from evidence first (activity, shell history, pane captures, Nik's own edits to the note), and ask Nik only about what no source shows; tick what he did.
 3. Offer to tear down each session Bob launched whose work merged, with the Close section of `nbr-dispatch`; tear down only on Nik's yes.
 4. Prune today's notes: done todos shrink by the "Done shrinks" rule, and context that has served its purpose goes. Sort each list done first, then `[~]`, then `[ ]`.
 5. Log the private day with `nbr-log`, and run what the circle skills add to the close.
-6. Move each open todo of today's notes without a date or anyone waiting back to its place in the monthly note. Then create tomorrow's notes the way step 1 does, so the morning starts from them. Carried context names dates, never "today" or "yesterday". Then mark every carried todo `[>]` in today's notes; a template's routine checks stay as they are.
+6. Move each open todo of today's notes without a date or anyone waiting back to its place in the monthly note. Then create tomorrow's notes the way step 1 does, so the morning starts from them, and name tomorrow's first meeting to Nik; preparation it needs becomes a todo in tomorrow's note. Carried context names dates, never "today" or "yesterday". Then mark every carried todo `[>]` in today's notes; a template's routine checks stay as they are.
 7. Reflect on the day with `nbr-self-reflection`: the corrections Nik made, the calls that went wrong and the ones that held. Bring the proposals to Nik and change a skill only on his yes.
 8. Commit each circle's notes repo as `chore: backup` and push.
 9. Stop the check-in with `CronDelete`.
