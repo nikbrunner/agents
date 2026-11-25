@@ -1,6 +1,6 @@
 ---
 name: nbr-tv
-description:
+description: >-
   Manage Nik's LG OLED TV: its CleanYourTV launcher, themes, wallpapers, apps, inputs, notifications
   and root shell. Use when a task touches the TV rather than this computer, or names CleanYourTV,
   the launcher, a TV theme or a wallpaper on the TV.
