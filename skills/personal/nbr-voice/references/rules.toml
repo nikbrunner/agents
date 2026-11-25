@@ -1,0 +1,879 @@
+# Prose rules for nbr-voice: the words and patterns that mark machine-written text, each with its
+# plain fix. Read this file before a draft or durable prose goes out. scripts/lint.py runs every
+# entry; the Stop hook (scope reply) and the document hook (scope document) call it.
+#
+# Entries are in our own words. The ASD-STE100 dictionary, its definitions and its example
+# sentences never go into this public repo.
+#
+# Entry kinds:
+#   [[rule]]  forms = [...]    whole-word, case-insensitive phrases; use = the plain replacement
+#   [[rule]]  pattern = '...'  a regex in a literal string ('''...''' when it holds an
+#                              apostrophe), case-insensitive (a part in (?-i:...) matches case);
+#                              use = the fix; name = the label in reports
+#   [[group]] words = [...]    synonyms for one action, each a string or a list of its forms;
+#                              hits when one text uses 2 or more of them; note = the fix
+# Properties on every entry:
+#   severity = "hard" | "advisory"            default "hard"; a hard finding blocks
+#   scope = ["reply", "document", "procedure"] default all three; an entry runs when any of its
+#                                             scopes is active
+#   weak = true                               advisory only; reported when 2 or more distinct
+#                                             weak entries hit the same text
+#
+# Before any match the linter masks fenced code (a markdown or md fence stays checked, since
+# drafts go there), inline code, URLs, link targets, paths, front matter, table separator rows,
+# horizontal rules, dash-only table cells and numeric ranges. A phrase in backticks counts as
+# discussed, not used. Double quotes do not mask.
+
+[checks.sentence_length]
+severity = "advisory"
+max_words = { reply = 25, document = 25, procedure = 20 }
+
+[checks.same_opening]
+severity = "advisory"
+run = 3
+
+[ignore]
+# Globs matched against the absolute path and the file name.
+paths = ["*/node_modules/*", "CHANGELOG.md"]
+
+# --- Plain words: a fancy word where a plain one does the job ---
+
+[[rule]]
+forms = ["leverage", "leverages", "leveraged", "leveraging"]
+use = "use"
+
+[[rule]]
+forms = ["utilize", "utilizes", "utilized", "utilizing"]
+use = "use"
+
+[[rule]]
+forms = ["delve", "delves", "delved", "delving"]
+use = "dig into, look at"
+
+[[rule]]
+forms = ["deep dive", "deep-dive"]
+use = "a close look"
+
+[[rule]]
+forms = ["additionally"]
+use = "also"
+
+[[rule]]
+forms = ["furthermore", "moreover"]
+use = "also, or start a new sentence"
+
+[[rule]]
+forms = ["crucial", "crucially"]
+use = "important, or say why it counts"
+
+[[rule]]
+forms = ["pivotal"]
+use = "central, or cut it"
+
+[[rule]]
+forms = ["paramount"]
+use = "most important"
+
+[[rule]]
+forms = ["showcase", "showcases", "showcased", "showcasing"]
+use = "show"
+
+[[rule]]
+forms = ["tapestry"]
+use = "cut it, name the parts"
+
+[[rule]]
+forms = ["testament"]
+use = "proof, or cut it"
+
+[[rule]]
+forms = ["interplay"]
+use = "how X and Y affect each other"
+
+[[rule]]
+forms = ["intricate", "intricacies"]
+use = "complex, details"
+
+[[rule]]
+forms = ["meticulous", "meticulously"]
+use = "careful, carefully"
+
+[[rule]]
+forms = ["vibrant"]
+use = "cut it"
+
+[[rule]]
+forms = ["garner", "garners", "garnered"]
+use = "get"
+
+[[rule]]
+forms = ["bolster", "bolsters", "bolstered"]
+use = "strengthen, support"
+
+[[rule]]
+forms = ["foster", "fosters", "fostered", "fostering"]
+use = "build, encourage"
+
+[[rule]]
+forms = ["facilitate", "facilitates", "facilitated", "facilitating"]
+use = "help, make possible"
+
+[[rule]]
+forms = ["streamline", "streamlines", "streamlined", "streamlining"]
+use = "simplify"
+
+[[rule]]
+forms = ["seamless", "seamlessly"]
+use = "smooth, or cut it"
+
+[[rule]]
+forms = ["holistic", "holistically"]
+use = "whole, complete"
+
+[[rule]]
+forms = ["comprehensive"]
+use = "full, complete"
+
+[[rule]]
+forms = ["embark", "embarks", "embarked"]
+use = "start"
+
+[[rule]]
+forms = ["empower", "empowers", "empowered", "empowering"]
+use = "let, allow"
+
+[[rule]]
+forms = ["myriad", "plethora"]
+use = "many"
+
+[[rule]]
+forms = ["game-changer", "game-changing"]
+use = "say what it changes"
+
+[[rule]]
+forms = ["cutting-edge"]
+use = "new, current"
+
+[[rule]]
+forms = ["in order to"]
+use = "to"
+
+[[rule]]
+forms = ["worth noting"]
+use = "cut it, state the point"
+
+[[rule]]
+forms = ["ever-evolving", "evolving landscape"]
+use = "changing"
+
+# Words with a technical sense in this work (an API key, a robust parser, syntax highlighting, a
+# feature gate, CSS alignment, the underscore character, elevated permissions, an auth realm, CPU
+# utilization) stay advisory: only a figurative use is a tell, and that takes a reader to judge.
+
+[[rule]]
+name = "key (adjective)"
+pattern = '\bkey (?:role|factor|insight|takeaway|point|part|aspect|element|feature|benefit|challenge|question|thing|difference|idea|reason|area)s?\b'
+use = "important, or say why it counts"
+severity = "advisory"
+
+[[rule]]
+forms = ["robust"]
+use = "say what it withstands"
+severity = "advisory"
+
+[[rule]]
+name = "highlight (verb)"
+pattern = '\bhighlight(?:s|ed|ing)? (?:the|a|an|how|that|its|their|this|these|our|what|why)\b'
+use = "show, name"
+severity = "advisory"
+
+[[rule]]
+forms = ["gate", "gates", "gated"]
+use = "check, or name the condition"
+severity = "advisory"
+
+[[rule]]
+forms = ["align with", "aligns with", "aligned with", "aligning with"]
+use = "match, fit"
+severity = "advisory"
+
+[[rule]]
+forms = ["landscape"]
+use = "field, or name the parts"
+severity = "advisory"
+
+[[rule]]
+forms = ["underscores", "underscored", "underscoring"]
+use = "show, or cut it"
+severity = "advisory"
+
+[[rule]]
+forms = ["enhance", "enhances", "enhanced", "enhancing"]
+use = "improve"
+severity = "advisory"
+
+[[rule]]
+forms = ["elevate", "elevates", "elevated", "elevating"]
+use = "raise, improve"
+severity = "advisory"
+
+[[rule]]
+forms = ["realm"]
+use = "area, field"
+severity = "advisory"
+
+[[rule]]
+forms = ["actually"]
+use = "cut it"
+severity = "advisory"
+
+[[rule]]
+forms = ["quietly"]
+use = "cut it"
+severity = "advisory"
+
+[[rule]]
+forms = ["valuable"]
+use = "say what it is worth"
+severity = "advisory"
+
+[[rule]]
+forms = ["enduring"]
+use = "lasting, or cut it"
+severity = "advisory"
+
+[[rule]]
+forms = ["profound"]
+use = "deep, or say what changed"
+severity = "advisory"
+
+[[rule]]
+forms = ["renowned"]
+use = "say who knows it and for what"
+severity = "advisory"
+
+[[rule]]
+forms = ["groundbreaking"]
+use = "say what is new"
+severity = "advisory"
+
+[[rule]]
+forms = ["ensure", "ensures", "ensured", "ensuring"]
+use = "make sure, or cut the rider"
+severity = "advisory"
+
+# --- Contrast with no one: a "not X" that nobody claimed ---
+
+[[rule]]
+name = "not just X but Y"
+pattern = '\bnot (?:just|only|merely|simply)\b[^.!?\n]{0,80}?\bbut\b'
+use = "state Y"
+
+[[rule]]
+name = "it's not X, it's Y"
+pattern = '''\b(?:it's|it is|this is|that's|that is) not\b[^.!?\n]{0,60}[,;] (?:it's|it is)\b'''
+use = "state Y"
+
+[[rule]]
+name = "doesn't mean X. It means Y"
+pattern = '''\bdoes(?:n't| not) mean\b[^.!?\n]*\. it means\b'''
+use = "state Y"
+
+[[rule]]
+name = ", no guessing"
+pattern = ', no (?:guessing|magic|hand-waving|surprises)\b'
+use = "cut the clipped tail"
+severity = "advisory"
+
+[[rule]]
+forms = ["rather than"]
+use = "state the choice; keep the contrast only when the reader holds X"
+severity = "advisory"
+weak = true
+
+# --- Closer that restates: a one-line verdict on what was just said ---
+
+[[rule]]
+name = "stock closer"
+forms = [
+  "read that again",
+  "let that sink in",
+  "the message was clear",
+  "it was a lesson in",
+  "that's the real win",
+  "that is the real win",
+  "that distinction matters",
+]
+use = "cut it, or give it a new fact"
+
+[[rule]]
+name = "this shows the importance of"
+pattern = '\bthis (?:shows|highlights|underscores) the importance\b'
+use = "cut it, or give it a new fact"
+
+[[rule]]
+name = "that's what matters"
+pattern = '''\bthat(?:'s| is) (?:the point|what matters)\b'''
+use = "cut it, or give it a new fact"
+severity = "advisory"
+
+[[rule]]
+name = "dotted emphasis"
+pattern = '(?<![\w.])(?:\w+\. ){2,}\w+\.(?!\w)'
+use = "one sentence, no staccato"
+severity = "advisory"
+
+# --- Saying that sounds deep ---
+
+[[rule]]
+name = "deep saying"
+forms = [
+  "at its core",
+  "the real question is",
+  "what really matters",
+  "the deeper issue",
+  "the heart of the matter",
+]
+use = "cut it, state the specific claim"
+
+[[rule]]
+name = "the real problem is"
+pattern = '\bthe real (?:problem|issue|win) (?:is|here)\b'
+use = "state the problem"
+
+[[rule]]
+name = "deep saying (soft)"
+forms = ["fundamentally", "in reality", "becomes a trap"]
+use = "cut it, state the specific claim"
+severity = "advisory"
+
+[[rule]]
+name = "the language of"
+pattern = '\b(?:is|becomes) the (?:language|currency|architecture) of\b'
+use = "state the specific claim"
+severity = "advisory"
+
+# --- Run-up: words before the point ---
+
+[[rule]]
+name = "run-up"
+forms = [
+  "let's dive in",
+  "dive into",
+  "let's break this down",
+  "let's explore",
+  "here's what you need to know",
+  "without further ado",
+  "here's the thing",
+  "let's be honest",
+  "real talk",
+]
+use = "cut it, start with the point"
+
+[[rule]]
+name = "the thing is,"
+pattern = '\bthe thing is[,:]'
+use = "cut it, start with the point"
+
+[[rule]]
+name = "Honestly? / Look, at a sentence start"
+pattern = '(?-i:(?:^|(?<=[.!?] ))(?:Honestly|Look|Listen)[,?.!])'
+use = "cut it, start with the point"
+
+[[rule]]
+name = "run-up (soft)"
+forms = ["heads up", "quick note", "now let's look at"]
+use = "cut it, start with the point"
+severity = "advisory"
+
+# --- Defense against an absent objection ---
+
+[[rule]]
+name = "absent objection"
+forms = [
+  "to be clear",
+  "I'm not saying",
+  "don't get me wrong",
+  "this is not to say",
+  "some might say",
+  "a tempting approach",
+  "an obvious approach",
+  "you might think",
+  "it would be easy to just",
+]
+use = "cut it, keep any real claim"
+severity = "advisory"
+
+[[rule]]
+name = "this isn't about"
+pattern = '''\bthis (?:isn't|is not) (?:mainly |really |just )?about\b'''
+use = "say what it is about"
+severity = "advisory"
+
+[[rule]]
+name = "might be tempted to"
+pattern = '\b(?:one|you) might be tempted to\b'
+use = "cut it, keep any real claim"
+severity = "advisory"
+
+# --- Dashes: a comma, colon, full stop or parentheses instead ---
+
+[[rule]]
+name = "dash"
+pattern = '—|(?<=\s)(?:–|--)(?=\s)'
+use = "a comma, colon, full stop or parentheses"
+scope = ["reply", "document"]
+
+# --- Stacked hedges: one qualifier, where the doubt is real ---
+
+[[rule]]
+name = "could potentially"
+pattern = '\b(?:could|might|may) (?:potentially|possibly|arguably)\b'
+use = "one qualifier"
+severity = "advisory"
+weak = true
+
+[[rule]]
+name = "hedge phrase"
+forms = ["possibly be argued", "it's also possible", "to be fair"]
+use = "one qualifier, or cut it"
+severity = "advisory"
+weak = true
+
+[[rule]]
+name = "in some cases it may"
+pattern = '\bin some cases (?:it|this) may\b'
+use = "say which cases"
+severity = "advisory"
+weak = true
+
+# --- Compound adjective after the noun ---
+
+[[rule]]
+name = "is well-known"
+pattern = '\b(?:is|are|was|were) (?:high-quality|well-known|well-documented|long-term|client-facing)\b'
+use = "say what makes it so"
+severity = "advisory"
+weak = true
+
+# --- Inflated significance ---
+
+[[rule]]
+name = "inflated significance"
+forms = [
+  "setting the stage",
+  "sets the stage",
+  "set the stage",
+  "indelible mark",
+  "lasting legacy",
+  "continues to thrive",
+  "the future looks bright",
+  "a step in the right direction",
+]
+use = "keep the fact, end on the last concrete one"
+
+[[rule]]
+name = "plays a key role"
+pattern = '\bplay(?:s|ed|ing)? an? (?:key|crucial|vital|pivotal|central|major) role\b'
+use = "say what it does"
+
+[[rule]]
+name = "exciting times ahead"
+pattern = '\bexciting times (?:lie )?ahead\b'
+use = "cut it"
+
+[[rule]]
+name = "marks a turning point"
+pattern = '\bmark(?:s|ed|ing)? an? (?:turning point|pivotal moment)\b'
+use = "say what changed"
+
+[[rule]]
+name = "underscores its importance"
+pattern = '\bunderscores (?:its|the) importance\b'
+use = "cut it"
+
+[[rule]]
+name = "inflated significance (soft)"
+forms = ["marking the", "reflects a broader"]
+use = "keep the fact, cut the significance"
+severity = "advisory"
+
+[[rule]]
+name = "stock heading"
+pattern = '^#+ (?:future outlook|challenges and legacy|awards and recognition)\s*$'
+use = "a heading that names what the section holds"
+severity = "advisory"
+scope = ["document"]
+
+# --- Vague link: name the relationship ---
+
+[[rule]]
+name = "vague link"
+forms = ["associated with", "in association with", "in connection with"]
+use = "name the relationship"
+severity = "advisory"
+
+# --- -ing rider: a participle after a comma that adds no fact ---
+
+[[rule]]
+name = ", emphasizing"
+pattern = ', (?:emphasizing|symbolizing|cultivating|encompassing) '
+use = "keep the fact, cut the rider"
+
+[[rule]]
+name = ", highlighting"
+pattern = ', (?:highlighting|underscoring|reflecting|contributing to) '
+use = "keep the fact, cut the rider"
+severity = "advisory"
+
+# --- Sales talk and borrowed authority ---
+
+[[rule]]
+name = "sales talk"
+forms = ["breathtaking", "must-visit", "diverse array", "natural beauty"]
+use = "say what the thing is"
+
+[[rule]]
+forms = ["nestled"]
+use = "is in"
+
+[[rule]]
+name = "sales talk (soft)"
+forms = ["stunning", "exemplify", "exemplifies", "exemplified", "commitment to", "in the heart of"]
+use = "say what the thing is"
+severity = "advisory"
+
+[[rule]]
+name = "experts say"
+pattern = '\b(?:experts|observers|critics|analysts) (?:argue|say|believe|have cited)\b'
+use = "say who said what"
+severity = "advisory"
+
+[[rule]]
+name = "borrowed authority"
+forms = ["industry reports", "active social media presence"]
+use = "say who said what"
+severity = "advisory"
+
+[[rule]]
+name = "featured in"
+pattern = '\b(?:cited|featured|profiled) in\b|\bover [\d,]+ followers\b'
+use = "say who said what"
+severity = "advisory"
+
+# --- A verb that avoids is and has ---
+
+[[rule]]
+name = "serves as"
+forms = ["stands as", "serves as"]
+use = "is"
+
+[[rule]]
+forms = ["boasts"]
+use = "has"
+
+[[rule]]
+name = "functions as"
+forms = ["functions as", "operates as", "represents a"]
+use = "is"
+severity = "advisory"
+
+# --- Bold, headings and decoration ---
+
+[[rule]]
+name = "bold-label list"
+pattern = '^[ \t]*(?:[-*+]|\d+\.)[ \t]+\*\*[^*\n]+\*\*.*\n[ \t]*(?:[-*+]|\d+\.)[ \t]+\*\*[^*\n]+\*\*'
+use = "plain list items, no bold labels"
+severity = "advisory"
+scope = ["reply", "document"]
+
+[[rule]]
+name = "Title Case heading"
+pattern = '^#{2,6} (?-i:(?:[A-Z][a-z]+ ){2,}[A-Z][a-z]+)\s*$'
+use = "sentence case"
+severity = "advisory"
+scope = ["reply", "document"]
+
+[[rule]]
+name = "emoji or arrow lead"
+pattern = '^[ \t]*(?:#{1,6}|[-*+]|\d+\.)[ \t]+(?:→|[\U0001F300-\U0001FAFF☀-➿])'
+use = "plain text"
+severity = "advisory"
+scope = ["document"]
+
+# --- Chat residue: the wrapper around the content ---
+
+[[rule]]
+name = "chat residue"
+forms = ["great question", "I hope this helps", "hope this helps"]
+use = "cut it"
+
+[[rule]]
+forms = ["absolutely right"]
+use = "right"
+
+[[rule]]
+name = "Certainly! opener"
+pattern = '(?-i:(?:^|(?<=[.!?] ))(?:Of course|Certainly|Absolutely|Sure thing)!)'
+use = "cut it, start with the content"
+
+# Questions to the reader are part of the workflow (approval, clarification), so these stay
+# advisory: the tell is the reflex, not the question.
+[[rule]]
+name = "chat residue (question)"
+forms = ["let me know if", "would you like me to", "want me to", "should I continue"]
+use = "ask the one question that blocks, or cut it"
+severity = "advisory"
+
+# --- Guess dressed as knowledge ---
+
+[[rule]]
+name = "training cutoff"
+pattern = '\bmy (?:last )?(?:training|knowledge cutoff)\b|\bin the (?:provided|available) sources\b|\bwhile specific details are (?:limited|not)\b|\bnot (?:publicly|widely) (?:available|documented)\b'
+use = "say what the source does not show"
+severity = "advisory"
+
+[[rule]]
+name = "guess dressed as knowledge"
+forms = [
+  "based on available information",
+  "based on the available information",
+  "maintains a low profile",
+  "it is believed that",
+]
+use = "say what the source does not show"
+severity = "advisory"
+
+# --- Text about itself ---
+
+[[rule]]
+name = "text about itself"
+pattern = '\bwas added to replace\b|\b(?:generated|compiled|drawn) from\b|\bflagged rather than\b|\bthe (?:table|list|section) (?:below|above)\b|\bthis section (?:is|covers|describes)\b'
+use = "state what is"
+severity = "advisory"
+weak = true
+scope = ["document"]
+
+# --- Procedures: one plain verb per action ---
+
+[[rule]]
+forms = [
+  "spin up",
+  "spins up",
+  "spinning up",
+  "spun up",
+  "reach out",
+  "reaches out",
+  "reached out",
+  "reaching out",
+  "kick off",
+  "kicks off",
+  "kicked off",
+  "kicking off",
+  "circle back",
+  "circles back",
+  "circled back",
+  "circling back",
+  "touch base",
+  "touches base",
+  "touched base",
+  "touching base",
+]
+use = "a single verb: start, contact, begin, return to, talk"
+scope = ["procedure"]
+
+[[rule]]
+name = "action frozen into a noun"
+pattern = '\b(?:perform|performs|performed|performing|conduct|conducts|conducted|conducting|carry out|carries out|carried out|carrying out) (?:a|an|the) \w+(?:tion|sion|ment|ance|ence|ysis)\b'
+use = "the verb: analyze, not perform an analysis of"
+severity = "advisory"
+
+# One word, one meaning: a synonym for the same action reads as a second action.
+
+[[group]]
+words = [
+  [
+    "check",
+    "checks",
+    "checked",
+    "checking",
+  ],
+  [
+    "verify",
+    "verifies",
+    "verified",
+    "verifying",
+  ],
+  [
+    "confirm",
+    "confirms",
+    "confirmed",
+    "confirming",
+  ],
+  [
+    "validate",
+    "validates",
+    "validated",
+    "validating",
+  ],
+]
+note = "pick one verb for the action and keep it"
+severity = "advisory"
+scope = ["procedure"]
+
+[[group]]
+words = [
+  [
+    "delete",
+    "deletes",
+    "deleted",
+    "deleting",
+  ],
+  [
+    "remove",
+    "removes",
+    "removed",
+    "removing",
+  ],
+  [
+    "erase",
+    "erases",
+    "erased",
+    "erasing",
+  ],
+]
+note = "pick one verb for the action and keep it"
+severity = "advisory"
+scope = ["procedure"]
+
+[[group]]
+words = [
+  [
+    "start",
+    "starts",
+    "started",
+    "starting",
+  ],
+  [
+    "launch",
+    "launches",
+    "launched",
+    "launching",
+  ],
+  [
+    "begin",
+    "begins",
+    "began",
+    "beginning",
+  ],
+  [
+    "initiate",
+    "initiates",
+    "initiated",
+    "initiating",
+  ],
+]
+note = "pick one verb for the action and keep it"
+severity = "advisory"
+scope = ["procedure"]
+
+[[group]]
+words = [
+  [
+    "stop",
+    "stops",
+    "stopped",
+    "stopping",
+  ],
+  [
+    "halt",
+    "halts",
+    "halted",
+    "halting",
+  ],
+  [
+    "terminate",
+    "terminates",
+    "terminated",
+    "terminating",
+  ],
+]
+note = "pick one verb for the action and keep it"
+severity = "advisory"
+scope = ["procedure"]
+
+[[group]]
+words = [
+  [
+    "show",
+    "shows",
+    "showed",
+    "shown",
+    "showing",
+  ],
+  [
+    "display",
+    "displays",
+    "displayed",
+    "displaying",
+  ],
+]
+note = "pick one verb for the action and keep it"
+severity = "advisory"
+scope = ["procedure"]
+
+[[group]]
+words = [
+  [
+    "get",
+    "gets",
+    "got",
+    "getting",
+  ],
+  [
+    "retrieve",
+    "retrieves",
+    "retrieved",
+    "retrieving",
+  ],
+  [
+    "fetch",
+    "fetches",
+    "fetched",
+    "fetching",
+  ],
+  [
+    "obtain",
+    "obtains",
+    "obtained",
+    "obtaining",
+  ],
+]
+note = "pick one verb for the action and keep it"
+severity = "advisory"
+scope = ["procedure"]
+
+[[group]]
+words = [
+  [
+    "change",
+    "changes",
+    "changed",
+    "changing",
+  ],
+  [
+    "modify",
+    "modifies",
+    "modified",
+    "modifying",
+  ],
+  [
+    "alter",
+    "alters",
+    "altered",
+    "altering",
+  ],
+]
+note = "pick one verb for the action and keep it"
+severity = "advisory"
+scope = ["procedure"]

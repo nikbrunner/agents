@@ -1,37 +1,26 @@
 #!/usr/bin/env python3
-"""Stop hook: block a reply that uses a word from nbr-voice's forbidden list.
+"""Stop hook: send a reply back when nbr-voice's linter has a hard finding in it.
 
-The list is the table under "## Forbidden" in the skill's references/words.md. Words match
-whole and case-insensitive. Code spans, code blocks, URLs and paths are not checked; a fenced
-markdown block is, since that is where drafts go.
+The linter is the skill's scripts/lint.py with its references/rules.toml, run with scope reply.
+Advisory findings ride along only when a hard one blocks. Any error (no uv, a bad rules file, a
+crash, a timeout) lets the reply through without output.
 """
 import json
 import os
-import re
+import subprocess
 import sys
 
-WORDS = os.path.expanduser("~/.agents/skills/nbr-voice/references/words.md")
+LINT = os.path.expanduser("~/.agents/skills/nbr-voice/scripts/lint.py")
 
 
-def forbidden():
-    entries = []
-    section = False
-    with open(WORDS) as f:
-        for line in f:
-            if line.startswith("## "):
-                section = line.strip() == "## Forbidden"
-                continue
-            if not section or not line.startswith("|"):
-                continue
-            cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
-            if len(cells) < 2 or cells[0] == "Forms" or set(cells[0]) <= set("-: "):
-                continue
-            for form in cells[0].split(","):
-                words = form.strip().split()
-                if words:
-                    pattern = r"(?<!\w)" + r"\s+".join(map(re.escape, words)) + r"(?!\w)"
-                    entries.append((form.strip(), cells[1], re.compile(pattern, re.I)))
-    return entries
+def lint(text, scopes):
+    command = ["uv", "run", "--quiet", "--script", LINT, "--json"]
+    for scope in scopes:
+        command += ["--scope", scope]
+    result = subprocess.run(command, input=text.encode("utf-8"), capture_output=True, timeout=5)
+    if result.returncode not in (0, 1):
+        return []
+    return json.loads(result.stdout.decode("utf-8"))
 
 
 def last_reply(transcript_path):
@@ -59,37 +48,38 @@ def last_reply(transcript_path):
     return "\n".join(reversed(texts))
 
 
-def prose(text):
-    text = re.sub(
-        r"```(\w*)[^\n]*\n(.*?)```",
-        lambda m: m.group(2) if m.group(1).lower() in ("markdown", "md") else " ",
-        text,
-        flags=re.S,
-    )
-    text = re.sub(r"`[^`\n]*`", " ", text)
-    text = re.sub(r"\]\([^)]*\)", "]", text)
-    text = re.sub(r"https?://\S+", " ", text)
-    text = re.sub(r"\S*/\S+", " ", text)
-    return text.replace("’", "'")
+def listed(findings, limit=10):
+    text = "; ".join("{} → {}".format(f["match"], f["use"]) for f in findings[:limit])
+    return text + ("; and {} more".format(len(findings) - limit) if len(findings) > limit else "")
 
 
 def main():
     payload = json.load(sys.stdin)
-    if payload.get("stop_hook_active") or not os.path.exists(WORDS):
+    if payload.get("stop_hook_active") or not os.path.exists(LINT):
         return
     reply = payload.get("last_assistant_message")
     if reply is None and payload.get("transcript_path"):
         reply = last_reply(payload["transcript_path"])
-    text = prose(reply or "")
-    found = [f"{form} → {use}" for form, use, pattern in forbidden() if pattern.search(text)]
-    if found:
-        print(json.dumps({
-            "decision": "block",
-            "reason": "Forbidden words in the reply (nbr-voice): " + "; ".join(found)
-            + ". Rewrite those sentences in plain words and send the reply again. A word you"
-            " discuss rather than use goes in backticks.",
-        }, ensure_ascii=False))
+    if not reply:
+        return
+    findings = lint(reply, ["reply"])
+    hard = [f for f in findings if f["severity"] == "hard"]
+    if not hard:
+        return
+    reason = (
+        "Voice findings in the reply (nbr-voice): " + listed(hard)
+        + ". Rewrite those sentences in plain words and send the reply again. A phrase you"
+        " discuss rather than use goes in backticks."
+    )
+    advisory = [f for f in findings if f["severity"] != "hard"]
+    if advisory:
+        reason += " Also worth a look while you rewrite: " + listed(advisory) + "."
+    print(json.dumps({"decision": "block", "reason": reason}, ensure_ascii=False))
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        pass
+    sys.exit(0)
