@@ -1,0 +1,24 @@
+{
+  "$schema": "https://pi.dev/schemas/models.schema.json",
+  "providers": {
+    "openrouter": {
+      "modelOverrides": {
+        "anthropic/claude-opus-5": {
+          "promptCache": { "short": 300, "long": 3600 }
+        },
+        "anthropic/claude-sonnet-5.5": {
+          "promptCache": { "short": 300, "long": 3600 }
+        },
+        "anthropic/claude-haiku-5.5": {
+          "promptCache": { "short": 300, "long": 3600 }
+        },
+        "google/gemini-4-neon": {
+          "promptCache": { "short": 300, "long": 300 }
+        },
+        "deepseek/deepseek-v4.1-flash-1017": {
+          "promptCache": { "short": 7200, "long": 7200 }
+        }
+      }
+    }
+  }
+}

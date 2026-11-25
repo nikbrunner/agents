@@ -17,7 +17,8 @@
     "npm:@juicesharp/rpiv-advisor",
     "npm:pi-zentui",
     "npm:pi-lens",
-    "npm:@juicesharp/rpiv-todo"
+    "npm:@juicesharp/rpiv-todo",
+    "npm:@nilskluewer/pi-cache-guard"
   ],
   "extensions": ["extensions/ask-user-inline.ts", "extensions/model-price.ts", "-builtin:mcp"],
   "defaultProvider": "openrouter",

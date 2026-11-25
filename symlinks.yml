@@ -7,19 +7,28 @@ common:
   # a wildcard-expanded target, not a single repo source, so it
   # can't be listed as a second target above without re-triggering it.
   home/.config/rpiv-advisor/advisor.json: ~/.config/rpiv-advisor/advisor.json
-  # Pi keeps its sessions, credentials and caches in ~/.pi, so only its config is linked.
+  # Pi keeps its sessions, credentials and caches in ~/.pi, so only its
+  # config is linked.
   home/.pi/agent/settings.json: ~/.pi/agent/settings.json
   home/.pi/agent/keybindings.json: ~/.pi/agent/keybindings.json
   home/.pi/agent/mcp.json: ~/.pi/agent/mcp.json
   home/.pi/agent/mcp-adapter.json: ~/.pi/agent/mcp-adapter.json
   home/.pi/agent/pi-fff.json: ~/.pi/agent/pi-fff.json
   home/.pi/agent/plannotator.json: ~/.pi/agent/plannotator.json
+  home/.pi/agent/models.json: ~/.pi/agent/models.json
   home/.pi/agent/trust.json: ~/.pi/agent/trust.json
   home/.pi/agent/extensions: ~/.pi/agent/extensions
-  home/.agents/AGENTS.md: [~/.claude/CLAUDE.md, ~/.claude-work/CLAUDE.md, ~/.pi/agent/AGENTS.md]
+  home/.agents/AGENTS.md:
+    - ~/.claude/CLAUDE.md
+    - ~/.claude-work/CLAUDE.md
+    - ~/.pi/agent/AGENTS.md
   home/.agents/agents: [~/.claude/agents, ~/.claude-work/agents]
-  home/.claude/settings.json: [~/.claude/settings.json, ~/.claude-work/settings.json]
-  home/.claude/keybindings.json: [~/.claude/keybindings.json, ~/.claude-work/keybindings.json]
+  home/.claude/settings.json:
+    - ~/.claude/settings.json
+    - ~/.claude-work/settings.json
+  home/.claude/keybindings.json:
+    - ~/.claude/keybindings.json
+    - ~/.claude-work/keybindings.json
   home/.agents: ~/.agents
   home/repos/nikbrunner/AGENTS.md: ~/repos/nikbrunner/AGENTS.md
   "home/.claude/hooks/enforce/*": ~/.claude/hooks/enforce
@@ -27,7 +36,8 @@ common:
   home/.local/bin/claude-account-label: ~/.local/bin/claude-account-label
   home/.local/bin/claude-cache-countdown: ~/.local/bin/claude-cache-countdown
 
-  # Codex CLI: only the config; authentication, sessions and runtime state stay local.
+  # Codex CLI: only the config; authentication, sessions and runtime state
+  # stay local.
   home/.codex/config.toml: ~/.codex/config.toml
 
   home/.config/opencode/opencode.jsonc: ~/.config/opencode/opencode.jsonc
