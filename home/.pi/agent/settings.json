@@ -42,14 +42,20 @@
   "enableInstallTelemetry": false,
   "enableSkillCommands": true,
   "editorPaddingX": 1,
-  "showCacheMissNotices": true,
   "collapseChangelog": true,
   "extensionChangelogVersions": {
     "{\"source\":\"npm:pi-web-access\",\"scope\":\"user\"}": "0.47.0",
     "{\"source\":\"npm:pi-mcp-adapter\",\"scope\":\"user\"}": "7.0.1",
-    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.87.0",
-    "{\"source\":\"npm:@narumitw/pi-accounts\",\"scope\":\"user\"}": "0.54.1",
-    "{\"source\":\"npm:@narumitw/pi-usage\",\"scope\":\"user\"}": "0.69.2",
-    "{\"source\":\"npm:pi-lens\",\"scope\":\"user\"}": "4.4.11"
-  }
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.90.0",
+    "{\"source\":\"npm:@narumitw/pi-accounts\",\"scope\":\"user\"}": "0.54.4",
+    "{\"source\":\"npm:@narumitw/pi-usage\",\"scope\":\"user\"}": "0.70.0",
+    "{\"source\":\"npm:pi-lens\",\"scope\":\"user\"}": "4.5.2"
+  },
+  "notices": {
+    "cacheMisses": true,
+    "cacheWarming": true,
+    "compactionCosts": true,
+    "reasoningDrops": true
+  },
+  "defaultModel": "deepseek/deepseek-v4.1-flash-1017"
 }
