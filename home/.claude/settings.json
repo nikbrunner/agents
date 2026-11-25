@@ -111,6 +111,15 @@
         "hooks": [
           {
             "type": "command",
+            "command": "~/.claude/hooks/enforce/voice-context.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
             "command": "~/.claude/hooks/enforce/record-repo-root.sh"
           }
         ]
@@ -150,6 +159,15 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/enforce/voice-words.py",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -168,6 +186,15 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/enforce/current-datetime.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/enforce/voice-reminder.sh"
           }
         ]
       }
