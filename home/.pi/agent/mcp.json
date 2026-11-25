@@ -7,6 +7,12 @@
     "atlassian-rovo-mcp": {
       "type": "http",
       "url": "https://mcp.atlassian.com/v1/mcp/authv2"
+    },
+    "tv": {
+      "type": "http",
+      "url": "http://192.168.2.117:8802/mcp",
+      "headers": { "Authorization": "!cat ~/.config/cytv/bearer" },
+      "description": "LG TV home screen (CleanYourTV): apps, inputs, notifications, volume, theme"
     }
   }
 }
