@@ -1,6 +1,7 @@
 /.agents/
 /.claude/
 node_modules
+__pycache__/
 
 /.pi-subagents
 
@@ -17,7 +18,6 @@ node_modules
 /home/.agents/skills/diagnosing-bugs
 /home/.agents/skills/documentation-writer
 /home/.agents/skills/find-skills
-/home/.agents/skills/humanizer
 /home/.agents/skills/skill-creator
 /home/.agents/skills/tdd
 /home/.agents/skills/writing-for-agents

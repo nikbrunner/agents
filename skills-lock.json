@@ -37,12 +37,6 @@
       "skillPath": "skills/find-skills/SKILL.md",
       "computedHash": "b146008599c31057cef1c145774cea5d5afb30e8f43fa802e47a4b461419aaaf"
     },
-    "humanizer": {
-      "source": "blader/humanizer",
-      "sourceType": "github",
-      "skillPath": "SKILL.md",
-      "computedHash": "1e67c3a4a675bd0c961b1fd8ebb718174f9a61a547d9bedad2ade5eb99cce831"
-    },
     "skill-creator": {
       "source": "anthropics/skills",
       "sourceType": "github",
