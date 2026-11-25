@@ -252,8 +252,8 @@ Nik's PR) and a block for who guides the worker.
      fetch, and name the topic in two to four words from the title, labelled
      `<repo> · <Topic in words> · PR <number>`.
   3. Write the brief to a scratch file from [briefs.md](briefs.md), with its `pr-review` block.
-  4. Launch it with `nbr-dispatch`: the primary checkout as the confirmed `repo`; a worktree on the
-     source branch in the folder `<repo folder>-<topic>` beside it, by the worktree convention; the
+  4. Launch it with `nbr-dispatch`: the primary checkout as the confirmed `repo`; a worktree named
+     `<topic>` on the source branch (`origin/<source>`), which lager places; the
      label; `no-scripts` in the package roots the diff touches; the brief as it stands; harness
      `claude` with the circle's `CLAUDE_CONFIG_DIR`; and the agent's name,
      `<Topic in words> · <Name>`. A denial or dialog dispatch stops on goes to Nik with the session,

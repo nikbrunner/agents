@@ -41,7 +41,8 @@ Run {{review_skill}} on this PR.
 
 Stay for Nik's follow-ups. When the PR needs code the locally running service lacks, offer to set up that
 dependency: pull a merged one whose checkout is clean on the target branch and only behind; otherwise add a
-worktree of that repo on the needed ref beside its primary checkout, named <repo>-<topic>. Then offer to rerun
+worktree of that repo with `lager worktree add <repo> <topic> --fetch`: `--branch origin/<branch>` for a branch,
+`--new-branch <topic> --start <ref>` for a tag or commit. Then offer to rerun
 that service, naming what it replaces (a running container, a port), and give the steps to try the PR against
 it. Once Nik is done with it, offer to stop the service, restore what it replaced and remove that worktree.
 Once Nik is done with the review, offer to tear this session down. On yes, close it with the Close section of

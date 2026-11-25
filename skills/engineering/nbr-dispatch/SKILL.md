@@ -19,7 +19,8 @@ From the caller; a direct dispatch asks the user for what it needs.
 
 - `repo`: the checkout, the `found_path` of its row in `lager status --json`, confirmed by the user.
   The row's `changes` is the pre-existing state.
-- `worktree`: none, or its folder and path, with a new branch and its base or an existing branch.
+- `worktree`: none, or its name, with a new branch and its base or an existing local or remote
+  branch.
 - `install`: `normal`, `no-scripts` or `skip`, with the package roots.
 - `brief`: a file. `harness`: the agent CLI, by default the one running this session. `config_dir`,
   `label` and `name` when the caller has them.
@@ -31,13 +32,15 @@ From the caller; a direct dispatch asks the user for what it needs.
    unclear label. An agent already working there: offer `nbr-intercom` instead.
 2. None: create it with lager.
    - The checkout as it stands: `lager session create "$repo" --json`.
-   - A new worktree: `git -C "$repo" fetch origin`, then
-     `lager worktree add "$repo" "$folder" --path "$path" --create-session --json` with
-     `--new-branch "$branch" --start "origin/$base"` or `--branch "$branch"`.
-   - A worktree that exists: `lager session create "$repo" "$folder" --json`, and
-     `git -C "$path" pull --ff-only` when it is clean.
-   - Workaround until lager tracks remote branches:
-     `git -C "$repo" branch --track "$branch" "origin/$branch"` before `--branch`.
+   - A new worktree: `lager worktree add "$repo" "$name" --fetch --create-session --json` with
+     `--new-branch "$branch" --start "origin/$base"`, or with `--branch "origin/$branch"` for a
+     pushed branch. That reaches the local branch when one exists, else it creates one that tracks
+     the remote branch. With `--branch`, drop the `"$name"` argument to take the branch's last
+     segment. The document's `path` is the worktree. When it reports `behind` above 0 and `ahead`
+     0, run `git -C "$path" merge --ff-only "$upstream"`, since lager never moves a branch.
+   - A worktree that exists: find its `path` in `lager worktree list "$repo" --json`, run
+     `lager session create "$repo" "$name" --json`, and `git -C "$path" pull --ff-only` when it is
+     clean.
    - Workaround until lager takes a label: `rex session rename "$session" "$label"`.
 3. Install by the repo's `AGENTS.md` in each package root, else the checkout's root. `no-scripts`
    skips lifecycle scripts (`npm ci --ignore-scripts`), and code nobody has reviewed yet, such as a

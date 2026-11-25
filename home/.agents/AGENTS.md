@@ -241,18 +241,21 @@ committen?". Every commit runs through `nbr-git-commit`.
 Commit messages and PR descriptions carry no agent attribution: no `Claude-Session` trailer, no
 session URL, even when the harness asks for one.
 
-A worktree sits beside the main checkout and is named by its topic: two to four words, as I would
-say them out loud. The branch carries the type prefix and the ticket key, the folder starts with the
-repo and never changes, and the Rex session label is the repo, then the topic in words, with the
-ticket key and PR number appended once they exist. A session on the main checkout is labelled with
-the project name. Agent names stay out of the label.
+A worktree lives in `<repo>.worktrees/<name>`, next to the main checkout. `lager worktree add`
+creates it and derives its path, name and session label. No agent or tool builds a worktree path
+itself. Its name is the topic in two to four words, as I would say them out loud. A ticket key
+leads the name when there is one. With `--branch`, lager takes the branch's last segment, so a ticket branch
+keeps its key. The branch carries the type
+prefix and the ticket key, and the folder never changes. A session label reads repo, topic in words,
+then ticket key. The PR number joins it once the PR exists. A session on the main checkout is
+labelled with the project name. Agent names stay out of the label.
 
-| Case           | Branch                              | Folder                                    | Rex label                                    |
-| -------------- | ----------------------------------- | ----------------------------------------- | -------------------------------------------- |
-| No ticket      | `feat/project-settings-refinements` | `labels-web-project-settings-refinements` | `labels-web · Project settings refinements`  |
-| With a ticket  | `CP-244-sign-in-page`               | `labels-web-sign-in-page`                 | `labels-web · Sign-in page · CP-244`         |
-| PR open        | unchanged                           | unchanged                                 | `labels-web · Sign-in page · CP-244 · PR 28` |
-| Reviewing a PR | the PR's own branch                 | `labels-web-upload-images`                | `labels-web · Upload images · PR 24`         |
+| Case           | Branch                              | Folder                                              | Rex label                                    |
+| -------------- | ----------------------------------- | --------------------------------------------------- | -------------------------------------------- |
+| No ticket      | `feat/project-settings-refinements` | `labels-web.worktrees/project-settings-refinements` | `labels-web · Project settings refinements`  |
+| With a ticket  | `CP-244-sign-in-page`               | `labels-web.worktrees/CP-244-sign-in-page`          | `labels-web · Sign in page · CP-244`         |
+| PR open        | unchanged                           | unchanged                                           | `labels-web · Sign in page · CP-244 · PR 28` |
+| Reviewing a PR | the PR's own branch                 | `labels-web.worktrees/upload-images`                | `labels-web · Upload images · PR 24`         |
 
 ### Comments
 
