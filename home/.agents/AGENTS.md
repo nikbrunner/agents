@@ -243,12 +243,12 @@ session URL, even when the harness asks for one.
 
 A worktree lives in `<repo>.worktrees/<name>`, next to the main checkout. `lager worktree add`
 creates it and derives its path, name and session label. No agent or tool builds a worktree path
-itself. Its name is the topic in two to four words, as I would say them out loud. A ticket key
-leads the name when there is one. With `--branch`, lager takes the branch's last segment, so a ticket branch
-keeps its key. The branch carries the type
-prefix and the ticket key, and the folder never changes. A session label reads repo, topic in words,
-then ticket key. The PR number joins it once the PR exists. A session on the main checkout is
-labelled with the project name. Agent names stay out of the label.
+itself. Its name is the topic in two to four words, as I would say them out loud. A ticket key leads
+the name when there is one. With `--branch`, lager takes the branch's last segment, so a ticket
+branch keeps its key. The branch carries the type prefix and the ticket key, and the folder never
+changes. A session label reads repo, topic in words, then ticket key. The PR number joins it once
+the PR exists. A session on the main checkout is labelled with the project name. Agent names stay
+out of the label.
 
 | Case           | Branch                              | Folder                                              | Rex label                                    |
 | -------------- | ----------------------------------- | --------------------------------------------------- | -------------------------------------------- |

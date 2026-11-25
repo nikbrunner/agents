@@ -166,12 +166,11 @@ Agents' work counts, so parallel work shows as overlapping blocks.
 - One block is one piece of work (a todo, ticket or PR), titled as the note writes the todo. Create
   it with
   `ical add "<title>" -c <block calendar> -s <start> -e <end> --url <the todo's link> --notes "bob" --no-alert`.
-  `ical add` prints no JSON: read the new block's `id` back with `ical list`.
-  A worker started through `nbr-afk-implementation` is an AFK run: its block's notes add a line
-  `afk`.
+  `ical add` prints no JSON: read the new block's `id` back with `ical list`. A worker started
+  through `nbr-afk-implementation` is an AFK run: its block's notes add a line `afk`.
 - A meeting Nik says runs past its end continues in a block with the meeting's title, from the
-  meeting's end to the next run. Bob owns that block; the meeting itself stays as its organizer
-  set it.
+  meeting's end to the next run. Bob owns that block; the meeting itself stays as its organizer set
+  it.
 - Signals per piece of work, read without interrupting it: `ListAgents` busy or idle, `rex capture`
   output moving, dirty files in `lager status --json`, commits, reports, merges, Nik's messages.
 - Each check-in brings the blocks in line with the signals. Running work stretches its block to the
@@ -183,8 +182,8 @@ Agents' work counts, so parallel work shows as overlapping blocks.
 - The ledger `blocks/YYYY-MM-DD.json` in the circle's `bob/` folder holds each block Bob created:
   event `id`, link, `afk`, and the title, start and end Bob last wrote. Bob touches only blocks in
   the ledger. A title, start or end in the calendar that differs from the ledger's means Nik changed
-  the block: it stands, and work that runs past its end continues in a new block. `modified_at`
-  is no signal, since the Exchange sync bumps it after every write.
+  the block: it stands, and work that runs past its end continues in a new block. `modified_at` is
+  no signal, since the Exchange sync bumps it after every write.
 
 ## 1. Open the day
 
@@ -253,11 +252,11 @@ Nik's PR) and a block for who guides the worker.
      `<repo> · <Topic in words> · PR <number>`.
   3. Write the brief to a scratch file from [briefs.md](briefs.md), with its `pr-review` block.
   4. Launch it with `nbr-dispatch`: the primary checkout as the confirmed `repo`; a worktree named
-     `<topic>` on the source branch (`origin/<source>`), which lager places; the
-     label; `no-scripts` in the package roots the diff touches; the brief as it stands; harness
-     `claude` with the circle's `CLAUDE_CONFIG_DIR`; and the agent's name,
-     `<Topic in words> · <Name>`. A denial or dialog dispatch stops on goes to Nik with the session,
-     the pane, the brief path and its exact text.
+     `<topic>` on the source branch (`origin/<source>`), which lager places; the label; `no-scripts`
+     in the package roots the diff touches; the brief as it stands; harness `claude` with the
+     circle's `CLAUDE_CONFIG_DIR`; and the agent's name, `<Topic in words> · <Name>`. A denial or
+     dialog dispatch stops on goes to Nik with the session, the pane, the brief path and its exact
+     text.
 - Before writing a brief, ask Nik in one question for the approvals the work will foreseeably need
   (commit, push, publish, removals) and who drives the worker: Bob, or Nik himself. Put both into
   the brief, the grant in his words, with the date. A worker's session accepts what its brief says

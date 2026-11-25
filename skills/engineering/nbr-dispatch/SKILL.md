@@ -36,8 +36,8 @@ From the caller; a direct dispatch asks the user for what it needs.
      `--new-branch "$branch" --start "origin/$base"`, or with `--branch "origin/$branch"` for a
      pushed branch. That reaches the local branch when one exists, else it creates one that tracks
      the remote branch. With `--branch`, drop the `"$name"` argument to take the branch's last
-     segment. The document's `path` is the worktree. When it reports `behind` above 0 and `ahead`
-     0, run `git -C "$path" merge --ff-only "$upstream"`, since lager never moves a branch.
+     segment. The document's `path` is the worktree. When it reports `behind` above 0 and `ahead` 0,
+     run `git -C "$path" merge --ff-only "$upstream"`, since lager never moves a branch.
    - A worktree that exists: find its `path` in `lager worktree list "$repo" --json`, run
      `lager session create "$repo" "$name" --json`, and `git -C "$path" pull --ff-only` when it is
      clean.
