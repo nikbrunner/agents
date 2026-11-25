@@ -210,7 +210,7 @@ Applies when the repo has a `package.json`.
 Applies when the repo has a GitHub remote and any kit piece exists. Shell checks use read-only `git` and `gh`.
 
 - [ ] `.agents/skills/repo-{commit,changelog,release}/SKILL.md` and `repo-changelog/references/curated-release.md` exist, and each `name` matches its directory. (releases.md)
-- [ ] Every relative link in the kit's skills and `docs/releases.md` resolves; a skill that lives only in the global directory (`humanizer`) is named, not linked. (releases.md#project-skills)
+- [ ] Every relative link in the kit's skills and `docs/releases.md` resolves; a skill that lives only in the global directory (`nbr-voice`) is named, not linked. (releases.md#project-skills)
 - [ ] Every skill the kit names exists in `.agents/skills/` or `~/.claude/skills/`; the step that calls a missing one silently does nothing. (releases.md#project-skills)
 - [ ] No `{{` placeholder remains, and every command the skills run exists: Makefile targets, `package.json` scripts, `mise` tasks. (releases.md#project-skills)
 - [ ] The commit scopes in `repo-commit` match `git log` since the last tag. (releases.md#commits)

@@ -5,7 +5,7 @@ description:
     docs, then write a plan that reads for a Product Owner and a Developer (prose per section, implementation and
     verification beneath it) and review it in Plannotator. Use when asked to plan a change, for every plan written in plan mode, and when asked to grill an idea,
     which stops after the grill."
-compatibility: Requires the nbr-repo-conventions and humanizer skills, and Plannotator, which ships the plannotator-annotate skill.
+compatibility: Requires the nbr-repo-conventions and nbr-voice skills, and Plannotator, which ships the plannotator-annotate skill.
 ---
 
 # Plan a change
@@ -72,7 +72,7 @@ Use this shape:
 - Add a Mermaid diagram after the goal when three or more components interact and the text alone leaves the flow unclear.
 - An empty Out of scope section is dropped.
 
-Run `humanizer` over everything the Product Owner reads. The Implementation bullets stay as written.
+Run the `nbr-voice` rewrite pass over everything the Product Owner reads. The Implementation bullets stay as written.
 
 The plan is ready when the Product Owner pass, reading only the prose, explains every slice, and every Implementation
 block lets the Developer start and verify that slice without asking.

@@ -1,7 +1,7 @@
 ---
 name: nbr-create-pr
 description: "Write or update a pull request in a fixed shape: a slice title, a flat trigger-word list for what changed, tests added (e2e per scenario), how to test, optional screenshots and design-file changes, open decisions. Drafts locally, waits for approval, then publishes."
-compatibility: Requires the gh CLI for GitHub or bkt for Bitbucket, and the humanizer skill.
+compatibility: Requires the gh CLI for GitHub or bkt for Bitbucket, and the nbr-voice skill.
 argument-hint: "[optional PR number or URL]"
 user-invocable: true
 metadata:
@@ -26,7 +26,7 @@ short bullet a reviewer scans top to bottom.
    the diff shows, and an offer to reword it or to rebuild the run with `/nbr-git-commit-rebuild`, which the user starts.
    On a pushed branch, either needs a force push the user approves. Done when the list holds only genuine open decisions
    for reviewers.
-3. **Draft** using the template below, then run the `humanizer` skill on it in embedded mode. Done when every section is
+3. **Draft** using the template below, then run the `nbr-voice` rewrite pass on it. Done when every section is
    filled or deliberately omitted.
 4. **Show and wait.** Put the title and the body into the reply as one fenced `markdown` block, copy-ready, and stop.
    Apply the user's edits in the next reply the same way until they approve the text. Write the body to a gitignored

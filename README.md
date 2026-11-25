@@ -223,7 +223,7 @@ Install these first:
 
 | Dependency                                                          | Install                                                              | Used by                                                    |
 | ------------------------------------------------------------------- | -------------------------------------------------------------------- | ---------------------------------------------------------- |
-| [`humanizer`](https://github.com/blader/humanizer)                  | `npx skills add blader/humanizer`                                    | `nbr-plan`, `nbr-create-pr`                                |
+| `nbr-voice`                                                         | `npx skills add nikbrunner/agents --skill nbr-voice`                 | `nbr-plan`, `nbr-create-pr`                                |
 | [`documentation-writer`](https://github.com/github/awesome-copilot) | `npx skills add github/awesome-copilot --skill documentation-writer` | `nbr-git-commit`, and through it `-buckets` and `-rebuild` |
 | [Plannotator](https://github.com/backnotprop/plannotator)           | see its README, it ships `plannotator-annotate`                      | `nbr-plan`                                                 |
 | `gh` or [`bkt`](https://github.com/avivsinai/bitbucket-cli)         | your package manager                                                 | `nbr-create-pr`                                            |
