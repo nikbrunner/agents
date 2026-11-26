@@ -149,7 +149,7 @@ async function pollGit($: EngineInterface) {
 
 // Ctrl-\ Ctrl-N reaches normal mode from any nvim mode, where a bare Esc before ':' can read as Alt-:.
 const OPEN_IN_EDITOR = `
-s="$REX_SESSION"
+s=$(rex whoami --json | jq -r .session_id)
 b=$(rex block ls -s "$s" --json | jq -r '.blocks[] | select(.label == "Editor") | .block_id' | head -1)
 [ -n "$b" ] || exit 1
 p=$(printf %s "$(git rev-parse --show-toplevel)/$1" | sed 's/[ %#|"\\\\]/\\\\&/g')
@@ -259,12 +259,11 @@ async function syncPane($: EngineInterface) {
 
 async function namePane($: EngineInterface, name: string) {
   if (name === paneName) return;
-  const session = await $.env.get("REX_SESSION");
   const block = await $.env.get("REX_BLOCK");
-  if (!session || !block) return;
+  if (!block) return;
   paneName = name;
   const run = await $.process
-    .run(["rex", "block", "rename", "-s", session, block, name], { timeoutMs: 5000 })
+    .run(["rex", "block", "rename", "-s", block, block, name], { timeoutMs: 5000 })
     .catch(() => null);
   if (run?.exitCode !== 0) paneName = "";
 }

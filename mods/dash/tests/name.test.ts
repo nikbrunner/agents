@@ -47,7 +47,7 @@ function seed(on: On, disk: { titles: string; env: Record<string, string>; topic
   return { labels, asked };
 }
 
-const REX = { REX_SESSION: "session:s", REX_BLOCK: "block:b" };
+const REX = { REX_BLOCK: "block:b" };
 const start = { cwd: "/repo", surface: "terminal", isInteractive: true } as const;
 
 test("a dispatched name labels the pane and holds through the brief", async ($, on) => {

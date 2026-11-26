@@ -19,7 +19,7 @@ Run `ListAgents` first and take the session named `Bob`. `ListAgents` only shows
 same Claude config dir, and Bob runs on one config for all of Nik's work, so a session on the other
 account does not see it there.
 
-Not listed and `REX_SESSION` is set: find it in Rex, as `nbr-intercom` describes under "Find the
+Not listed and `REX_BLOCK` is set: find it in Rex, as `nbr-intercom` describes under "Find the
 peer": the Rex session labelled `Bob`, in the agent pane whose status line shows `[Bob]`. None of
 these finds it: tell Nik, and give him the report as text to paste there instead.
 

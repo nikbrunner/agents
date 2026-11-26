@@ -44,7 +44,7 @@ Run `ListAgents`. It shows the Claude sessions under the same Claude config dir 
 repo: `labels-web-66` runs in labels-web, `iter-nvim-be` in iter.nvim. A listed peer is reached with
 `SendMessage`. When several names match, ask the user which one.
 
-In Rex (`REX_SESSION` is set), Rex shows which session and pane runs which repo, across every config
+In Rex (`REX_BLOCK` is set), Rex shows which session and pane runs which repo, across every config
 dir and harness:
 
 1. `rex ls` lists sessions by label (a repo name, or a PR title like

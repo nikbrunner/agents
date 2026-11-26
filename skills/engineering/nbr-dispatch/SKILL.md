@@ -10,7 +10,7 @@ compatibility: Requires Rex and lager.
 # Dispatch
 
 Starts a coding agent in a repository's Rex session, or closes that session. Lager creates and
-removes worktrees and sessions; Rex finds sessions and panes. Runs inside Rex (`REX_SESSION` set);
+removes worktrees and sessions; Rex finds sessions and panes. Runs inside Rex (`REX_BLOCK` set);
 otherwise report blocked, and never do the task inline.
 
 ## Inputs
