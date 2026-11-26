@@ -41,19 +41,19 @@ or the notice, leave the peer alone.
 ## Find the peer
 
 Run `ListAgents`. It shows the Claude sessions under the same Claude config dir by name, prefixed by
-repo: `labels-web-66` runs in labels-web, `iter-nvim-be` in iter.nvim. A listed peer is reached with
+repo: `shop-web-66` runs in shop-web, `iter-nvim-be` in iter.nvim. A listed peer is reached with
 `SendMessage`. When several names match, ask the user which one.
 
 In Rex (`REX_BLOCK` is set), Rex shows which session and pane runs which repo, across every config
 dir and harness:
 
 1. `rex ls` lists sessions by label (a repo name, or a PR title like
-   `PR 20 · Labels configuration`).
+   `PR 20 · Search configuration`).
 2. `rex block ls -s <session>` lists its panes; an agent pane carries its current topic and the
    session's persona (`Brush wheel keys · Clara`), or `Agent I`, `Agent II`, … before its first
    prompt.
 3. `rex capture -s <session> -b <block> | tail -25` shows the pane's state; a Claude status line
-   names the repo and the Claude session (`[Bob]`, `[pr-20-labels-config]`).
+   names the repo and the Claude session (`[Bob]`, `[pr-20-search-config]`).
 
 Use Rex to settle which `ListAgents` name belongs to which repo, to read a peer's state when that
 saves a question, and to find a peer `ListAgents` misses: a session under another
@@ -87,9 +87,9 @@ and a delivery notice says so.
    submit it: `rex send -s <session> -b <block> $'\e[200~'"$message"$'\e[201~'` and
    `rex send-key -s <session> -b <block> Enter`. Check with `rex capture` that it shows after a `❯`
    prompt.
-2. The reply stays in the peer's pane. When you need it, wait in the turn with an until-loop on
-   `rex capture` for the pane's next `· done HH:MM` line (Bash `timeout` up to 240000), then read
-   the reply from the capture.
+2. The reply stays in the peer's pane. When you need it, wait with the `Monitor` tool. Its command
+   is an until-loop on `rex capture` that exits on the pane's next `· done HH:MM` line (`timeout_ms`
+   up to 1800000). When the monitor exits, read the reply from the capture.
 
 Tell the user in one line which Rex session and pane you used.
 

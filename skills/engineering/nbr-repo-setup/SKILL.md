@@ -33,8 +33,8 @@ it, such as a hook migration.
    and help output of tools the procedure names (`vp --version`, `lefthook --version`). Never run
    installers, builds, or anything that writes.
 4. Propose a plan: every file to create or change with its intended content, one table of inferred
-   values with their source, the commands that will run, and the steps left for the maintainer. Use
-   the host's plan mode when it has one.
+   values with their source, the commands that will run, and the steps left for the maintainer. When
+   the host has a plan mode, offer it with a recommendation and enter it only on a yes.
 5. Wait for explicit approval. Then write only the listed files and run only the listed commands.
 6. Run `nbr-repo-audit <topic>` over what was written, and report each finding with its fix.
 

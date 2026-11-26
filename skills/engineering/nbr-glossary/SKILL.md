@@ -52,7 +52,7 @@ Write a `GLOSSARY.md` file with this structure:
 ## Example dialogue
 
 > **Dev:** "When a **Customer** places an **Order**, do we create the **Invoice** immediately?"
-> **Domain expert:** "No — an **Invoice** is only generated once a **Fulfillment** is confirmed. A
+> **Domain expert:** "No, an **Invoice** is only generated once a **Fulfillment** is confirmed. A
 > single **Order** can produce multiple **Invoices** if items ship in separate **Shipments**."
 > **Dev:** "So if a **Shipment** is cancelled before dispatch, no **Invoice** exists for it?"
 > **Domain expert:** "Exactly. The **Invoice** lifecycle is tied to the **Fulfillment**, not the
@@ -60,7 +60,7 @@ Write a `GLOSSARY.md` file with this structure:
 
 ## Flagged ambiguities
 
-- "account" was used to mean both **Customer** and **User** — these are distinct concepts: a
+- "account" was used to mean both **Customer** and **User**, which are distinct concepts: a
   **Customer** places orders, while a **User** is an authentication identity that may or may not
   represent a **Customer**.
 ```
@@ -77,7 +77,7 @@ Write a `GLOSSARY.md` file with this structure:
   unless they have domain-specific meaning.
 - **Group terms into multiple tables** when natural clusters emerge (e.g. by subdomain, lifecycle,
   or actor). Each group gets its own heading and table. If all terms belong to a single cohesive
-  domain, one table is fine — don't force groupings.
+  domain, one table is fine; don't force groupings.
 - **Write an example dialogue.** A short conversation (3-5 exchanges) between a dev and a domain
   expert that demonstrates how the terms interact naturally. The dialogue should clarify boundaries
   between related concepts and show terms being used precisely.
@@ -89,7 +89,7 @@ When invoked again in the same conversation:
 1. Read the existing `GLOSSARY.md`
 2. Incorporate any new terms from subsequent discussion
 3. Update definitions if understanding has evolved
-4. Mark changed entries with "(updated)" and new entries with "(new)"
+4. List the changed and new entries in the reply; `GLOSSARY.md` states each term as it is
 5. Re-flag any new ambiguities
 6. Rewrite the example dialogue to incorporate new terms
 

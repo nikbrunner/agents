@@ -158,14 +158,15 @@ Print and stop:
 6. One ask through the question tool (AskUserQuestion in Claude Code): "Commit with this message?",
    with the message as the recommended option's description and "Change the message" as the other.
    Several commits get one ask each, one after the other. A harness without a question tool asks
-   "Go-ahead to commit?" in the reply. When the brief names another session as the driver, print
-   the gate, end the turn and wait for the driver's message: a dialog would block that message.
+   "Go-ahead to commit?" in the reply. When the brief names another session as the driver, print the
+   gate, end the turn and wait for the driver's message: a dialog would block that message.
 
 Commit when the user says "commit" (or "commit and push"), picks the recommended option, or answers
 the ask with a plain approval ("yes", "passt", "weiter"). An approval that may refer to something
-else, such as a reply to a later message or a side topic, is not a go-ahead: ask again. Accepted findings are applied before the
-commit; unanswered findings count as declined. A prior approval does not carry over to a changed
-plan. A caller with its own gate (`nbr-git-commit-buckets`) replaces this step.
+else, such as a reply to a later message or a side topic, is not a go-ahead: ask again. Accepted
+findings are applied before the commit; unanswered findings count as declined. A prior approval does
+not carry over to a changed plan. A caller with its own gate (`nbr-git-commit-buckets`) replaces
+this step.
 
 "Commit and push" approves the message in advance: skip the stop, commit, push, and report the
 message afterwards. A failing check or a side-effect finding still stops here. A bare "commit" gets
@@ -196,12 +197,12 @@ Confirm with `git log --oneline -3` and `git status --short`.
 
 ## Re-touching history
 
-| Situation                                                               | Strategy           | Command                                                           |
-| ----------------------------------------------------------------------- | ------------------ | ----------------------------------------------------------------- |
-| Fix belongs to the **immediately prior** commit, already pushed nowhere | Amend              | `git commit --amend --no-edit`                                    |
-| Fix belongs to an **older** local commit                                | Fixup + autosquash | `git commit --fixup=<sha>` + `git rebase -i --autosquash <sha>~1` |
-| A whole run of commits needs rewriting                                  | Rebuild            | `nbr-git-commit-rebuild`                                          |
-| Distinct new unit of work                                               | New commit         | Normal flow above.                                                |
+| Situation                                                               | Strategy           | Command                                                                                 |
+| ----------------------------------------------------------------------- | ------------------ | --------------------------------------------------------------------------------------- |
+| Fix belongs to the **immediately prior** commit, already pushed nowhere | Amend              | `git commit --amend --no-edit`                                                          |
+| Fix belongs to an **older** local commit                                | Fixup + autosquash | `git commit --fixup=<sha>` + `GIT_SEQUENCE_EDITOR=: git rebase -i --autosquash <sha>~1` |
+| A whole run of commits needs rewriting                                  | Rebuild            | `nbr-git-commit-rebuild`                                                                |
+| Distinct new unit of work                                               | New commit         | Normal flow above.                                                                      |
 
 A commit that supersedes one already on the branch, such as a second bump of the same dependency or
 a redo of the same change, is no new unit of work. It folds into the earlier commit, so a PR's

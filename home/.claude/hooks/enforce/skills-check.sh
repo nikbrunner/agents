@@ -10,7 +10,13 @@ prompt_lower=$(jq -r '(.prompt // "") | ascii_downcase' 2>/dev/null || echo "")
 REPO=$(basename "$(pwd)")
 matches=()
 
-if [[ "$prompt_lower" =~ ^(implement|build|refactor|fix|add|migrate|remove|delete|update|upgrade)\  ||
+personal_repo=false
+case "$PWD" in
+"$HOME"/repos/nikbrunner/* | "$HOME"/repos/black-atom-industries/*) personal_repo=true ;;
+esac
+
+if [[ "$personal_repo" == true ]] &&
+    [[ "$prompt_lower" =~ ^(implement|build|refactor|fix|add|migrate|remove|delete|update|upgrade)\  ||
     "$prompt_lower" =~ ^can\ you\ (implement|build|fix|add)\  ]]; then
     matches+=("Implementation: load the project's convention skills and the matching nbr-repo-conventions topics before editing (typescript, react, css, state, tanstack, validation, testing). Keep selection to the code being changed.")
 fi
@@ -23,7 +29,7 @@ fi
 if [[ "$prompt_lower" =~ ^(audit|review)([[:space:]]|$) ||
     "$prompt_lower" =~ ^run\ (an?\ )?(audit|review)([[:space:]]|$) ||
     "$prompt_lower" =~ ^check\ .*(quality|conventions|a11y|accessibility) ]]; then
-    matches+=("Review/audit request: load nbr-repo-audit for a convention audit, or code-review for a branch or PR review. Report findings; start implementation or shipping work only when explicitly requested.")
+    matches+=("Review/audit request: load nbr-review-pr for a PR or branch review (a host-specific review skill, such as one for Bitbucket, builds on it), or nbr-repo-audit for a convention audit. Report findings; start implementation or shipping work only when explicitly requested.")
 fi
 
 if [[ "$prompt_lower" =~ ^(commit|lets\ commit|let\'s\ commit)([[:space:]]|$) ||

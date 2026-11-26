@@ -88,6 +88,7 @@ every Implementation block lets the Developer start and verify that slice withou
 
 ## 4. Review
 
-Present the plan through the host's plan mode; exiting plan mode opens it in Plannotator. Without
-plan mode, write it to a file and open it with `plannotator-annotate`. Address every annotation,
-revise, and present again until the user approves.
+When the session is already in plan mode, present the plan there; exiting plan mode opens it in
+Plannotator. Otherwise offer plan mode once, with a recommendation, and enter it only on a yes. On a
+no, or in a host without plan mode, write the plan to a file and open it with
+`plannotator-annotate`. Address every annotation, revise, and present again until the user approves.

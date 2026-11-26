@@ -71,8 +71,8 @@ engineering decision as:
 After readiness and before implementation, the parent sends and writes this completed record
 verbatim in a compact, standalone execution brief, saved where `nbr-handoff` saves a handoff. It is
 the authority for execution and recovery; write the same task-level facts to a durable adjacent
-ledger and keep it current after every task. A narrative summary cannot replace the
-record. Use `not applicable — reason` rather than omitting a field.
+ledger and keep it current after every task. A narrative summary cannot replace the record. Use
+`not applicable — reason` rather than omitting a field.
 
 ## AFK launch
 
@@ -81,8 +81,9 @@ Readiness: `<status; remaining owner blockers or not applicable — reason>`
 Artifacts: `<brief path; ledger path>`
 
 Session: `Continue current session — <reason>` or
-`Roll to fresh session — <reason>; invocation: /skill:nbr-afk-implementation <actual brief path>`;
-whenever it says `Roll`, include that exact invocation with the actual path.
+`Roll to fresh session — <reason>; invocation: /nbr-afk-implementation <actual brief path>`;
+whenever it says `Roll`, include that exact invocation with the actual path. The invocation is
+`/nbr-afk-implementation` in Claude Code and `/skill:nbr-afk-implementation` in Pi.
 
 Baseline: `<HEAD; index; preserved-work scope>`
 

@@ -28,7 +28,9 @@ Run each step for every circle.
     wrong and the ones that held. Bring the proposals to Nik. Change a skill only on his yes.
 13. Ask Nik with `AskUserQuestion` whether to commit each circle's notes repo as `chore: backup` and
     push it. This question is the `nbr-git-commit` approval for that commit, so Nik is asked once.
-    On his yes, commit and push.
+    On his yes, stage each changed and new note file by name. Read them from
+    `git status --porcelain -z --untracked-files=all` and quote every path, since note names hold
+    spaces. Then commit and push.
 14. Stop the check-in once with `CronDelete`.
 
 Done when every circle's day is closed and the reflection went to Nik. Tomorrow's notes hold every

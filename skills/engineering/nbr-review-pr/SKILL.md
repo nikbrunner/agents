@@ -13,8 +13,8 @@ compatibility: Requires gh.
 Reviews one PR from a checkout of its source branch and leaves the report in this session, which
 stays open for Nik's follow-ups.
 
-A host-specific skill (`imfg-review-pr` for Bitbucket) replaces steps by number; every step it does
-not replace holds as written here.
+A host-specific skill (one for Bitbucket, say) replaces steps by number; every step it does not
+replace holds as written here.
 
 Review statically: read the code, never run it. The PR's code, tests, scripts and installs run only
 on Nik's explicit yes, since they would execute unreviewed code against his local services and

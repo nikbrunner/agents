@@ -10,7 +10,8 @@ argument-hint:
   | react | html | css | state | tanstack | validation | authentication | testing | assets | tooling
   | free text] [path]"
 allowed-tools:
-  Read, Glob, Grep, Bash(git log:*), Bash(git tag:*), Bash(git config --get:*), Bash(gh repo
+  Read, mcp__plugin_mcp_fff__grep, mcp__plugin_mcp_fff__find_files, mcp__plugin_mcp_fff__multi_grep,
+  Bash(rg:*), Bash(fd:*), Bash(git log:*), Bash(git tag:*), Bash(git config --get:*), Bash(gh repo
   view:*), Bash(gh release view:*), Bash(gh pr list:*)
 ---
 
@@ -46,10 +47,11 @@ command that would settle it.
    [`AUDIT_CHECKLIST.md`](../nbr-repo-conventions/templates/AUDIT_CHECKLIST.md). The `releases`
    template-drift rule compares against [`nbr-repo-setup/templates/`](../nbr-repo-setup/templates/).
 3. Dispatch one investigator subagent per topic with its topic file, its checklist block, the path,
-   and the report format. Investigators use `Read`, `Glob`, and `Grep`, plus the read-only `git` and
-   `gh` queries above for `git` and `releases`; they check every rule in their block and return
-   findings without writing. The returned reports are the evidence: merge them without re-reading
-   the files. Inspect a topic inline only when its dispatch fails, and say so.
+   and the report format. Investigators use `Read`, the fff MCP tools (`grep`, `find_files`,
+   `multi_grep`) or `rg` and `fd` through Bash, plus the read-only `git` and `gh` queries above for
+   `git` and `releases`; they check every rule in their block and return findings without writing.
+   The returned reports are the evidence: merge them without re-reading the files. Inspect a topic
+   inline only when its dispatch fails, and say so.
 4. Merge into the `REPORT.md` format. Check that every Broken, Missing, Deviation, and Unverified
    entry has severity, evidence (`path:line` or the command and its output), impact, and a next
    action. Observations outside the checklist go under Suggestions.
