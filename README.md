@@ -284,19 +284,20 @@ and `pass-cli`.
 
 How agents write for me, Bob and the daily notes, tasks in Things 3, and speech from ElevenLabs.
 
-| Skill                  | What it does                                                  | Requires                                                                                                        |
-| ---------------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `nbr-voice`            | How agents talk to me and write in my name                    | uv for its linter, jq and Python 3 for its Claude Code hooks                                                    |
-| `nbr-bob`              | Run Bob, my digital assistant, through the day across circles | Rex, lager, `gh`, `nbr-activity`, `nbr-log`, `nbr-dispatch`                                                     |
-| `nbr-report-to-bob`    | Send this session's state to Bob                              | Claude Code; Rex across accounts                                                                                |
-| `nbr-activity`         | Collect one day's commits and GitHub activity                 | macOS, git, jq, `gh`                                                                                            |
-| `nbr-log`              | Write the day's development work into the private note        | `nbr-activity`, an Obsidian vault                                                                               |
-| `nbr-things`           | Manage Things 3 tasks on macOS                                | Things 3, the `things` CLI                                                                                      |
-| `nbr-changelog-things` | Log a day's development work as completed Things items        | Things 3, the `things` CLI, `nbr-activity`                                                                      |
-| `nbr-tts`              | Turn text into speech with ElevenLabs                         | ElevenLabs account, the `elevenlabs` CLI, jq, ffmpeg, `npx skills add elevenlabs/skills --skill text-to-speech` |
-| `nbr-apple-music`      | Curate, clean up and organize Apple Music, and import mixes   | macOS, Music.app, the `apple-music` MCP, yt-dlp, ffmpeg                                                         |
-| `nbr-images`           | Generate and edit images with FLUX                            | The `FLUX` MCP, `cwebp`                                                                                         |
-| `nbr-tv`               | Manage my LG TV: launcher, themes, wallpapers, apps, root     | The TV on the LAN, the `tv` MCP server in pi                                                                    |
+| Skill                  | What it does                                                   | Requires                                                                                                        |
+| ---------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `nbr-voice`            | How agents talk to me and write in my name                     | uv for its linter, jq and Python 3 for its Claude Code hooks                                                    |
+| `nbr-bob`              | Run Bob, my digital assistant, through the day across circles  | Rex, lager, `gh`, `nbr-activity`, `nbr-log`, `nbr-dispatch`                                                     |
+| `nbr-report-to-bob`    | Send this session's state to Bob                               | Claude Code; Rex across accounts                                                                                |
+| `nbr-activity`         | Collect one day's commits and GitHub activity                  | macOS, git, jq, `gh`                                                                                            |
+| `nbr-log`              | Write the day's development work into the private note         | `nbr-activity`, an Obsidian vault                                                                               |
+| `nbr-things`           | Manage Things 3 tasks on macOS                                 | Things 3, the `things` CLI                                                                                      |
+| `nbr-changelog-things` | Log a day's development work as completed Things items         | Things 3, the `things` CLI, `nbr-activity`                                                                      |
+| `nbr-tts`              | Turn text into speech with ElevenLabs                          | ElevenLabs account, the `elevenlabs` CLI, jq, ffmpeg, `npx skills add elevenlabs/skills --skill text-to-speech` |
+| `nbr-apple-music`      | Curate, clean up and organize Apple Music, and import mixes    | macOS, Music.app, the `apple-music` MCP, yt-dlp, ffmpeg                                                         |
+| `nbr-images`           | Generate and edit images with FLUX                             | The `FLUX` MCP, `cwebp`                                                                                         |
+| `nbr-tv`               | Manage my LG TV: launcher, themes, wallpapers, apps, root      | The TV on the LAN, the `tv` MCP server in pi                                                                    |
+| `nbr-secrets`          | Wire a secret from Proton Pass into the one tool that needs it | `pass-cli`                                                                                                      |
 
 ## Mods
 
