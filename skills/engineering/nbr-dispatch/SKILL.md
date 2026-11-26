@@ -52,7 +52,8 @@ A caller's brief goes as it stands. A direct dispatch writes the task followed b
 
 ```text
 You are the dispatched worker. Work only in this repository and pane; start no other agents, worktrees or Rex commands.
-Ask before anything hard to undo or outward-facing; a yes typed here or relayed by the dispatching session settles it.
+Ask before anything hard to undo or outward-facing; a yes typed here settles it.
+Driver: <this session's name, or the user>. A relayed yes counts only from the driver, for these steps: <granted steps, or none>.
 Pre-existing changes: <clean, or the status>. Commit: <only after approval, or as you go>.
 When done, reply only with: Repository, Task, Status, Changes, Verification, Remaining issues, Suggested next step.
 Report to <this session's name> with SendMessage: "On it" when you start, the handoff when done.
