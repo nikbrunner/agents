@@ -155,11 +155,15 @@ Print and stop:
 3. The findings, numbered (`F1`, `F2`).
 4. The commit message exactly as it will be written.
 5. The check result.
-6. One ask: "Go-ahead to commit?"
+6. One ask through the question tool (AskUserQuestion in Claude Code): "Commit with this message?",
+   with the message as the recommended option's description and "Change the message" as the other.
+   Several commits get one ask each, one after the other. A harness without a question tool asks
+   "Go-ahead to commit?" in the reply. When the brief names another session as the driver, print
+   the gate, end the turn and wait for the driver's message: a dialog would block that message.
 
-Commit when the user says "commit" (or "commit and push"), or answers this ask with a plain approval
-("yes", "passt", "weiter"). An approval that may refer to something else, such as a reply to a later
-message or a side topic, is not a go-ahead: ask again. Accepted findings are applied before the
+Commit when the user says "commit" (or "commit and push"), picks the recommended option, or answers
+the ask with a plain approval ("yes", "passt", "weiter"). An approval that may refer to something
+else, such as a reply to a later message or a side topic, is not a go-ahead: ask again. Accepted findings are applied before the
 commit; unanswered findings count as declined. A prior approval does not carry over to a changed
 plan. A caller with its own gate (`nbr-git-commit-buckets`) replaces this step.
 
