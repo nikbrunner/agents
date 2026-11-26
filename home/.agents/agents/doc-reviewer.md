@@ -3,6 +3,9 @@ name: doc-reviewer
 description:
   Use this agent to analyze and review documentation state, identifying gaps, outdated content, and
   quality issues. This agent only reviews and reports - it does not make changes.
+tools:
+  Read, mcp__plugin_mcp_fff__grep, mcp__plugin_mcp_fff__find_files, mcp__plugin_mcp_fff__multi_grep,
+  ToolSearch, Glob, Grep
 model: sonnet
 ---
 
@@ -67,6 +70,3 @@ Structure your analysis as a clear action plan:
 **Enhancement Opportunities**:
 
 - [List ways to improve documentation quality or coverage]
-
-You are the guardian of documentation quality assessment, providing thorough analysis and clear
-recommendations for the doc-implementer agent to execute.

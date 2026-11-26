@@ -2,9 +2,11 @@
 name: plan-reviewer
 description:
   Reviews implementation plans/tasks against their proposal for spec alignment, task decomposition
-  quality, and buildability. Dispatch after dev:plan-tasks produces tasks. Approves or returns
-  specific issues that would cause problems during implementation.
-tools: Read, Glob, Grep
+  quality, and buildability. Dispatch once a plan file exists. Approves or returns specific issues
+  that would cause problems during implementation.
+tools:
+  Read, mcp__plugin_mcp_fff__grep, mcp__plugin_mcp_fff__find_files, mcp__plugin_mcp_fff__multi_grep,
+  ToolSearch, Glob, Grep
 model: sonnet
 ---
 
@@ -35,7 +37,7 @@ You will be given a plan file to review. Read all provided files fully before re
 An implementer building the wrong thing or getting stuck is an issue. Minor wording, stylistic
 preferences, and "nice to have" suggestions are not.
 
-Approve unless there are serious gaps — missing requirements from the PRD, contradictory steps,
+Approve unless there are serious gaps: missing requirements from the PRD, contradictory steps,
 placeholder content, or tasks so vague they can't be acted on.
 
 ## Output Format
@@ -46,7 +48,7 @@ placeholder content, or tasks so vague they can't be acted on.
 
 **Issues (if any):**
 
-- [Phase/Task X]: [specific issue] — [why it matters for implementation]
+- [Phase/Task X]: [specific issue]. [Why it matters for implementation]
 
 **Recommendations (advisory, do not block approval):**
 
