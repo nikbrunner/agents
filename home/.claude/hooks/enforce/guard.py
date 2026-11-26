@@ -27,7 +27,7 @@ ARGS = {"sed": ("-l",), "perl": ("-M", "-m", "-I")}
 
 EDIT = "Change files with Edit or Write, never sed -i or perl -i (temp files under /tmp excepted)."
 STAGE = ("Stage by name (git add path/a path/b), or by hunk with nbr-git-commit's hunks.py ("
-         + HUNKS + "). Never git add -A, ., *, :/ or -u, and never git commit -a or with a pathspec.")
+         + HUNKS + "). Never git add -A, ., *, :/ or -u, and never git commit -a or with ., * or :/ as its path.")
 WORKTREE = "lager creates worktrees: run `lager worktree add <repo> <name>`, never git worktree add."
 FORCE = "Force push. Confirm?"
 NO_VERIFY = "--no-verify skips the git hooks. Confirm?"
