@@ -373,7 +373,7 @@
       "**CI/CD deploy targets**: None configured",
       "**Network posture**: None configured",
       "**Host containment**: None configured — assume an ordinary developer machine with open internet",
-      "**Source control**: The trusted repo (nikbrunner/dots, remotes `origin` github.com:nikbrunner/dots.git and `codeberg` ssh://codeberg.org/nbr/dots.git) only — no additional orgs configured",
+      "**Source control**: The trusted repo (nikbrunner/dots, remote `origin` github.com:nikbrunner/dots.git) only — no additional orgs configured",
       "**Trusted internal domains**: None configured",
       "**Trusted cloud buckets**: None configured",
       "**Key internal services**: dinky.rodeo, code.claude.com, api.github.com, www.superlogical.com — hosts contacted routinely in this project's session transcripts",
@@ -385,7 +385,7 @@
       "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
       "### User-specific",
       "**Primary use of Claude Code**: software development, dotfiles and developer tooling (personal/hobby use)",
-      "**Trusted repo**: nikbrunner/dots (this repo's working directory and its remotes `origin`/`codeberg`); PUBLIC — only this repo's own work belongs here, ported/repointed content from elsewhere is not its own work",
+      "**Trusted repo**: nikbrunner/dots (this repo's working directory and its remote `origin`); PUBLIC — only this repo's own work belongs here, ported/repointed content from elsewhere is not its own work",
       "**Org-specific CLIs**: rex, dinky, defi, dots, wt, elevenlabs, tanstack, ghostty — non-standard CLIs used routinely in this project's sessions",
       "routine under nikbrunner/ prefix: actions scoped to the nikbrunner/dots repo and its own tooling (dots, wt, rex) are routine; actions touching other orgs' repos are not"
     ]
