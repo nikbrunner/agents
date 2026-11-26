@@ -37,7 +37,8 @@ the skill text loaded at day open lies far back by the afternoon.
 - Before the first question of a turn, read [ask.md](ask.md). Ask with `AskUserQuestion`, one
   question per call. Use the Rex palette only while Nik has said he is away from the keyboard.
 - When Nik closes the day, read [close.md](close.md).
-- A check-in arrives with [checkin.md](checkin.md) already injected by a hook. Follow it.
+- A check-in arrives with [checkin.md](checkin.md) already injected by a hook. Follow it. A
+  `Bob check-in` without it: read checkin.md and gather the signals yourself.
 
 ## Circles
 

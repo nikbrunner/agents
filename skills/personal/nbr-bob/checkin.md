@@ -17,7 +17,7 @@ earlier.
 5. Read a Rex pane, a PR or a ticket only where the digest leaves its state unclear.
 6. Tell Nik what changed or needs him, one line each. Say what waits on him first. Name a meeting
    that starts before the next check-in. While a meeting runs, the news waits for its end. When
-   nothing needs Nik, end the turn without text.
+   nothing needs Nik, end the turn without any text, not even "nothing new".
 
 Done when every flag is handled, the blocks match the signals, and every stale todo shows its
 current state.
