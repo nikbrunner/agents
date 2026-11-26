@@ -69,9 +69,9 @@ engineering decision as:
 ## 2. Execution brief and rollover
 
 After readiness and before implementation, the parent sends and writes this completed record
-verbatim in a compact, standalone execution brief in the main repository's ignored `handoffs/`
-directory. It is the authority for execution and recovery; write the same task-level facts to a
-durable adjacent ledger and keep it current after every task. A narrative summary cannot replace the
+verbatim in a compact, standalone execution brief, saved where `nbr-handoff` saves a handoff. It is
+the authority for execution and recovery; write the same task-level facts to a durable adjacent
+ledger and keep it current after every task. A narrative summary cannot replace the
 record. Use `not applicable — reason` rather than omitting a field.
 
 ## AFK launch
@@ -175,8 +175,8 @@ them.
   deferred, or disputed findings; residual risks; `HEAD` and index proof; recommended review order
   and relevant skills.
 
-After successful verification, write the final review handoff separately under the main repository's
-ignored `handoffs/` directory. If a recorded fix-loop cap is exhausted before required verification
+After successful verification, write the final review handoff as a separate file, saved where
+`nbr-handoff` saves a handoff. If a recorded fix-loop cap is exhausted before required verification
 succeeds, write that handoff as incomplete and unverified instead. It is addressed to a fresh review
 session, not the execution session. The closing response gives its path and tells the owner to start
 a new review session from it.
