@@ -623,11 +623,14 @@ async function draw(
     );
   };
 
-  const meter = (name: string, percent: number, extra: string) => (
+  const meter = (name: string, percent: number | undefined, extra: string) => (
     <Box flexShrink={0}>
       <Text dimColor>{name} </Text>
-      {gauge(percent, 6, heat(percent))}
-      <Text bold> {String(Math.round(percent)).padStart(3)}%</Text>
+      {gauge(percent ?? 0, 6, heat(percent ?? 0))}
+      <Text bold>
+        {" "}
+        {percent === undefined ? "   –" : `${String(Math.round(percent)).padStart(3)}%`}
+      </Text>
       {extra !== "" && <Text dimColor> {extra}</Text>}
     </Box>
   );
@@ -721,13 +724,16 @@ async function draw(
       </Box>
     );
     const fileColor: Record<string, string> = { A: "success", D: "error", "?": "suggestion" };
-    const wide = (name: string, percent: number, extra: string) => (
+    const wide = (name: string, percent: number | undefined, extra: string) => (
       <Box>
         <Box width={5} flexShrink={0}>
           <Text dimColor>{name}</Text>
         </Box>
-        {gauge(percent, 12, heat(percent))}
-        <Text bold> {String(Math.round(percent)).padStart(3)}%</Text>
+        {gauge(percent ?? 0, 12, heat(percent ?? 0))}
+        <Text bold>
+          {" "}
+          {percent === undefined ? "   –" : `${String(Math.round(percent)).padStart(3)}%`}
+        </Text>
         {extra !== "" && <Text dimColor> {extra}</Text>}
       </Box>
     );
@@ -769,21 +775,19 @@ async function draw(
                 {w.turns} turns{tail}
               </Text>,
             )}
-            {(u.context !== undefined || u.limits.length > 0) &&
-              section(
-                "usage",
-                u.context !== undefined &&
-                  wide(
-                    "ctx",
-                    u.context,
-                    u.tokens !== undefined && u.window !== undefined
-                      ? `${Math.round(u.tokens / 1000)}k/${u.window >= 1_000_000 ? `${u.window / 1_000_000}M` : `${Math.round(u.window / 1000)}k`}`
-                      : "",
-                  ),
-                ...u.limits.map((l) =>
-                  wide(LIMIT_LABEL[l.kind] ?? l.kind, l.percent, until(l.resetsAt, at)),
-                ),
-              )}
+            {section(
+              "usage",
+              wide(
+                "ctx",
+                u.context,
+                u.tokens !== undefined && u.window !== undefined
+                  ? `${Math.round(u.tokens / 1000)}k/${u.window >= 1_000_000 ? `${u.window / 1_000_000}M` : `${Math.round(u.window / 1000)}k`}`
+                  : "",
+              ),
+              ...u.limits.map((l) =>
+                wide(LIMIT_LABEL[l.kind] ?? l.kind, l.percent, until(l.resetsAt, at)),
+              ),
+            )}
             {section(
               "cache",
               <Box>
@@ -970,24 +974,21 @@ async function draw(
               ))}
             </Text>,
           )}
-          {(u.context !== undefined || u.limits.length > 0) && (
-            <Box>
-              {label("usage")}
-              <Box gap={3} overflow="hidden">
-                {u.context !== undefined &&
-                  meter(
-                    "ctx",
-                    u.context,
-                    u.tokens !== undefined && u.window !== undefined
-                      ? `${Math.round(u.tokens / 1000)}k/${u.window >= 1_000_000 ? `${u.window / 1_000_000}M` : `${Math.round(u.window / 1000)}k`}`
-                      : "",
-                  )}
-                {u.limits.map((l) =>
-                  meter(LIMIT_LABEL[l.kind] ?? l.kind, l.percent, until(l.resetsAt, at)),
-                )}
-              </Box>
+          <Box>
+            {label("usage")}
+            <Box gap={3} overflow="hidden">
+              {meter(
+                "ctx",
+                u.context,
+                u.tokens !== undefined && u.window !== undefined
+                  ? `${Math.round(u.tokens / 1000)}k/${u.window >= 1_000_000 ? `${u.window / 1_000_000}M` : `${Math.round(u.window / 1000)}k`}`
+                  : "",
+              )}
+              {u.limits.map((l) =>
+                meter(LIMIT_LABEL[l.kind] ?? l.kind, l.percent, until(l.resetsAt, at)),
+              )}
             </Box>
-          )}
+          </Box>
           {kv(
             "cache",
             <Text>
