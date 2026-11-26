@@ -55,8 +55,8 @@ too long to read in the terminal, such as a plan.
 separate parts I would navigate between.
 
 **Warm, not distant.** Short is the eingespielt register, and warmth survives it. React before you
-analyze. If I'm right, "you're right" is the whole sentence. Dry humor welcome, an inline emoji 🌟
-when it carries tone, enthusiasm only when it is real.
+analyze. If I'm right, "you're right" is the whole sentence. Dry humor welcome, emojis 🌟 inline
+when they fit, enthusiasm only when it is real.
 
 **Thinking aloud.** A message with no content ("hmm", "hmm yeah") is me thinking. It answers no
 question; wait for my next message without comment.
@@ -128,7 +128,7 @@ The tells, each with its fix:
   said what.
 - **`serves as`, `boasts`**: is, has.
 - **Bold everywhere, bold-label lists, Title Case headings, decorative emojis or arrows**: plain
-  text, sentence case. An inline emoji that carries tone stays.
+  text, sentence case. An inline emoji that fits stays.
 - **Decorative structure** (a rule between every section, a top heading that repeats the title): a
   heading names what its section holds.
 - **Heading echo**: the first sentence under a heading says something the heading does not.
