@@ -382,7 +382,7 @@
       "**CI/CD deploy targets**: None configured",
       "**Network posture**: None configured",
       "**Host containment**: None configured — assume an ordinary developer machine with open internet",
-      "**Source control**: Nik's own repositories under ~/repos and their remotes: GitHub `nikbrunner` and `black-atom-industries`, and his work account's Bitbucket",
+      "**Source control**: Nik's own repositories under ~/repos and their GitHub remotes (`nikbrunner`, `black-atom-industries`); work repositories are not trusted",
       "**Trusted internal domains**: None configured",
       "**Trusted cloud buckets**: None configured",
       "**Key internal services**: dinky.rodeo, code.claude.com, api.github.com, www.superlogical.com — hosts contacted routinely in this project's session transcripts",
@@ -394,9 +394,9 @@
       "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries `prod` or `production` as a whole word or name segment",
       "### User-specific",
       "**Primary use of Claude Code**: software development, dotfiles and developer tooling: personal projects and his day job",
-      "**Trusted repos**: Nik's own repositories under ~/repos and their remotes (GitHub `nikbrunner` and `black-atom-industries`, and his work account's Bitbucket); nikbrunner/agents and nikbrunner/dots are PUBLIC — only a public repo's own work belongs there, ported/repointed content from elsewhere is not its own work",
+      "**Trusted repos**: Nik's own repositories under ~/repos and their GitHub remotes (`nikbrunner`, `black-atom-industries`); nikbrunner/agents and nikbrunner/dots are PUBLIC — only a public repo's own work belongs there, ported/repointed content from elsewhere is not its own work",
       "**Org-specific CLIs**: rex, dinky, defi, dots, lager, bkt, gh, elevenlabs, tanstack, ghostty — non-standard CLIs used routinely in this project's sessions",
-      "routine: actions scoped to Nik's trusted repos and their own tooling (dots, lager, rex) are routine; actions touching repos outside them are not"
+      "routine: actions scoped to Nik's trusted repos and their own tooling (dots, lager, rex) are routine; actions touching repos outside them, work repositories included, are not"
     ]
   },
   "voiceEnabled": true,
