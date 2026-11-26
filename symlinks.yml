@@ -22,6 +22,7 @@ common:
     - ~/.claude/CLAUDE.md
     - ~/.claude-work/CLAUDE.md
     - ~/.pi/agent/AGENTS.md
+    - ~/.codex/AGENTS.md
   home/.agents/agents: [~/.claude/agents, ~/.claude-work/agents]
   home/.claude/settings.json:
     - ~/.claude/settings.json
