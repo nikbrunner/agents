@@ -2,7 +2,7 @@
 
 Sessions report with `nbr-report-to-bob`, as a cross-session message or a paste. A report is the
 sender's full account; the notes get only what Nik can act on. Filter it down, never copy it over.
-The filing rules in SKILL.md still apply to everything that lands in a note.
+The rules in [filing.md](filing.md) apply to everything that lands in a note.
 
 The report's **Circle** line picks the note. When it is missing or the repo path says otherwise, the
 circle whose skill claims the repo wins.

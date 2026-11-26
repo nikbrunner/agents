@@ -196,6 +196,11 @@ report in the right note. It hands PR reviews and tasks out to sessions through 
 watches how much runs at once, and at day close offers to tear down sessions whose work merged,
 which it does only on my yes.
 
+Its half-hourly check-in runs through a hook in a circle's notes repo.
+[`scripts/checkin.py`](skills/personal/nbr-bob/scripts/checkin.py) reads the sessions, checkouts,
+calendar, time-block ledger, PRs and tickets itself. It drops the check-in while I'm talking to Bob
+or when nothing changed, and otherwise hands Bob only what changed.
+
 #### A PR review
 
 Bob asks me whether a PR goes to review. On yes, it writes a brief that names the circle's review
