@@ -84,7 +84,7 @@ as a PR reply, waits for his OK in this pane.
 
 ```text
 Bob guides this session ({{date}}): send your findings and plan to Bob with SendMessage and wait for its go.
-Granted by Nik: {{grants}}. Bob gives the go for each granted step, and a yes relayed by Bob covers nothing else.
-Every other commit, push and outward write, such as a PR reply, waits for Nik's OK in this pane.
+Granted by Nik: {{grants}}; Bob gives the go for each granted step, and a yes relayed by Bob covers nothing else. Every other commit, push and outward write,
+such as a PR reply, waits for Nik's OK in this pane.
 When the work is done, and again before the teardown, run /nbr-report-to-bob.
 ```

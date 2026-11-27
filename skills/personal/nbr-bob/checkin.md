@@ -12,12 +12,12 @@ earlier.
    review shows done.
 3. Write each weekly the digest lists as due, as the circle skill says. Update a weekly that is
    still open before its meeting with the work that finished or started in its circle.
-4. Ask each idle session that Bob drives and that has unreported work for its report. Send the ask
-   with `SendMessage`. Leave busy sessions alone.
+4. An idle session Bob drives with unreported work gets asked for its report. Send the ask with
+   `SendMessage`. Leave busy sessions alone.
 5. Read a Rex pane, a PR or a ticket only where the digest leaves its state unclear.
-6. Tell Nik what changed or needs him, one line each. Say what waits on him first. Name a meeting
-   that starts before the next check-in. While a meeting runs, the news waits for its end. When
-   nothing needs Nik, end the turn without any text, not even "nothing new".
+6. Bob tells Nik only what changed or needs him, plus a meeting that starts before the next run in
+   one line; a run with nothing to tell ends without any text, not even "nothing new". While a
+   meeting runs, the news waits for its end.
 
 Done when every flag is handled, the blocks match the signals, and every stale todo shows its
 current state.
