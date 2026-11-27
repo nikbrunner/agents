@@ -183,9 +183,10 @@ flowchart LR
 `nbr-plan`, `nbr-create-pr` and Bob run on their drafts. Its linter, `scripts/lint.py`, checks prose
 against the rules in `references/rules.toml`. In Claude Code four hooks in
 [`home/.claude/hooks/enforce`](home/.claude/hooks/enforce) keep it in force: `voice-context.sh` puts
-the skill in context at session start and after compaction, `voice-reminder.sh` adds a short
-reminder to every prompt, `voice-words.py` sends a reply back when the linter has a hard finding in
-it, and `voice-docs.py` does the same for the Markdown an agent writes.
+the skill and its conversation guide in context at session start and after compaction,
+`voice-reminder.sh` adds a short reminder to every prompt, `voice-words.py` sends a reply back when
+the linter has a hard finding in it, and `voice-docs.py` does the same for the Markdown an agent
+writes.
 
 #### A day with Bob
 
