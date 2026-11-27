@@ -13,7 +13,7 @@ import socket
 import sys
 import time
 
-HOST = "192.168.2.117"
+HOST = "lgwebostv.local"
 PORT = 23
 DEADLINE = 200  # seconds; an app removal can take 30 per app
 

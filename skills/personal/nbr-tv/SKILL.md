@@ -9,9 +9,10 @@ compatibility: The TV reachable on the LAN, and the `tv` MCP server in pi. Root 
 
 # TV
 
-Nik's TV is an **LG OLED65C17LB** (2021 C1) on webOS 6.5.3, firmware `03.53.45`, at `192.168.2.117`.
-It is rooted with Homebrew Channel 0.7.3, and the **CleanYourTV** launcher stands in for LG's Home:
-`home-standin.sh` is bind-mounted over `/usr/bin/com.webos.app.home`.
+Nik's TV is an **LG OLED65C17LB** (2021 C1) on webOS 6.5.3, firmware `03.53.45`, on the LAN as
+`lgwebostv.local` (mDNS, so it follows the DHCP lease). It is rooted with Homebrew Channel 0.7.3,
+and the **CleanYourTV** launcher stands in for LG's Home: `home-standin.sh` is bind-mounted over
+`/usr/bin/com.webos.app.home`.
 
 Firmware updates are blocked at `/var/luna/preferences/webosbrew_block_updates`. Every firmware
 newer than `03.53.45` closes the exploit, so an update ends root and CleanYourTV with it.
@@ -20,7 +21,7 @@ newer than `03.53.45` closes the exploit, so an update ends root and CleanYourTV
 
 Take the highest door that answers the question.
 
-1. **MCP `tv`** at `http://192.168.2.117:8802/mcp`, 21 tools: `tv_list_apps`, `tv_launch_app`,
+1. **MCP `tv`** at `http://lgwebostv.local:8802/mcp`, 21 tools: `tv_list_apps`, `tv_launch_app`,
    `tv_switch_input`, `tv_show_notification`, `tv_get_current_app`, `tv_navigate`, `tv_get_volume`,
    `tv_info`, `tv_most_used_apps`, `tv_get_weather`, `tv_theme`, `tv_remote_buttons`,
    `tv_close_app`, `tv_list_running_apps`, plus `androidbox`, `icons`, `agent`. The token lives in
