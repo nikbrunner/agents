@@ -168,6 +168,17 @@ def code_checks(masked, checks, scopes, keep):
                     found.append((opening, "same opening", start, snippet(parts[i]),
                                   f"{run} sentences open with '{firsts[i]}': merge or change the subject"))
                     break
+    rocks = checks.get("big_rocks")
+    if rocks and applies(rocks, scopes):
+        first = next(units(masked), None)
+        lead = masked.lstrip().split("\n", 1)[0]
+        if first and keep(first[0]) and not re.match(r"(#{1,6}\s|[-*+]\s|\d+[.)]\s|>|\|)", lead):
+            count, limit = len(sentences(first[1])), rocks.get("max_sentences", 3)
+            words, word_limit = len(words_in(first[1])), rocks.get("max_words", 60)
+            if count > limit or words > word_limit:
+                found.append((rocks, "big rocks first", first[0], snippet(first[1]),
+                              f"open with the main point in a line or two ({count} sentences, {words} words;"
+                              f" limit {limit} and {word_limit}), and keep every detail below it"))
     return found
 
 

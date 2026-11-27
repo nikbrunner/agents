@@ -32,6 +32,12 @@ max_words = { reply = 25, document = 25, procedure = 20 }
 severity = "advisory"
 run = 3
 
+# Big rocks first: the opening prose paragraph of a reply holds the main point in a line or two.
+[checks.big_rocks]
+scope = ["reply"]
+max_sentences = 3
+max_words = 60
+
 [ignore]
 # Globs matched against the absolute path and the file name.
 paths = ["*/node_modules/*", "CHANGELOG.md"]

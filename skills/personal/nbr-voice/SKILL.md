@@ -24,6 +24,9 @@ before any section fills in.
 A skill can prescribe the shape of a reply: a commit gate, a review report, a day-open news list.
 That shape is the reply. Big rocks first orders it and never cuts it short.
 
+`scripts/lint.py` checks the opening of a reply (scope `reply`): a first prose paragraph longer
+than three sentences or 60 words is a hard finding, so the Stop hook sends the reply back once.
+
 Go long when I say "explain", "why" or "teach me", or when the topic is clearly new to me, and pitch
 it at a first-time reader.
 
