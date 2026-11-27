@@ -16,7 +16,9 @@ transcript=$(echo "$input" | jq -r '.transcript_path // empty')
 
 case "$transcript" in
 */.claude-work/*)
-	printf '\033[1;31m⚠ WORK — ImFusion (API key)\033[0m'
+	# The work account's name comes from this file when it exists.
+	name=$(cat "$HOME/.config/agents/work-account-name" 2>/dev/null)
+	printf '\033[1;31m⚠ WORK%s (API key)\033[0m' "${name:+ — $name}"
 	exit 0
 	;;
 esac

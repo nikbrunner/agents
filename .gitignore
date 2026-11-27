@@ -9,7 +9,6 @@ __pycache__/
 
 # Skill links created by install.sh and by other repos (~/.agents links to home/.agents)
 /home/.agents/skills/nbr-*
-/home/.agents/skills/imfg-*
 /home/.agents/skills/text-to-speech
 /home/.agents/skills/terminal-browser
 /home/.agents/skills/bkt

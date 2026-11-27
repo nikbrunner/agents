@@ -7,8 +7,8 @@ Code reads `*/SKILL.md`, and Pi ignores root `.md` files here.
 Skills Nik wrote carry the `nbr-` prefix, and each `name` matches its directory. They and the
 third-party skills they build on live in [nikbrunner/agents](https://github.com/nikbrunner/agents):
 its `skills-lock.json` records each third-party source, and its `install.sh` restores them and links
-everything in here. `plannotator-*` come from the Plannotator installer, and `imfg-*` link to my
-work agents repo; `tldraw-offline` and `terminal-browser` belong to their apps.
+everything in here. `plannotator-*` come from the Plannotator installer, and my work skills link in
+from my work agents repo; `tldraw-offline` and `terminal-browser` belong to their apps.
 
 ## Map
 

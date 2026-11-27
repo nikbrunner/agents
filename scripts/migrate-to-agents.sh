@@ -2,13 +2,14 @@
 # One-time move of the agent config from dots to nikbrunner/agents, once per machine.
 # Run after nikbrunner/skills is renamed to nikbrunner/agents on GitHub and both
 # agents-repo branches are merged, with dots still on its pre-merge commit, and with
-# Claude Code and Pi closed. The work skills link only where the work repo exists.
+# Claude Code and Pi closed. The work skills link only when WORK_AGENTS_DIR names the
+# work agents repo.
 set -euo pipefail
 
 repos="$HOME/repos/nikbrunner"
 dots="$repos/dots"
 agents="$repos/agents"
-work="$HOME/repos/imfusion/brunner/agents"
+work="${WORK_AGENTS_DIR:-}"
 moved_paths=(common/.pi common/.agents common/.claude common/.codex common/.config/opencode common/.config/rpiv-advisor)
 
 step() { printf '\n==> %s\n' "$*"; }
@@ -91,7 +92,7 @@ step "Linking"
 DOTS_DIR="$dots" AGENTS_DIR="$agents" "$dots/common/.local/bin/dots" link
 "$agents/install.sh"
 
-if [[ -x $work/install.sh ]]; then
+if [[ -n $work && -x $work/install.sh ]]; then
     step "Linking the work skills"
     "$work/install.sh"
 fi
