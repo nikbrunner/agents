@@ -239,12 +239,12 @@ changes. A session label reads repo, topic in words, then ticket key. The PR num
 the PR exists. A session on the main checkout is labelled with the project name. Agent names stay
 out of the label.
 
-| Case           | Branch                              | Folder                                              | Rex label                                    |
-| -------------- | ----------------------------------- | --------------------------------------------------- | -------------------------------------------- |
-| No ticket      | `feat/project-settings-refinements` | `shop-web.worktrees/project-settings-refinements`   | `shop-web · Project settings refinements`    |
-| With a ticket  | `PROJ-42-sign-in-page`              | `shop-web.worktrees/PROJ-42-sign-in-page`           | `shop-web · Sign in page · PROJ-42`          |
-| PR open        | unchanged                           | unchanged                                           | `shop-web · Sign in page · PROJ-42 · PR 28`  |
-| Reviewing a PR | the PR's own branch                 | `shop-web.worktrees/upload-images`                  | `shop-web · Upload images · PR 24`           |
+| Case           | Branch                              | Folder                                            | Rex label                                   |
+| -------------- | ----------------------------------- | ------------------------------------------------- | ------------------------------------------- |
+| No ticket      | `feat/project-settings-refinements` | `shop-web.worktrees/project-settings-refinements` | `shop-web · Project settings refinements`   |
+| With a ticket  | `PROJ-42-sign-in-page`              | `shop-web.worktrees/PROJ-42-sign-in-page`         | `shop-web · Sign in page · PROJ-42`         |
+| PR open        | unchanged                           | unchanged                                         | `shop-web · Sign in page · PROJ-42 · PR 28` |
+| Reviewing a PR | the PR's own branch                 | `shop-web.worktrees/upload-images`                | `shop-web · Upload images · PR 24`          |
 
 ### Comments
 
