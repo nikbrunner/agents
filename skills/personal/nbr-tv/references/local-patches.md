@@ -2,6 +2,10 @@
 
 These live on the TV and in no release. A CleanYourTV update replaces all of them.
 
+The exception is `/media/developer/tv-quiet/`, which silences four LG daemons and hooks in from
+`/var/lib/webosbrew/init.d/20-tv-quiet`: it sits outside CleanYourTV and survives a launcher update.
+The skill's "Quieting the TV's own daemons" covers it.
+
 ## Five theme settings
 
 Their schema has no switch for any of these. Each is a `SCHEMA` row in `helper/themeschema.js`, an

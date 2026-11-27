@@ -1,9 +1,9 @@
 ---
 name: nbr-tv
 description: >-
-  Manage Nik's LG OLED TV: its CleanYourTV launcher, themes, wallpapers, apps, inputs, notifications
-  and root shell. Use when a task touches the TV rather than this computer, or names CleanYourTV,
-  the launcher, a TV theme or a wallpaper on the TV.
+  Manage Nik's LG OLED TV: its CleanYourTV launcher, themes, wallpapers, apps, inputs,
+  notifications, network quieting, power state and root shell. Use when a task touches the TV rather
+  than this computer, or names CleanYourTV, the launcher, a TV theme or a wallpaper on the TV.
 compatibility: The TV reachable on the LAN, and the `tv` MCP server in pi. Root shell needs python3.
 ---
 
@@ -16,6 +16,19 @@ and the **CleanYourTV** launcher stands in for LG's Home: `home-standin.sh` is b
 
 Firmware updates are blocked at `/var/luna/preferences/webosbrew_block_updates`. Every firmware
 newer than `03.53.45` closes the exploit, so an update ends root and CleanYourTV with it.
+
+Power-off is standby, because `option.quickStartMode` is `on`. With it `off` the remote's power
+button is a real shutdown: the next start walks the whole webOS boot (about 60 s to the launcher,
+the LG logo included) and the TV's DHCP lease can lapse in between, which moves the address. The
+setting is one write:
+
+```sh
+luna-send -n 1 -f luna://com.webos.settingsservice/setSystemSettings \
+  '{"category":"option","settings":{"quickStartMode":"on"}}'
+```
+
+A real shutdown stays available from door 3: `/sbin/reboot`, since `reboot` is not in `PATH`, or
+`luna://com.webos.service.tvpower/power/turnOff`.
 
 ## Three doors
 
@@ -37,6 +50,17 @@ Take the highest door that answers the question.
    `/media/developer/cleanyourtv`, watched by the boot scripts; a stop and start takes about 15
    seconds and the watchdog covers the gap.
 
+   telnetd wraps input at roughly 70 characters and the shell then runs the pieces as separate
+   lines, so a long command arrives mangled. Keep commands short, and for anything longer write the
+   script here and fetch it: serve the folder
+   (`python3 -m http.server 8099 --bind <this Mac's LAN IP>`) and run
+   `wget -O /tmp/x http://<this Mac>:8099/x; sh /tmp/x` on the TV. Base64 on one line does not
+   survive the wrap.
+
+   `ps -A` lists nothing useful on webOS; read `/proc/*/comm` instead. To attribute a socket to a
+   process, take the inode from column 10 of `/proc/net/tcp{,6}` and match it against the
+   `socket:[<inode>]` links under `/proc/*/fd`.
+
 ## Everyday jobs
 
 - **Remove a store app**:
@@ -56,6 +80,45 @@ Take the highest door that answers the question.
   `text`, `image`, `seconds` and `position`.
 - **App title**: a store app's name is its own `appinfo.json` `title`, which the app manager
   re-reads after a reboot. Edit it there, back it up first.
+- **Quiet down**: see below.
+
+## Quieting the TV's own daemons
+
+`/media/developer/tv-quiet/quiet.sh`, hooked in at `/var/lib/webosbrew/init.d/20-tv-quiet`, silences
+the daemons that reach out on their own: `iot-client` (starfish, which runs `iconnectivity`),
+`lgchannelurl`, `broadcast-conf-downloader` and `amazon-alexa-adapter`. A no-op binary is
+bind-mounted over each of them, so a service manager that starts one on demand gets nothing. Apps
+stay untouched: streaming, the store and AirPlay keep working.
+
+- `sh /media/developer/tv-quiet/quiet.sh undo` starts the four again and removes the boot hook.
+- `touch /media/developer/tv-quiet/DISABLE` makes the boot hook a no-op until the file is gone.
+- The log is `/tmp/tv-quiet.log`, with uptime stamps, and lives until the next reboot.
+
+`/proc/mounts` prints the underlying device (`/dev/mmcblk0p56`) for these bind mounts instead of the
+stub path, so check for the target (`/usr/sbin/iconnectivity`) rather than for `stub-noop`. The
+launcher's own debloat stubs behave the same way. A stub is in place when `wc -c` on the target
+reports 17 bytes.
+
+The launcher's own debloat is separate: four groups (`ads`, `tracking`, `logs`, `suggestions`),
+switched per group in `config.json` under `options.debloatOff`, run by `15-cleanyourtv-debloat` 60 s
+after boot. It holds when `remotelogger`, `service-logger` and `contentminer` read `inactive`,
+`acr2`, `adoverlay-service` and `sportsalarm` are 17-byte stubs, and `/etc/hosts` carries two
+`# cleanyourtv-debloat` lines.
+
+`/tmp/cleanyourtv-boot.log` records each boot with uptime stamps: when the boot script ran, when the
+stand-in was mounted, which app the TV started on, and when the launcher was shown. It is the first
+place to look when a boot looks wrong.
+
+AirPlay is outside all of this. The TV advertises `Fernseher._airplay._tcp.local` at port 7000 as an
+AirPlay 2 receiver, with no legacy `_raop._tcp` entry, and `airplay-adaptor` and `appcasting` run
+regardless of the stubs above.
+
+The kernel has working netfilter: `iptables` writes rules and `ip6tables-restore` is present. A
+LAN-only block is therefore possible as a second boot hook — allow `192.168.2.0/24`, DHCP and DNS to
+the router, reject the rest, IPv6 off on `eth0`. It ends streaming, the store, LG voice, the
+launcher's weather card and the LG account/IoT link. With the daemons above quiet, the remaining
+outbound traffic is Apple (AirPlay and HomeKit), Google and Akamai, plus LG's own cloud in AWS
+eu-west-1.
 
 ## Theme work
 
